@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <!-- When adding a new directory build path location, remember and add "Source" to the end like
+       SQLRaceBuildSource. -->
+  <!--<?define SQLRaceDatabaseDirectory="$(var.SolutionDir)MESL.SqlRace.Database.Session"?>-->
+  <?define SQLRaceMainDirectory="$(var.SolutionDir)MESL.SqlRace.Documentation"?>
+  <?define SQLRaceHelpDirectory="$(var.SolutionDir)MESL.SqlRace.Documentation"?>
+  <?define SQLRaceExamplesSession="$(var.SolutionDir)MESL.SqlRace.Examples.Sessions.CSharp"?>
+  <?define SQLRaceExamplesReadExcelData="$(var.SolutionDir)MESL.SqlRace.Examples.ReadExcelData"?>
+  <?define SqlRaceRootDirectory=".."?>
+  <?define SqlRaceNuGetPackagesDirectory="$(var.SolutionDir)packages"?>
+  <?define SQLRaceBuildDirectory_ReferencedAssemblies="$(var.SolutionDir)ReferencedAssemblies\"?>
+  <?define SQLRaceBuildSource="$(var.TargetDir)\"?>
+  <?define SQLRaceBuildPluginsSource="$(var.SQLRaceBuildSource)Plugins\"?>
+  <?define SQLRaceBuildExtensionsSource="$(var.SQLRaceBuildSource)Extensions\"?>  
+  <?define SQLRaceHelpDirectory="$(var.SolutionDir)MESL.SqlRace.Documentation\Help\"?>
+  <?define SQLRaceSessionDllsSource="$(var.SQLRaceBuildSource)SessionDLLs\"?>
+  <?define NugetFolder="$(var.SolutionDir)packages"?>
+  
+  <?define SQLRaceNugetName="MESL.SQLRace.API"?>
+  <!-- The SQL Race nuget version number is updated by a script as part of the build process -->
+  <?define SQLRaceNugetVersion="2.1.18261.1"?>
+  <?define SQLRaceNugetFile="$(var.SQLRaceNugetName).$(var.SQLRaceNugetVersion).nupkg"?>
+</Include>

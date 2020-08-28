@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+
+<head>
+    <title>SQL Race Examples</title>
+
+    <style type="text/css">
+    h3 {color: black; font-family: verdana; font-size:18px}
+    td {color: black; font-family: verdana; font-size:12px}
+    p {color: black; font-family: verdana; font-size:12px}
+    .style2 {
+        font-family: Verdana;
+    }
+    </style>
+
+</head>
+
+<body>
+
+<h1 align="center" class="style2">SQL Race examples</h1>
+
+<p>The SQL Race examples demonstrate how the SQL Race APIs can be used. They are 
+    written in C# .NET and require Microsoft Visual Studio 2013 or above to 
+    compile/run.</p>
+
+<p>The examples can be found within the installation directory, which will typically be 
+    C:\Program Files\McLaren Electronic Systems\SQL Race\Examples.</p>
+    <p><a href="file:.">Click here</a> to open the examples.</p>
+
+<table width="100%">
+  <tr><td valign="top"><a name="net">&nbsp;</a></td></tr>
+  <tr>
+    <td valign="top" width="100%">
+      <table bgcolor="#dddddd">
+        <tr>
+          <td valign="top">
+            <h3 align="center">List of examples (C# .NET)</h3>
+            <table width="100%" border="1" cellspacing="2" cellpadding="5" bgcolor="#eeeeee">
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td valign="top">
+                    MESL.SqlRace.Examples.Recorder
+                    MESL.SqlRace.Examples.Recorder.UI
+                </td>
+                <td valign="top">
+                    Demonstrates how a custom recorder can be developed for SQL Race Server. 
+                    This example has 2 parts, the UI assembly and recorder assembly. When compiled and copied to the McLaren Electronic Systems\SQL Race\Bin\Extensions directory, 
+                    this recorder can be loaded and example data is written to SQL Race.</td>
+              </tr>             
+              <tr>
+                <td valign="top">
+                    MESL.SqlRace.Examples.Sessions.CSharp</td>
+                <td valign="top">Demonstrates general operations with the SQL Race API such as 
+                    creating sessions, adding data/laps/events, loading a saved session and searching 
+                    sessions by session items etc.</td>
+              </tr>             
+                <tr>
+                <td valign="top">
+                    MESL.SqlRace.Examples.ReadExcelData</td>
+                <td valign="top">Demonstrates reading data from an excel sheet (such as session 
+                    constant) and adding it to the SQL Race session.</td>        
+                </tr>
+                <tr>
+                    <td valign="top">
+                        MESL.SqlRace.Examples.DataDistribution</td>
+                    <td valign="top">Demonstrates the usage of the Data Distribution feature 
+                        (distribution between a local SQL Race database and a centralized SQL Race database 
+                        server).</td>
+                </tr>
+            
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>  
+  
+</table>
+
+</body>
+</html>

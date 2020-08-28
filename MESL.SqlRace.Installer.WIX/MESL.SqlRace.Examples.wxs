@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <?include PathVariables.wxi ?>
+    <ComponentGroup Id="MESL.SqlRace.Examples">
+  
+      <ComponentRef Id="MESL.SqlRace.Examples.Sessions.CSharp" />
+      <ComponentRef Id="MESL.SqlRace.Examples.Sessions.CSharp.Properties" />
+      <ComponentRef Id="MESL.SqlRace.Examples.References" />
+    </ComponentGroup>
+
+    <Component Id="MESL.SqlRace.Examples.Sessions.CSharp" Guid="FBB27B4A-F36B-4efb-B0DC-1EFFFD3C6B0F" Directory="Dir.MESL.SqlRace.Examples.Sessions.CSharp">
+      <File Id="Sessions_app.config" Name="app.config" Source="$(var.SQLRaceExamplesSession)\app.config" />
+      <File Id="Sessions_FindAllSessionsExample.cs" Name="FindAllSessionsExample.cs" Source="$(var.SQLRaceExamplesSession)\FindAllSessionsExample.cs" />
+      <File Id="Sessions_LoadSessionExample.cs" Name="LoadSessionExample.cs" Source="$(var.SQLRaceExamplesSession)\LoadSessionExample.cs" />
+      <File Id="Sessions_MainForm.cs" Name="MainForm.cs" Source="$(var.SQLRaceExamplesSession)\MainForm.cs" />
+      <File Id="Sessions_MainForm.Designer.cs" Name="MainForm.Designer.cs" Source="$(var.SQLRaceExamplesSession)\MainForm.Designer.cs" />
+      <File Id="Sessions_MainForm.resx" Name="MainForm.resx" Source="$(var.SQLRaceExamplesSession)\MainForm.resx" />
+      <File Id="Sessions_MESL.SqlRace.Examples.Sessions.CSharp.csproj" Name="MESL.SqlRace.Examples.Sessions.CSharp.csproj" Source="$(var.SQLRaceExamplesSession)\MESL.SqlRace.Examples.Sessions.CSharp.csproj" />
+      <File Id="Sessions_Program.cs" Name="Program.cs" Source="$(var.SQLRaceExamplesSession)\Program.cs" />
+      <File Id="Sessions_SearchSessionsByItemExample.cs" Name="SearchSessionsByItemExample.cs" Source="$(var.SQLRaceExamplesSession)\SearchSessionsByItemExample.cs" />
+      <File Id="Sessions_SessionCreationExample.cs" Name="SessionCreationExample.cs" Source="$(var.SQLRaceExamplesSession)\SessionCreationExample.cs" />
+    </Component>
+    <Component Id="MESL.SqlRace.Examples.Sessions.CSharp.Properties" Guid="87B23B99-D1C8-4d3b-916D-3ED0E7DE14C5" Directory="Dir.MESL.SqlRace.Examples.Sessions.CSharp.Properties">
+      <File Id="Sessions_AssemblyInfo.cs" Name="AssemblyInfo.cs" Source="$(var.SQLRaceExamplesSession)\Properties\AssemblyInfo.cs" />
+      <File Id="Sessions_Resources.Designer.cs" Name="Resources.Designer.cs" Source="$(var.SQLRaceExamplesSession)\Properties\Resources.Designer.cs" />
+      <File Id="Sessions_Resources.resx" Name="Resources.resx" Source="$(var.SQLRaceExamplesSession)\Properties\Resources.resx" />
+      <File Id="Sessions_Settings.Designer.cs" Name="Settings.Designer.cs" Source="$(var.SQLRaceExamplesSession)\Properties\Settings.Designer.cs" />
+      <File Id="Sessions_Settings.settings" Name="Settings.settings" Source="$(var.SQLRaceExamplesSession)\Properties\Settings.settings" />
+    </Component>
+    <Component Id="MESL.SqlRace.Examples.References" Guid="E5EC3AA4-8A5B-49c5-B4BE-E6E9B4E4B5CA" Directory="Dir.References">
+      <File Id="MESL.SqlRace.Examples.References.Domain" Name="MESL.SqlRace.Domain.dll" Source="$(var.SQLRaceBuildSource)MESL.SqlRace.Domain.dll"/>
+      <File Id="MESL.SqlRace.Examples.References.UI" Name="MESL.SqlRace.UI.dll" Source="$(var.SQLRaceBuildSource)MESL.SqlRace.UI.dll"/>      
+      <File Id="MESL.SqlRace.Examples.References.Common" Name="MESL.SqlRace.Common.dll" Source="$(var.SQLRaceBuildSource)MESL.SqlRace.Common.dll"/>
+      <File Id="MESL.SqlRace.Examples.References.System.Windows.Interactivity" Name="System.Windows.Interactivity.dll" Source="$(var.SQLRaceBuildSource)System.Windows.Interactivity.dll"/>
+    </Component>
+  </Fragment>
+</Wix>
