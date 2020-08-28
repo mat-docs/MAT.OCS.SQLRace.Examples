@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:sql="http://schemas.microsoft.com/wix/SqlExtension"  xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  <!--Change this version number between builds-->
+  <?define productVersion="!(bind.FileVersion.MESL.SqlRace.Domain.dll_Bin)"?>
+  <?define majorVersion="1.0"?>
+  <!--Do not change this code until the next major release change - e.g. v1.x to v2.x-->
+  <?define upgradeCode="E53248EA-5472-45BE-9142-65B61A71BC5A"?>
+  <!--Set the product name-->
+  <?define productName="SQL Race Examples"?>
+  <!--Manufacturer-->
+  <?define Manufacturer="McLaren Applied Technologies"?>
+  <?define ManufacturerOld="McLaren Electronic Systems"?>
+  <?define IsWin64="yes"?>
+  <!--Product information-->
+  <Product Id="*" Name="$(var.productName)" Language="1033" Version="$(var.productVersion)" Manufacturer="$(var.Manufacturer)" UpgradeCode="$(var.upgradeCode)">
+    <!--Package information-->
+    <Package Id="*" Description="$(var.productName) $(var.productVersion) Installer" Manufacturer="$(var.Manufacturer)"
+             Comments="$(var.productName) is a registered trademark of McLaren Applied Technologies Ltd." Keywords="$(var.productName) Installer McLaren Applied Technologies Ltd"
+             InstallerVersion="450" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+
+    <Icon Id="sqlrace.ico" SourceFile="$(var.ProjectDir)\Resources\sqlrace.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="sqlrace.ico" />
+    <Property Id="ARPNOREPAIR" Value="yes" Secure="yes" />
+
+    <!--Check user is an administrator-->
+    <Condition Message="$(var.productName) requires Windows administrative permission to install.">
+      Privileged
+    </Condition>
+
+    <!--Allowed versions of Windows OS-->
+    <Condition Message="$(var.productName) requires a Windows Operating System version compatible with the Microsoft .NET 4.5.1 Framework, namely; Windows Vista SP2, Windows Server 2008 SP2, or above">
+      <![CDATA[(VersionNT = 600 AND ServicePackLevel >= 2) OR VersionNT > 600]]>
+    </Condition>
+
+    <!--Ensure that Microsoft .NET Framework 4.5.1 is installed-->
+    <PropertyRef Id="NETFRAMEWORK45"/>
+    <Condition Message="$(var.productName) requires .NET Framework 4.5.1. Please install the .NET Framework (http://www.microsoft.com/en-gb/download/confirmation.aspx?id=40779) then run this installer again.">
+      <![CDATA[Installed OR (NETFRAMEWORK45 >= "#378675")]]>
+    </Condition>
+
+
+    <!-- Exits successfully in the case newer version are already installed -->
+    <CustomActionRef Id="WixExitEarlyWithSuccess" />
+
+
+
+    <!--Add/Remove Programs properties-->
+    <Property Id="ARPCOMMENTS">$(var.productName)</Property>
+    <Property Id="ARPCONTACT">support@mclaren.com</Property>
+    <Property Id="ARPHELPLINK">http://www.mclarenappliedtechnologies.com/</Property>
+    <!--"Support Information" link - ARPCOMMENT is the display text for this link -->
+    <Property Id="ARPURLINFOABOUT">http://www.mclarenappliedtechnologies.com/</Property>
+    <!--"Publisher" link-->
+    <Property Id="ARPURLUPDATEINFO">http://www.sqlrace.com</Property>
+    <!--"Product Updates" link-->
+    <Property Id="ARPTELEPHONE">+44 (0)1483 261400</Property>
+    <!--Suppress the Modify button-->
+    <!--General Properties-->
+    <Property Id="URL_SQLRACE" Value="http://www.sqlrace.com"></Property>
+
+    <!--Include files-->
+    <?include PathVariables.wxi ?>
+
+
+    <!--Licence File-->
+    <WixVariable Id="WixUILicenseRtf" Value="..\MESL.SqlRace.Installer.WIX\Files\License.rtf" Overridable="no" />
+    <!--UI Top Banner-->
+    <WixVariable Id="WixUIBannerBmp" Value="..\MESL.SqlRace.Installer.WIX\Files\WixUIBannerBmp.bmp" Overridable="no" />
+    <!--UI Background-->
+    <WixVariable Id="WixUIDialogBmp" Value="..\MESL.SqlRace.Installer.WIX\Files\WixUIDialogBmp.bmp" Overridable="no" />
+    <!--User Interface-->
+    <UIRef Id="WixUI_ErrorProgressText" />
+    <Media Id="1" Cabinet="SqlRaceInstaller.cab" EmbedCab="yes" />
+    <!--Check for IIS - required for the RowProvider option-->
+    <Property Id="IISVERSION">
+      <RegistrySearch Id="IISVersion" Type="raw" Root="HKLM" Key="Software\Microsoft\InetStp" Name="MajorVersion" />
+    </Property>
+
+    <!--Directory Structure-->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="MESLFolder" Name="$(var.ManufacturerOld)">
+          <Directory Id="INSTALLDIR" DiskId="1">
+
+            <Directory Id="Dir_SQLRace_Help" Name="Help">
+              <Component Id="MESL.SqlRace.Documentation" Guid="4468E30E-B9D7-4E0D-A029-E06015DC923F">
+                <File Id="MESL_SqlRace_Class_Library_Documentation.chm" Name="SQLRaceClassLibrary.chm" Source="$(var.SQLRaceHelpDirectory)SQLRaceClassLibrary.chm" DiskId="1" KeyPath="yes" />
+                <File Id="MESL_SqlRace_Documentation.chm" Name="SQLRace.chm" Source="$(var.SolutionDir)MESL.SqlRace.Installer.WIX\Files\SQLRace.chm" DiskId="1" />
+
+                <RemoveFolder Id="Dir_SQLRace_Help" Directory="Dir_SQLRace_Help" On="uninstall" />
+              </Component>
+            </Directory>
+
+            <Directory Id="Dir_SQLRace_Nuget" Name="Nuget">
+              <Component Id="MESL.SqlRace.Nuget" Guid="CF364D0E-91A7-4256-A45C-557BE0398403">
+                <File Id="SourceNugetFile" Name="$(var.SQLRaceNugetFile)" Source="$(var.SqlRaceNuGetPackagesDirectory)\$(var.SQLRaceNugetName).$(var.SQLRaceNugetVersion)\$(var.SQLRaceNugetFile)" DiskId="1"  />
+
+                <RemoveFolder Id="Dir_SQLRace_Nuget" Directory="Dir_SQLRace_Nuget" On="uninstall" />
+              </Component>
+            </Directory>
+
+            <Directory Id="Dir_SQLRace_Examples" Name="Examples">
+              <Component Id="SQLRace_Examples" Guid="044D85C7-3AE3-4151-8BA4-8CA367DDA11A">
+                <File Id="SQLRace_Examples.htm" Name="SQLRace_Examples.htm" Source="..\MESL.SqlRace.Installer.WIX\Files\SQLRace Examples.htm" DiskId="1" />
+                <!--<Shortcut Id="SQLRaceExamplesShortcut" Directory="ProgramMenuDir" Name="SQL Race Examples" WorkingDirectory="INSTALLDIR" Description="Launches the SQLRace examples" Advertise="yes" />-->
+              </Component>
+              <Directory Id="Dir.MESL.SqlRace.Examples.Sessions.CSharp" Name="MESL.SqlRace.Examples.Sessions.CSharp">
+                <Directory Id="Dir.MESL.SqlRace.Examples.Sessions.CSharp.Properties" Name="Properties" />
+              </Directory>
+              <Directory Id="Dir.MESL.SqlRace.Examples.DataDistribution" Name="MESL.SqlRace.Examples.DataDistribution">
+                <Directory Id="Dir.MESL.SqlRace.Examples.DataDistribution.Properties" Name="Properties" />
+              </Directory>
+              <Directory Id="Dir.MESL.SqlRace.Examples.Recorder" Name="MESL.SqlRace.Examples.Recorder">
+                <Directory Id="Dir.MESL.SqlRace.Examples.Recorder.Properties" Name="Properties" />
+              </Directory>
+              <Directory Id="Dir.MESL.SqlRace.Examples.Recorder.UI" Name="MESL.SqlRace.Examples.Recorder.UI">
+                <Directory Id="Dir.MESL.SqlRace.Examples.Recorder.UI.Model" Name="Model" />
+                <Directory Id="Dir.MESL.SqlRace.Examples.Recorder.UI.Properties" Name="Properties" />
+                <Directory Id="Dir.MESL.SqlRace.Examples.Recorder.UI.View" Name="View" />
+                <Directory Id="Dir.MESL.SqlRace.Examples.Recorder.UI.ViewModel" Name="ViewModel" />
+              </Directory>
+              <Directory Id="Dir.References" Name="References" />
+            </Directory>
+
+          </Directory>
+        </Directory>
+      </Directory>
+      <!--Desktop Directory-->
+      <Directory Id="DesktopFolder" Name="Desktop">
+      </Directory>
+      <!--Start Menu Directory-->
+      <Directory Id="StartMenuFolder" Name="Start Menu">
+      </Directory>
+    </Directory>
+    <!--Features-->
+    <Feature Id="Complete" Title="SQL Race Examples" Description="Install all SQL Race examples." Display="expand" AllowAdvertise="no" Absent="disallow" InstallDefault="local" Level="1" ConfigurableDirectory="INSTALLDIR">
+      <Feature Id="Feat_SqlRace_Examples" Title="Examples" Description="Install code samples for SQL Race" Level="1">
+        <ComponentRef Id="SQLRace_Examples" />
+        <ComponentGroupRef Id="MESL.SqlRace.Examples" />
+      </Feature>
+    </Feature>
+    <UI />
+  </Product>
+</Wix>

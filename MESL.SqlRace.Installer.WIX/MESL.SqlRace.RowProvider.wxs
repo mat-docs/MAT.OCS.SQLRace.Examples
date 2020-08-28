@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+    <DirectoryRef Id="INSTALLDIR">
+      <!--SQL Race Row Provider Directory-->
+      <Directory Id="Dir_RowProvider">
+        <Component Id="MESL.SqlRaceRowProvider" Guid="60338334-16D4-4D2F-925D-C9C67F8BA48B">
+          <CreateFolder/>
+          <!--Set up the default user account-->
+          <!--
+                <util:User Id ='serviceAccount' 
+                           Name='[SERVICEACCOUNT]' 
+                           Password='[SERVICEACCOUNTPASSWORD]' 
+                           Domain='[SERVICEDOMAINNAME]'>
+                </util:User>
+                -->
+          <!-- Web site is only created if it doesn’t already exist-->
+          <!--
+                <iis:WebSite Id='DefaultWebSite' Description='Default Web Site'>
+                  <iis:WebAddress Id='AllUnassigned' 
+                                  Port='80' />
+                </iis:WebSite>
+                -->
+          <!--Define Default Virtual Directory Properties-->
+          <!--
+                <iis:WebDirProperties Id='WebVirtualDirProperties' 
+                                      Execute='yes' 
+                                      Script='yes' 
+                                      Read='yes' 
+                                      WindowsAuthentication='yes'
+                                      AnonymousAccess='yes' 
+                                      AnonymousUser='serviceAccount' 
+                                      IIsControlledPassword='yes'/>
+              </Component>
+              -->
+          <!--Create an Application Pool in IIS 6.0-->
+          <!--
+              <Component Id='C_MyAppPool' Guid='3C06911D-C31A-427E-8CA6-AEFC65161B1A' >
+                <iis:WebAppPool Id='MyAppPool' Name='MyAppPool' Identity='other' User='serviceAccount' >
+                </iis:WebAppPool>
+              </Component>
+              -->
+          <!--Create a Virtual Directory using Application Pool in Default Web Site-->
+          <!--
+              -->
+          <!--TARGETVDIR is the name of the Virtual Directory for this site.
+                  TARGETDIR is the directory location of the files for the site.-->
+          <!--
+              <Property Id="TARGETVDIR" Value="AuthenticationWebService" />
+              <Component Id='C_VirtualDirComponent' Guid='{A598E09C-B770-4df2-BE08-E069A718B938}'>
+                <iis:WebVirtualDir Id='VirtualDir' Alias='[TARGETVDIR]' Directory='TARGETDIR' WebSite='DefaultWebSite' DirProperties='WebVirtualDirProperties' >
+                  <iis:WebApplication Id='WebApplication' Name='[TARGETVDIR]' WebAppPool='C_MyAppPool'/>
+                </iis:WebVirtualDir>
+              </Component>
+              -->
+          <!--Install a Windows Service-->
+          <!--
+              <Component Id="ProductComponent" Guid="{ED4F5E2A-D8B6-42e7-9330-9282AA76BB50}">
+              <File Id='ServiceExeFile' 
+                    Name='AuthenticationBusinessService.Hosting.exe'
+                    Source='Files\AuthenticationBusinessService.Hosting.exe'
+                    KeyPath='yes' 
+                    Vital='yes' 
+                    DiskId='1' />     
+              <File Id='AuthenticationBusinessService.Hosting.exe.config'
+                    Name=' AuthenticationBusinessService.Hosting.exe.config'
+                    Source='Files\AuthenticationBusinessService.Hosting.exe.config'
+                    Vital='yes' 
+                    DiskId='1' />
+              -->
+          <!-- IMPORTANT: ServiceInstall Id and Name MUST MATCH SerivceControl Id and Name -->
+          <!--
+                <ServiceInstall Id='ServiceExeFile'
+                                DisplayName= 'Authentication'
+                                Business=''
+                                Service=''
+                                Name='AuthenticationBusinessService='
+                                normal=''
+                                Start='auto='
+                                Type='ownProcess='
+                                Vital='yes='
+                                Description='Authentication Business Service'
+                                Account='[SERVICEACCOUNTUSERNAME]'
+                                Password='[SERVICEACCOUNTPASSWORD]' 
+                                />
+                <ServiceControl Id='ServiceExeFile='
+                                Name='AuthenticationBusinessService='
+                                Start='install' 
+                                Stop='both' 
+                                Remove='uninstall' 
+                                Wait='yes' 
+                                />
+-->
+        </Component>
+      </Directory>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
