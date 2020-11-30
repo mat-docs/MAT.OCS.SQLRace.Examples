@@ -1,0 +1,9 @@
+name: pr-gate-build
+on: [push, pull_request]
+jobs:
+  build-solution:
+    runs-on: windows-latest
+    steps:
+      - name: Display the path
+        run: echo ${env:PATH}
+        shell: pwsh
