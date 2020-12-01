@@ -22,12 +22,18 @@ jobs:
         
     - name: Setup NuGet.exe
       uses: NuGet/setup-nuget@v1.0.5
-    - run: nuget setapikey "$env:BinTrayAPIKey" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
-    - run: nuget restore $env:Solution_Name
-    - run: nuget remove -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
+
+    steps:
+      - name: Restore nuget feeds
+      - shell: pwsh  
+        run: nuget setapikey "$env:BinTrayAPIKey" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
+        run: nuget restore $env:Solution_Name
+        run: nuget remove -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
 
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
       
-    - name: Build soltuion
-      run: msbuild $env:Solution_Name -p:Configuration=Release
+    steps:
+      - name: Build solution
+      - shell: pwsh    
+        run: msbuild $env:Solution_Name -p:Configuration=Release
