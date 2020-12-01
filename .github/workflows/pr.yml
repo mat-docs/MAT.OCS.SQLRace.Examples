@@ -24,7 +24,7 @@ jobs:
         uses: NuGet/setup-nuget@v1.0.5
 
       - name: Restore nuget feeds
-      - shell: pwsh  
+        shell: pwsh  
         run: |
           nuget setapikey "$env:BinTrayAPIKey" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
           nuget restore $env:Solution_Name
@@ -34,5 +34,5 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Build solution
-      - shell: pwsh    
+        shell: pwsh    
         run: msbuild $env:Solution_Name -p:Configuration=Release
