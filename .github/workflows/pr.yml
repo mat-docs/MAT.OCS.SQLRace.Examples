@@ -12,6 +12,7 @@ jobs:
     runs-on: windows-latest
     env:
       Solution_Name: MAT.OCS.SQLRace.Examples.sln
+      BinTrayAPIKey: ${{ secrets.BinTrayAPIKey }}
 
     steps:
     - name: Checkout
@@ -21,7 +22,7 @@ jobs:
         
     - name: Setup NuGet.exe
       uses: NuGet/setup-nuget@v1.0.5
-    - run: nuget setapikey ${{ secrets.BinTrayAPIKey }} -Source bintray
+    - run: nuget setapikey $env:BinTrayAPIKey -Source bintray
     - run: nuget restore $env:Solution_Name
     - run: nuget remove -Source bintray
 
