@@ -1,0 +1,38 @@
+name: PR gated build
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  build:
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+    runs-on: windows-latest
+    env:
+      Solution_Name: MAT.OCS.SQLRace.Examples.sln
+      BinTrayAPIKey: ${{ secrets.BINTRAY_API_KEY }}
+      BinTrayUserName: ${{ secrets.BINTRAY_USER_NAME }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup NuGet.exe
+        uses: NuGet/setup-nuget@v1.0.5
+
+      - name: Restore nuget feeds
+        shell: pwsh  
+        run: |
+          nuget sources Add -Name "Bintray" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget -UserName $env:BinTrayUserName -Password $env:BinTrayAPIKey
+          nuget restore $env:Solution_Name          
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Build solution
+        shell: pwsh    
+        run: msbuild $env:Solution_Name -p:Configuration=${{ matrix.configuration }} -p:Platform="Any CPU"
