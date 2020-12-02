@@ -12,7 +12,7 @@ jobs:
     runs-on: windows-latest
     env:
       Solution_Name: MAT.OCS.SQLRace.Examples.sln
-      BinTrayAPIKey: ${{ secrets.BinTrayAPIKey }}
+      BinTrayAPIKey: ${{ secrets.BINTRAY_API_KEY }}
 
     steps:
       - name: Checkout
