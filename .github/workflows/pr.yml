@@ -26,9 +26,9 @@ jobs:
       - name: Restore nuget feeds
         shell: pwsh  
         run: |
-          nuget setapikey "$env:BinTrayAPIKey" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
+          nuget setapikey "$env:BinTrayAPIKey" -Source Bintray
           nuget restore $env:Solution_Name
-          nuget remove -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
+          nuget remove -Source Bintray
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
