@@ -13,6 +13,7 @@ jobs:
     env:
       Solution_Name: MAT.OCS.SQLRace.Examples.sln
       BinTrayAPIKey: ${{ secrets.BINTRAY_API_KEY }}
+      BinTrayUserName: ${{ secrets.BINTRAY_USER_NAME }}
 
     steps:
       - name: Checkout
@@ -26,8 +27,8 @@ jobs:
       - name: Restore nuget feeds
         shell: pwsh  
         run: |
-          nuget sources Add -Name "Bintray" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
-          nuget setapikey "$env:BinTrayAPIKey" -Source Bintray
+          nuget sources Add -Name "Bintray" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget -UserName $env:BinTrayUserName -Password $env:BinTrayAPIKey
+          nuget setapikey "$env:BinTrayUserName" + ":" + "$env:BinTrayAPIKey" -Source Bintray
           nuget restore $env:Solution_Name          
 
       - name: Add msbuild to PATH
