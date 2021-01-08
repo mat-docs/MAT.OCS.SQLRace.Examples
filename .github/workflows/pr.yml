@@ -28,7 +28,8 @@ jobs:
         shell: pwsh  
         run: |
           nuget sources Add -Name "Bintray" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget -UserName $env:BinTrayUserName -Password $env:BinTrayAPIKey
-          nuget restore $env:Solution_Name          
+          nuget list MESL.SQLRace.API -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
+          nuget restore $env:Solution_Name
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
