@@ -21,7 +21,7 @@ function Check-References([string] $RootDirectory, [string] $PackageName, [strin
                 # This is referencing a version of a package that we aren't permitted to reference
                 $validationSuccessful = $false
 
-                Write-Host "Package file '$packageFile' is referencing an invalid build of '$packageName' - $version must contain $validRegex"
+                Write-Warning "Package file '$packageFile' is referencing an invalid build of '$packageName' - $version must contain $validRegex"
             }
         }
 
@@ -31,9 +31,14 @@ function Check-References([string] $RootDirectory, [string] $PackageName, [strin
                 # This is referencing a version of a package that we aren't permitted to reference
                 $validationSuccessful = $false
 
-                Write-Host "Package file '$packageFile' is referencing an invalid build of '$packageName' - $version must not contain $invalidRegex"
+                Write-Warning "Package file '$packageFile' is referencing an invalid build of '$packageName' - $version must not contain $invalidRegex"
             }
         }
+    }
+
+    if (-Not $validationSuccessful)
+    {
+        Write-Error "Error(s) found in package version."
     }
 }
 

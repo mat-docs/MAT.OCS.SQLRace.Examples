@@ -31,7 +31,6 @@ jobs:
           Write-Host "$latest" found on source... Checking package version in solution.
           $latestVersion = $latest.Split(" ")[1]
           . ./.github/workflows/Check-References.ps1
-          Write-Host "$Env:GITHUB_WORKSPACE"
           Check-References -Rootdirectory $Env:GITHUB_WORKSPACE -PackageName 'MESL.SQLRace.API' -VersionMustContain $latestVersion
           nuget restore $env:Solution_Name
 
