@@ -21,7 +21,7 @@ function Check-References([string] $RootDirectory, [string] $PackageName, [strin
                 # This is referencing a version of a package that we aren't permitted to reference
                 $validationSuccessful = $false
 
-                Write-Host "Package file '$packageFile' is referencing an invalid build of '$packageName' - $version must contain $validRegex" -ForegroundColor red
+                Write-Host "[ERROR]: Package file '$packageFile' is referencing an invalid build of '$packageName' - $version must contain $validRegex" -ForegroundColor red
             }
         }
 
@@ -31,7 +31,7 @@ function Check-References([string] $RootDirectory, [string] $PackageName, [strin
                 # This is referencing a version of a package that we aren't permitted to reference
                 $validationSuccessful = $false
 
-                Write-Host "Package file '$packageFile' is referencing an invalid build of '$packageName' - $version must not contain $invalidRegex" -ForegroundColor red
+                Write-Host "[ERROR]: Package file '$packageFile' is referencing an invalid build of '$packageName' - $version must not contain $invalidRegex" -ForegroundColor red
             }
         }
     }
