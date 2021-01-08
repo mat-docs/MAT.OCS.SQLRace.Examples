@@ -29,7 +29,7 @@ jobs:
           nuget sources Add -Name "Bintray" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget -UserName $env:BinTrayUserName -Password $env:BinTrayAPIKey
           $latest = nuget list MESL.SQLRace.API -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
           $latestVersion = $latest.Split(" ")[1]
-          . ./CheckReferences.ps1
+          . ./Check-References.ps1
           Check-References -Rootdirectory $Env:GITHUB_WORKSPACE -PackageName 'MESL.SQLRace.API' -VersionMustContain $latestVersion
           nuget restore $env:Solution_Name
 
