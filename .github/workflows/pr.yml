@@ -28,8 +28,10 @@ jobs:
         run: |
           nuget sources Add -Name "Bintray" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget -UserName $env:BinTrayUserName -Password $env:BinTrayAPIKey
           $latest = nuget list MESL.SQLRace.API -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
+          Write-Host "$latest" found on source... Checking package version in solution.
           $latestVersion = $latest.Split(" ")[1]
           . ./.github/workflows/Check-References.ps1
+          Write-Host "$Env:GITHUB_WORKSPACE"
           Check-References -Rootdirectory $Env:GITHUB_WORKSPACE -PackageName 'MESL.SQLRace.API' -VersionMustContain $latestVersion
           nuget restore $env:Solution_Name
 
