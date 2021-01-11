@@ -4,13 +4,13 @@ function Check-References([string] $RootDirectory, [string] $PackageName, [strin
     # Find all of the packages.config files
     $packageFiles = @(Get-ChildItem -Path $RootDirectory -Filter packages.config -Recurse | Select-Object -ExpandProperty "FullName")
     
-	# The value we will return to indicate whether the references as valid or not
+    # The value we will return to indicate whether the references as valid or not
     $validationSuccessful = $true
 
     foreach($packageFile in $packageFiles) { 
         $version = Get-Package-Version -PackageFilePath $packageFile -PackageName $PackageName
-		
-		if($version -eq $null) {
+
+        if($version -eq $null) {
             # The package in question wasn't referenced from this packages.config file
             continue
         }
