@@ -1,9 +1,11 @@
 name: PR gated build
 on:
   push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
+  schedule:
+    - cron:  '0 12 * * *'
+
 jobs:
   build:
     strategy:
@@ -24,11 +26,22 @@ jobs:
       - name: Setup NuGet.exe
         uses: NuGet/setup-nuget@v1.0.5
 
-      - name: Restore nuget feeds
-        shell: pwsh  
+      - name: Check latest available package
+        if: ${{ github.event_name == 'schedule' }}
+        shell: pwsh
         run: |
           nuget sources Add -Name "Bintray" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget -UserName $env:BinTrayUserName -Password $env:BinTrayAPIKey
-          nuget restore $env:Solution_Name          
+          $latest = nuget list MESL.SQLRace.API -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
+          Write-Host "$latest" found on source... Checking package version in solution.
+          $latestVersion = $latest.Split(" ")[1]
+          . ./.github/workflows/Check-References.ps1
+          Check-References -Rootdirectory $Env:GITHUB_WORKSPACE -PackageName 'MESL.SQLRace.API' -VersionMustContain $latestVersion
+
+      - name: Restore nuget feeds
+        shell: pwsh
+        run: |
+          nuget sources Add -Name "Bintray" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget -UserName $env:BinTrayUserName -Password $env:BinTrayAPIKey
+          nuget restore $env:Solution_Name
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
