@@ -27,7 +27,6 @@ jobs:
         uses: NuGet/setup-nuget@v1.0.5
 
       - name: Check latest available package
-        if: ${{ github.event_name == 'schedule' }}
         shell: pwsh
         run: |
           nuget sources Add -Name "McLaren Applied GitHub Packages" -Source https://nuget.pkg.github.com/mat-docs/index.json -UserName $env:PackagesUserName -Password $env:PackagesPatToken
