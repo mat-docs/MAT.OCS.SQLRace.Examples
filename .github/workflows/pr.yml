@@ -14,8 +14,8 @@ jobs:
     runs-on: windows-latest
     env:
       Solution_Name: MAT.OCS.SQLRace.Examples.sln
-      BinTrayAPIKey: ${{ secrets.BINTRAY_API_KEY }}
-      BinTrayUserName: ${{ secrets.BINTRAY_USER_NAME }}
+      PackagesUserName: ${{ secrets.PACKAGES_USERNAME }}
+      PackagesPatToken: ${{ secrets.PACKAGES_PATTOKEN }}
 
     steps:
       - name: Checkout
@@ -30,17 +30,20 @@ jobs:
         if: ${{ github.event_name == 'schedule' }}
         shell: pwsh
         run: |
-          nuget sources Add -Name "Bintray" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget -UserName $env:BinTrayUserName -Password $env:BinTrayAPIKey
-          $latest = nuget list MESL.SQLRace.API -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget
-          Write-Host "$latest" found on source... Checking package version in solution.
-          $latestVersion = $latest.Split(" ")[1]
+          nuget sources Add -Name "McLaren Applied GitHub Packages" -Source https://nuget.pkg.github.com/mat-docs/index.json -UserName $env:PackagesUserName -Password $env:PackagesPatToken
+          $Uri = "https://api.github.com/orgs/mat-docs/packages/nuget/MESL.SQLRace.API/versions"
+          $Headers = @{Authorization = "Basic " + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$env:PackagesUserName:$env:PackagesPatToken")) }
+          $Method = "GET"
+          $packageVersions = Invoke-RestMethod -Uri $Uri -Headers $Headers -Method $Method
+          $sortedPackages = $packageVersions | Sort-Object name -Descending
+          $latestVersion = $sortedPackages[0].name
           . ./.github/workflows/Check-References.ps1
-          Check-References -Rootdirectory $Env:GITHUB_WORKSPACE -PackageName 'MESL.SQLRace.API' -VersionMustContain $latestVersion
+          Check-References -Rootdirectory $Env:GITHUB_WORKSPACE -PackageName "MESL.SQLRace.API" -VersionMustContain $latestVersion
 
       - name: Restore nuget feeds
         shell: pwsh
         run: |
-          nuget sources Add -Name "Bintray" -Source https://api.bintray.com/nuget/mclarenappliedtechnologies/nuget -UserName $env:BinTrayUserName -Password $env:BinTrayAPIKey
+          nuget sources Add -Name "McLaren Applied GitHub Packages" -Source https://nuget.pkg.github.com/mat-docs/index.json -UserName $env:PackagesUserName -Password $env:PackagesPatToken
           nuget restore $env:Solution_Name
 
       - name: Add msbuild to PATH
