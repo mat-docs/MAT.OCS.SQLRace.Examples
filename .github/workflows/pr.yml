@@ -34,8 +34,10 @@ jobs:
           $Headers = @{Authorization = "Basic " + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$env:PackagesUserName:$env:PackagesPatToken")) }
           $Method = "GET"
           $packageVersions = Invoke-RestMethod -Uri $Uri -Headers $Headers -Method $Method
-          $sortedPackages = $packageVersions | Sort-Object name -Descending
-          $latestVersion = $sortedPackages[0].name
+          $sortedPackages = $packageVersions.name | Where { $_ -match "^[-]?[0-9.]+$" } | %{[System.Version]$_} | sort -Descending | foreach-object { $_.ToString() }
+          echo "Package versions found:" $sortedPackages 
+          $latestVersion = $sortedPackages[0]
+          echo "Latest Version: $latestVersion"
           . ./.github/workflows/Check-References.ps1
           Check-References -Rootdirectory $Env:GITHUB_WORKSPACE -PackageName "MESL.SQLRace.API" -VersionMustContain $latestVersion
 
