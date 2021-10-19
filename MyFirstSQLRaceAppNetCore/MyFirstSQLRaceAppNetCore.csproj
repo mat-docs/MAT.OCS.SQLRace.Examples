@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MESL.SQLRace.API" Version="2.2.0-dev-20211014-191005" />
+    <PackageReference Include="MESL.SQLRace.API" Version="2.2.0-dev-20211019-192649" />
   </ItemGroup>
 
   <ItemGroup>

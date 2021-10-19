@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+
 using MAT.OCS.Core;
 
 using MESL.SqlRace.Common.Extensions;
@@ -18,32 +19,70 @@ namespace MyFirstSQLRaceAppNet
 
         static void Main(string[] args)
         {
-            var frameworkTargetAttribute = Assembly.GetEntryAssembly().GetCustomAttribute<TargetFrameworkAttribute>();
-            Console.WriteLine($"Net Version {(!string.IsNullOrWhiteSpace(frameworkTargetAttribute?.FrameworkDisplayName) ? frameworkTargetAttribute.FrameworkDisplayName : RuntimeInformation.FrameworkDescription)}");
+            // Write .Net framework version
+            var frameworkTargetAttribute = Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>();
+            if (string.IsNullOrWhiteSpace(frameworkTargetAttribute?.FrameworkDisplayName))
+            {
+                Console.WriteLine(RuntimeInformation.FrameworkDescription);
+            }
+            else
+            {
+                Console.WriteLine(frameworkTargetAttribute.FrameworkDisplayName);
+            }
 
-#if NETFRAMEWORK
-            var executingLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            while (Do())
+            {
+            }
+        }
 
-            // SQLite style connection string
-            var connectionString = $@"DbEngine=SQLite;Data Source={Path.Combine(executingLocation, Ssn2)}";
-#else
-            // SQLServer style connection string
-            var connectionString = "Server=localhost;Database=FIA;Trusted_Connection=True";
-#endif
-            Console.WriteLine("Initializing SQL Race....");
+        private static bool Do()
+        {
+            Console.WriteLine("Choose Session Type: SQL[S]erver, SQ[L]ite, SS[N] or e[X]it");
+            var key = char.ToLowerInvariant(Console.ReadKey(true).KeyChar);
+
+            var sessionKey = CarSessionKey;
+            string connectionString = default;
+            switch (key)
+            {
+                case 's':
+                    connectionString = "Server=localhost;Database=FIA;Trusted_Connection=True";
+                    break;
+                case 'l':
+                    var executingLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+                    connectionString = $@"DbEngine=SQLite;Data Source={Path.Combine(executingLocation, Ssn2)}";
+                    break;
+                case 'n':
+                    Console.WriteLine("SSN not supported yet!");
+                    Console.WriteLine();
+                    return true;
+                case 'x':
+                    return false;
+
+                default:
+                    Console.WriteLine("Unknown option!");
+                    Console.WriteLine();
+                    return true;
+            }
 
             Core.LicenceProgramName = "SQLRace";
             Core.Initialize();
 
-            ReadSamples(connectionString, CarSessionKey);
+            try
+            {
+                ReadSamples(connectionString, CarSessionKey);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine();
+            }
 
-            Console.WriteLine("Press ENTER key to close.");
-            Console.ReadLine();
+            Console.WriteLine($"Session: {sessionKey}");
+            Console.WriteLine($"Connection String: {connectionString}");
+            Console.WriteLine();
+            return true;
         }
 
-        /// <summary>
-        ///     Reads samples from an historic session.
-        /// </summary>
         private static void ReadSamples(string connectionString, SessionKey sessionKey)
         {
             var identifiers = new List<string>
@@ -53,11 +92,11 @@ namespace MyFirstSQLRaceAppNet
                 "gLat:Chassis",
             };
 
-            Console.WriteLine("Loading session....");
+            Console.WriteLine("Loading Session...");
 
             using (var clientSession = LoadSession(sessionKey, connectionString))
             {
-                Console.WriteLine("Session loaded");
+                Console.WriteLine("Session loaded...");
                 clientSession.Session.LoadConfiguration();
                 var session = clientSession.Session;
 
@@ -79,11 +118,10 @@ namespace MyFirstSQLRaceAppNet
             Console.WriteLine();
         }
 
-        private static IClientSession LoadSession(SessionKey sessionKey, string connection)
+        private static IClientSession LoadSession(SessionKey sessionKey, string connectionString)
         {
             var sessionManager = SessionManager.CreateSessionManager();
-            return sessionManager.Load(sessionKey, connection);
+            return sessionManager.Load(sessionKey, connectionString);
         }
-
     }
 }
