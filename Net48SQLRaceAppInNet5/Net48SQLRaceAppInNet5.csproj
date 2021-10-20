@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\MultiTargetSQLRaceAppInNet5\Program.cs" Link="Program.cs" />
+    <Compile Include="..\MultiTargetSQLRaceAppInNet5\SessionHelper.cs" Link="SessionHelper.cs" />
+    <Compile Include="..\MultiTargetSQLRaceAppInNet5\StandaloneRecorder.cs" Link="StandaloneRecorder.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\MultiTargetSQLRaceAppInNet5\210930134636.ssn2" Link="210930134636.ssn2" />
+    <None Include="..\MultiTargetSQLRaceAppInNet5\AtlasWriteTest.ssn" Link="AtlasWriteTest.ssn" />
+    <None Include="..\MultiTargetSQLRaceAppInNet5\nlog.config" Link="nlog.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MAT.ATLAS.SupportFiles" Version="9.82.4.8-ci" />
+    <PackageReference Include="MESL.SQLRace.API" Version="2.1.21293.2-dev" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0-rc.2.21480.5" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115" />
+  </ItemGroup>
+
+</Project>
