@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="MAT.ATLAS.SupportFiles" Version="9.81.2.38" />
-    <PackageReference Include="MESL.SQLRace.API" Version="2.2.0-dev-20211019-192649" />
+    <PackageReference Include="MESL.SQLRace.API" Version="2.2.0-dev-20211104-123018" />
   </ItemGroup>
 
 </Project>
