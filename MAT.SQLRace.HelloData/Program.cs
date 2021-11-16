@@ -70,6 +70,7 @@ namespace MAT.SQLRace.HelloData
             //LoadLiveSessionAndWaitForLapEvents();
             //LoadLiveSessionAndWaitForEvents();
             //LoadLiveSamples();
+            //AddAndProcessMarkers();
             LoadSSN();
             //GetSessionSummaryBySessionGUID();
             //LoadLiveFunction();
@@ -122,7 +123,7 @@ namespace MAT.SQLRace.HelloData
                 compositeContainerParameterDataAccess.GoTo(compositeSessionPrimary.StartTime);
 
                 var sessionValuesKvp = compositeContainerParameterDataAccess.GetNextSamples(NumberOfSamples);
-                
+
                 if (sessionValuesKvp.Count == 0)
                 {
                     Console.WriteLine("No parameter result found!");
@@ -180,7 +181,7 @@ namespace MAT.SQLRace.HelloData
         private static void CreateSessionAndAddData()
         {
             ConnectionString = $@"DbEngine=SQLite;Data Source=c:\ssn2\test01.ssn2;";
-            
+
             var sessionManager = SessionManager.CreateSessionManager();
 
             var clientSession = sessionManager.CreateSession(
@@ -738,6 +739,66 @@ namespace MAT.SQLRace.HelloData
                 }
 
                 Console.WriteLine($"Session found {sessionSummary01.Identifier}");
+            }
+        }
+
+        /// <summary>
+        /// Load data an SSN file, add some Markers to it if they don't already exist, extract the data in the ranges defined by the Markers.
+        /// </summary>
+        private static void AddAndProcessMarkers()
+        {
+            var fileSessionManager = FileSessionManager.CreateFileSessionManager();
+
+            var session = fileSessionManager.Load(@"C:\McLaren\Sessions\9Barcelona SAI CH01  163532 D3R16.ssn")?.Session;
+
+            if (session == null)
+            {
+                Console.WriteLine("Session not found");
+                return;
+            }
+
+            if (session.Markers.Count(m => m.MarkerType == "Demo") < 3)
+            {
+                // Add some demo markers to the sessions to define some arbitrary time ranges
+                for (var i = 1; i <= 3; i++)
+                {
+                    // Start in the middle of the session and mark 20ms every 100s
+                    var markerStartTime =  session.StartTime + ((session.EndTime - session.StartTime) / 2) + (i * 100 * NanosecondExtensions.NanosecondsPerSecond);
+                    // 20ms after the start time
+                    var markerEndTime = markerStartTime + (20 * NanosecondExtensions.NanosecondsPerMillisecond);
+
+                    var marker = new Marker(markerStartTime, markerEndTime, "Marker" + i, "Demo", "Demonstration marker " + i);
+                    
+                    // Zero or more annotations can be added to the marker as required
+                    marker.AddLabel(
+                        new MarkerLabel
+                        {
+                            Label = "Short user description",
+                            Description = "A long description to explain what the marker represents to the user",
+                            Name = "conciseNameForCode" + i,
+                            Value = "demo" + i
+                        });
+
+                    session.Markers.Add(marker);
+                }
+            }
+
+            // Demonstrate how to extract the data in the ranges defined by the demo markers
+            using (var pda = session.CreateParameterDataAccess("vCar:Chassis"))
+            {
+                foreach (var marker in session.Markers.Where(m => m.MarkerType == "Demo"))
+                {
+                    Console.WriteLine($"Range start {marker.StartTimestamp.Value.ToTimeString()} end {marker.EndTimestamp.Value.ToTimeString()} {marker.Description}");
+
+                    var samples = pda.GetSamplesBetween(marker.StartTimestamp.Value, marker.EndTimestamp.Value);
+
+                    for (var i = 0; i < samples.SampleCount && samples.Timestamp[i] <= marker.EndTimestamp; i++)
+                    {
+                        Console.Write($"({samples.Timestamp[i]},{samples.Data[i]}), ");
+                    }
+
+                    Console.WriteLine();
+                }
             }
         }
 
