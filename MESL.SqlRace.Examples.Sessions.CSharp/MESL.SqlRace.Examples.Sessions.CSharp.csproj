@@ -74,10 +74,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="JetBrains.Profiler.Windows.Api, Version=104.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\JetBrains.Profiler.Windows.Api.dll</HintPath>
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\JetBrains.Profiler.Windows.Api.dll</HintPath>
     </Reference>
     <Reference Include="JetBrains.Profiler.Windows.SelfApi, Version=104.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\JetBrains.Profiler.Windows.SelfApi.dll</HintPath>
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\JetBrains.Profiler.Windows.SelfApi.dll</HintPath>
     </Reference>
     <Reference Include="MAT.OCS.Core, Version=2.1.12.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MAT.OCS.Core.2.1.12\lib\net45\MAT.OCS.Core.dll</HintPath>
@@ -94,54 +94,54 @@
     <Reference Include="MAT.OCS.Utilities, Version=2.1.12.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MAT.OCS.Utilities.2.1.12\lib\net45\MAT.OCS.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="MAT.SqlRace.Profiler, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MAT.SqlRace.Profiler.dll</HintPath>
+    <Reference Include="MAT.SqlRace.Profiler, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MAT.SqlRace.Profiler.dll</HintPath>
     </Reference>
-    <Reference Include="MAT.SqlRace.Ssn2Splitter, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MAT.SqlRace.Ssn2Splitter.dll</HintPath>
+    <Reference Include="MAT.SqlRace.Ssn2Splitter, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MAT.SqlRace.Ssn2Splitter.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=3.17.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MathNet.Numerics.3.17.0\lib\net40\MathNet.Numerics.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MESL.OCS.Metrics, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.OCS.Metrics.dll</HintPath>
+    <Reference Include="MESL.OCS.Metrics, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.OCS.Metrics.dll</HintPath>
     </Reference>
-    <Reference Include="MESL.SqlRace.Common, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.SqlRace.Common.dll</HintPath>
+    <Reference Include="MESL.SqlRace.Common, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.SqlRace.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MESL.SqlRace.DataServices, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.SqlRace.DataServices.dll</HintPath>
+    <Reference Include="MESL.SqlRace.DataServices, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.SqlRace.DataServices.dll</HintPath>
     </Reference>
-    <Reference Include="MESL.SqlRace.DataServices.Interfaces, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.SqlRace.DataServices.Interfaces.dll</HintPath>
+    <Reference Include="MESL.SqlRace.DataServices.Interfaces, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.SqlRace.DataServices.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="MESL.SqlRace.Domain, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.SqlRace.Domain.dll</HintPath>
+    <Reference Include="MESL.SqlRace.Domain, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.SqlRace.Domain.dll</HintPath>
     </Reference>
-    <Reference Include="MESL.SqlRace.Enumerators, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.SqlRace.Enumerators.dll</HintPath>
+    <Reference Include="MESL.SqlRace.Enumerators, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.SqlRace.Enumerators.dll</HintPath>
     </Reference>
-    <Reference Include="MESL.SqlRace.Framework, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.SqlRace.Framework.dll</HintPath>
+    <Reference Include="MESL.SqlRace.Framework, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.SqlRace.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="MESL.SqlRace.Functions.Interfaces, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.SqlRace.Functions.Interfaces.dll</HintPath>
+    <Reference Include="MESL.SqlRace.Functions.Interfaces, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.SqlRace.Functions.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="MESL.SqlRace.Functions.Types, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.SqlRace.Functions.Types.dll</HintPath>
+    <Reference Include="MESL.SqlRace.Functions.Types, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.SqlRace.Functions.Types.dll</HintPath>
     </Reference>
-    <Reference Include="MESL.SqlRace.Matlab, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.SqlRace.Matlab.dll</HintPath>
+    <Reference Include="MESL.SqlRace.Matlab, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.SqlRace.Matlab.dll</HintPath>
     </Reference>
-    <Reference Include="MESL.SqlRace.Messaging, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.SqlRace.Messaging.dll</HintPath>
+    <Reference Include="MESL.SqlRace.Messaging, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.SqlRace.Messaging.dll</HintPath>
     </Reference>
-    <Reference Include="MESL.SqlRace.Messaging.Interface, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.SqlRace.Messaging.Interface.dll</HintPath>
+    <Reference Include="MESL.SqlRace.Messaging.Interface, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.SqlRace.Messaging.Interface.dll</HintPath>
     </Reference>
-    <Reference Include="MESL.SqlRace.UI, Version=2.1.21326.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MESL.SQLRace.API.2.1.21326.1-dev\lib\net48\MESL.SqlRace.UI.dll</HintPath>
+    <Reference Include="MESL.SqlRace.UI, Version=2.1.21327.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MESL.SQLRace.API.2.1.21327.1-dev\lib\net48\MESL.SqlRace.UI.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Common.1.3.2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>

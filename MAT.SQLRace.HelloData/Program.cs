@@ -749,7 +749,7 @@ namespace MAT.SQLRace.HelloData
         {
             var fileSessionManager = FileSessionManager.CreateFileSessionManager();
 
-            var session = fileSessionManager.Load(@"C:\McLaren\Sessions\9Barcelona SAI CH01  163532 D3R16.ssn")?.Session;
+            var session = fileSessionManager.Load(@"C:\McLaren\Sessions\MarkersDemo.ssn")?.Session;
 
             if (session == null)
             {
@@ -765,12 +765,12 @@ namespace MAT.SQLRace.HelloData
                 for (var i = 1; i <= 3; i++)
                 {
                     // Start in the middle of the session and mark 20ms every 100s
-                    var markerStartTime =  session.StartTime + ((session.EndTime - session.StartTime) / 2) + (i * 100 * NanosecondExtensions.NanosecondsPerSecond);
+                    var markerStartTime = session.StartTime + ((session.EndTime - session.StartTime) / 2) + (i * 100 * NanosecondExtensions.NanosecondsPerSecond);
                     // 20ms after the start time
                     var markerEndTime = markerStartTime + (20 * NanosecondExtensions.NanosecondsPerMillisecond);
 
                     var marker = new Marker(markerStartTime, markerEndTime, "Marker" + i, "Demo", "Demonstration marker " + i);
-                    
+
                     newMarkers.Add(marker);
                 }
 
@@ -783,25 +783,28 @@ namespace MAT.SQLRace.HelloData
                         Name = "conciseNameForCodeUse01"
                     });
 
-                newMarkers[1].AddLabel(
+                newMarkers[2].AddLabel(
                     new MarkerLabel
                     {
-                        Label = "Drying Track",
-                        Description = "The track is wet but it is no longer raining",
-                        Name = "dryingLap01"
+                        Label = "Average Speed",
+                        Description = "A average sustained wind speed during this time period",
+                        Value = "9.6382834",
+                        Format = "%.2f",
+                        Unit = "m/s",
+                        Name = "windSpeedDataHighVelocity01"
                     });
 
                 newMarkers[1].AddLabel(
                     new MarkerLabel
                     {
-                        Label = "Full Throttle Time",
-                        Description = "A amount of time during the lap that was spent at full throttle",
-                        Value = "46.29183234",
-                        Format = "%.3f",
-                        Unit = "s",
-                        Name = "fullThrottle01"
-                    }); 
-                
+                        Label = "Direction",
+                        Description = "The direction of the wind during this time period",
+                        Value = "323",
+                        Format = "%i",
+                        Unit = "deg",
+                        Name = "windSpeedDataHighDirection01"
+                    });
+
                 newMarkers[1].AddLabel(
                     new MarkerLabel
                     {
@@ -844,9 +847,9 @@ namespace MAT.SQLRace.HelloData
             var fileSessionManager = FileSessionManager.CreateFileSessionManager();
 
             //var session01 = fileSessionManager.Load(@"C:\Session Location\Session To Load.ssn");
-            var session01 = fileSessionManager.Load(@"C:\McLaren\Sessions\9Barcelona SAI CH01  163532 D3R16.ssn", new List<string>
+            var session01 = fileSessionManager.Load(@"C:\Session Location\Session To Load.ssn", new List<string>
             {
-                //@"C:\Session Location\Session To Load.VTS.001.ssv"
+                @"C:\Session Location\Session To Load.VTS.001.ssv"
             }); // session with associates
 
             if (session01 == null)
