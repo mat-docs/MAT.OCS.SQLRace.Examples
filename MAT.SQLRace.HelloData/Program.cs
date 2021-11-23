@@ -759,6 +759,8 @@ namespace MAT.SQLRace.HelloData
 
             if (session.Markers.Count(m => m.MarkerType == "Demo") < 3)
             {
+                var newMarkers = new List<Marker>();
+
                 // Add some demo markers to the sessions to define some arbitrary time ranges
                 for (var i = 1; i <= 3; i++)
                 {
@@ -769,16 +771,48 @@ namespace MAT.SQLRace.HelloData
 
                     var marker = new Marker(markerStartTime, markerEndTime, "Marker" + i, "Demo", "Demonstration marker " + i);
                     
-                    // Zero or more annotations can be added to the marker as required
-                    marker.AddLabel(
-                        new MarkerLabel
-                        {
-                            Label = "Short user description",
-                            Description = "A long description to explain what the marker represents to the user",
-                            Name = "conciseNameForCode" + i,
-                            Value = "demo" + i
-                        });
+                    newMarkers.Add(marker);
+                }
 
+                // Zero or more annotations can be added to each marker as required
+                newMarkers[0].AddLabel(
+                    new MarkerLabel
+                    {
+                        Label = "Short user description",
+                        Description = "A long description to explain what the marker represents to the user",
+                        Name = "conciseNameForCodeUse01"
+                    });
+
+                newMarkers[1].AddLabel(
+                    new MarkerLabel
+                    {
+                        Label = "Drying Track",
+                        Description = "The track is wet but it is no longer raining",
+                        Name = "dryingLap01"
+                    });
+
+                newMarkers[1].AddLabel(
+                    new MarkerLabel
+                    {
+                        Label = "Full Throttle Time",
+                        Description = "A amount of time during the lap that was spent at full throttle",
+                        Value = "46.29183234",
+                        Format = "%.3f",
+                        Unit = "s",
+                        Name = "fullThrottle01"
+                    }); 
+                
+                newMarkers[1].AddLabel(
+                    new MarkerLabel
+                    {
+                        Label = "Max Temp",
+                        Value = "27.2",
+                        Unit = "°C",
+                        Name = "temp01"
+                    });
+
+                foreach (var marker in newMarkers)
+                {
                     session.Markers.Add(marker);
                 }
             }
