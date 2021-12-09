@@ -282,14 +282,12 @@ namespace MAT.SQLRace.HelloData
         /// </summary>
         private static void LoadLiveSamples()
         {
-            ConnectionString = @"Data Source=localhost\SQLEXPRESS;Initial Catalog=SQLRACE01;Integrated Security=True";
+            const string connectionFriendlyName = "<REPLACE WITH A KNOWN DATABASE>";
 
-            var qm = QueryManager.CreateQueryManager(ConnectionString);
+            var connectionString = GetSqlRaceConnectionString(connectionFriendlyName);
 
-            // Get the most recent live session from the database
-            var ss = qm.ExecuteQuery()
-                .OrderByDescending(x => x.TimeOfRecording)
-                .FirstOrDefault(y => y.State == SessionState.Live && !y.Identifier.Contains("VTS"));
+            var ss = GetMostRecentLiveSession(connectionString);
+
             if (ss == null)
             {
                 Console.WriteLine("No live session found");
@@ -327,21 +325,19 @@ namespace MAT.SQLRace.HelloData
         /// </summary>
         private static async void LoadLiveSessionAndWaitForLapEvents()
         {
-            ConnectionString = @"Data Source=MAT-TWFIASQL02\LOCALSERVER1;Initial Catalog=SQLRACE_DEV1;Integrated Security=True";
+            const string connectionFriendlyName = "<REPLACE WITH A KNOWN DATABASE>";
 
-            var qm = QueryManager.CreateQueryManager(ConnectionString);
+            var connectionString = GetSqlRaceConnectionString(connectionFriendlyName);
 
-            // Get the most recent live session from the database
-            var ss = qm.ExecuteQuery()
-                .OrderByDescending(x => x.TimeOfRecording)
-                .FirstOrDefault(y => y.State == SessionState.Live && !y.Identifier.Contains("VTS"));
+            var ss = GetMostRecentLiveSession(connectionString);
+
             if (ss == null)
             {
                 Console.WriteLine("No live session found");
                 return;
             }
 
-            Console.WriteLine("Loading session....");
+            Console.WriteLine($"Loading session {ss.Identifier}");
 
             var clientSession = LoadSession(ss.Key, ss.GetConnectionString());
             clientSession.Session.LoadConfiguration();
@@ -376,21 +372,19 @@ namespace MAT.SQLRace.HelloData
         /// </summary>
         private static async void LoadLiveSessionAndWaitForEvents()
         {
-            ConnectionString = @"Data Source=MAT-TWFIASQL02\LOCALSERVER1;Initial Catalog=SQLRACE_DEV1;Integrated Security=True";
+            const string connectionFriendlyName = "<REPLACE WITH A KNOWN DATABASE>";
 
-            var qm = QueryManager.CreateQueryManager(ConnectionString);
+            var connectionString = GetSqlRaceConnectionString(connectionFriendlyName);
 
-            // Get the most recent live session from the database
-            var ss = qm.ExecuteQuery()
-                .OrderByDescending(x => x.TimeOfRecording)
-                .FirstOrDefault(y => y.State == SessionState.Live && !y.Identifier.Contains("VTS"));
+            var ss = GetMostRecentLiveSession(connectionString);
+
             if (ss == null)
             {
                 Console.WriteLine("No live session found");
                 return;
             }
 
-            Console.WriteLine("Loading session....");
+            Console.WriteLine($"Loading session {ss.Identifier}");
 
             var sessionManager = SessionManager.CreateSessionManager();
             var clientSession = sessionManager.Load(ss.Key, ss.GetConnectionString());
@@ -409,6 +403,25 @@ namespace MAT.SQLRace.HelloData
         private static void Session_EventDataAdded(object sender, ItemEventArgs e)
         {
             Console.WriteLine($"Event occurred for session {e.SessionKey}: {e.Item}");
+        }
+
+        private static string GetSqlRaceConnectionString(string connectionFriendlyName)
+        {
+            var connectionManager = new DatabaseConnectionManager();
+            var databaseConnection = connectionManager.GetDatabaseConnections()
+                .FirstOrDefault(c => c.FriendlyName == connectionFriendlyName);
+            var connectionString = databaseConnection?.GetConnectionString();
+            return connectionString;
+        }
+
+        private static SessionSummary GetMostRecentLiveSession(string connectionString)
+        {
+            var qm = QueryManager.CreateQueryManager(connectionString);
+
+            var ss = qm.ExecuteQuery()
+                .OrderByDescending(x => x.TimeOfRecording)
+                .FirstOrDefault(y => y.State == SessionState.Live && !y.Identifier.Contains("VTS"));
+            return ss;
         }
 
         private static IClientSession LoadSession(SessionKey sessionKey, string connection)
@@ -628,9 +641,6 @@ namespace MAT.SQLRace.HelloData
                 }
             }
 
-
-
-
             //Create & Build Function
             var functionManager = FunctionManagerFactory.Create();
             var functionDefinition = FunctionHelper.CreateFdlFunctionDefinition(functionManager, FunctionMode.LeadingEdge);
@@ -748,7 +758,7 @@ namespace MAT.SQLRace.HelloData
         {
             var fileSessionManager = FileSessionManager.CreateFileSessionManager();
 
-            //var session01 = fileSessionManager.Load(@"C:\Session Location\Session To Load.ssn", false);
+            //var session01 = fileSessionManager.Load(@"C:\Session Location\Session To Load.ssn");
             var session01 = fileSessionManager.Load(@"C:\Session Location\Session To Load.ssn", new List<string>
             {
                 @"C:\Session Location\Session To Load.VTS.001.ssv"
