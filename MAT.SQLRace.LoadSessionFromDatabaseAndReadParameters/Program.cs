@@ -46,15 +46,15 @@ namespace MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters
     class Program
     {
 
-        private const int MAXSAMPLESREQUEST = 32767;
+        private const int MaxSamplesRequest = 32767;
         // TODO: Change the sessionGUID to something sensible
-        private static string sessionGUID = "SOME_SESSION_GUID";
-        private static List<string> parameterList = new List<string> { "vCar:Chassis", "nEngine:FIA", "aSteerFIA", "aSteerWheel:Chassis" };
+        private static readonly string sessionGUID = "SOME_SESSION_GUID";
+        private static readonly List<string> parameterList = new List<string> { "vCar:Chassis", "nEngine:FIA", "aSteerFIA", "aSteerWheel:Chassis" };
 
         static void Main(string[] args)
         {
             //TODO: Change the connection string for it to suit your Database system
-            string connectionString = @"Data Source=SOME_DATABASE_SERVER\LOCAL;Initial Catalog=SOME_DATABASE_NAME;Integrated Security=True";
+            const string connectionString = @"Data Source=SOME_DATABASE_SERVER\LOCAL;Initial Catalog=SOME_DATABASE_NAME;Integrated Security=True";
             Console.WriteLine("Initializing SQL Race....");
             Console.WriteLine(Directory.GetCurrentDirectory());
             Core.LicenceProgramName = "SQLRace";
@@ -77,7 +77,6 @@ namespace MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters
             }
             foreach (var parameter in parameterList)
             {
-                var lastTimedSample = "";
                 var session = clientSession.Session;
                 using (var pda = clientSession.Session.CreateParameterDataAccess(parameter))
                 {
@@ -93,10 +92,10 @@ namespace MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters
                     while (!end)
                     {
                         
-                        if (nSamples > MAXSAMPLESREQUEST)
+                        if (nSamples > MaxSamplesRequest)
                         {
-                            requestedSamples = MAXSAMPLESREQUEST;
-                            nSamples -= MAXSAMPLESREQUEST;
+                            requestedSamples = MaxSamplesRequest;
+                            nSamples -= MaxSamplesRequest;
                         }
                         else
                         {

@@ -1,43 +1,38 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using MAT.OCS.Core;
-using MESL.SqlRace.Common.Extensions;
 using MESL.SqlRace.Domain;
 using MESL.SqlRace.Domain.Infrastructure.DataPipeline;
 using MESL.SqlRace.Enumerators;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 
 namespace MAT.SQLRace.CreateSessionWIthMultipleParameters
 {
     class Program
     {
-        
         public static IClientSession CreateBasicSession(string connectionString, string sessIdentifier)
         {
-            SessionManager sessionManager = SessionManager.CreateSessionManager();
-            SessionKey sessionKey = SessionKey.NewKey();
-            IClientSession clientSession = sessionManager.CreateSession(connectionString, sessionKey, sessIdentifier,DateTime.Now, "Session");
+            var sessionManager = SessionManager.CreateSessionManager();
+            var sessionKey = SessionKey.NewKey();
+            var clientSession = sessionManager.CreateSession(connectionString, sessionKey, sessIdentifier,DateTime.Now, "Session");
             return clientSession;
         }
 
-        public static Dictionary<string, uint> PopulateSession(IClientSession clientSession, IEnumerable<string> identifers)
+        public static Dictionary<string, uint> PopulateSession(IClientSession clientSession, IEnumerable<string> identifiers)
         {
-            // Take into account that the identifiers inside the IEnumberable cannot contain spaces
-            Dictionary<string, uint> channels = new Dictionary<string, uint>();
+            // Take into account that the identifiers inside the IEnumerable cannot contain spaces
+            var channels = new Dictionary<string, uint>();
             //Constants for creating parameters
             const string ConversionFunctionName = "CONV_MyParam:MyApp";
             const string ApplicationGroupName = "MyApp";
             const string ParameterGroupIdentifier = "MyParamGroup";
 
-            Session session = clientSession.Session;
-            ConfigurationSet config = session.CreateConfiguration();
+            var session = clientSession.Session;
+            var config = session.CreateConfiguration();
             // Creating the parameter group where the channels will be added later
-            ParameterGroup group1 = new ParameterGroup(ParameterGroupIdentifier, "SampleDescription");
+            var group1 = new ParameterGroup(ParameterGroupIdentifier, "SampleDescription");
 
             // Application group without RDA where the parameter group will live
-            ApplicationGroup appGroup1 = new ApplicationGroup(
+            var appGroup1 = new ApplicationGroup(
                 ApplicationGroupName,
                 ApplicationGroupName,
                 new List<string>
@@ -65,17 +60,17 @@ namespace MAT.SQLRace.CreateSessionWIthMultipleParameters
             Frequency samplingFrequency = new Frequency(2, FrequencyUnit.Hz);
             uint channelId = 1;
             // We start to iterate over the identifiers to add the parameters to the param group
-            foreach (string identifier in identifers)
+            foreach (string identifier in identifiers)
             {
                 channels[identifier] = channelId;
-                Channel channel = new Channel(
+                var channel = new Channel(
                     channelId++,
                     "Channel" + channelId,
                     samplingFrequency.ToInterval(),
                     DataType.Signed16Bit,
                     ChannelDataSourceType.Periodic);
 
-                Parameter parameter = new Parameter(
+                var parameter = new Parameter(
                     identifier,
                     identifier,
                     identifier,
@@ -105,9 +100,9 @@ namespace MAT.SQLRace.CreateSessionWIthMultipleParameters
 
         public static void FillSessionDetails(IClientSession clientSession, IEnumerable<string> details)
         {
-            Session session = clientSession.Session;
+            var session = clientSession.Session;
             // Populating session details
-            int i = 1;
+            var i = 1;
             foreach (var detail in details)
             {
                 session.Items.Add(new SessionDataItem("Detail" + i, detail));
@@ -120,7 +115,7 @@ namespace MAT.SQLRace.CreateSessionWIthMultipleParameters
         {
             var session = clientSession.Session;
 
-            var lap = new Lap(startTime,number, triggersource, name, countForFastestLap);
+            var lap = new Lap(startTime, number, triggersource, name, countForFastestLap);
             // You can use the lap object to edit the different properties of it
             //lap.EndTime = 1;
 
@@ -139,20 +134,20 @@ namespace MAT.SQLRace.CreateSessionWIthMultipleParameters
             Core.LicenceProgramName = "SQLRace";
             Core.Initialize();
 
-            IClientSession clientSession = CreateBasicSession(connectionString, "SampleIdentifier");
             Console.WriteLine($"Creating session");
+            var clientSession = CreateBasicSession(connectionString, "SampleIdentifier");
 
             // Adding channels
-            List<string> identifiers = new List<string>
+            var identifiers = new List<string>
             {
                 "sampleparam1",
                 "sampleparam2"
             };
 
-            Dictionary<string, uint> channels = PopulateSession(clientSession, identifiers);
+           var channels = PopulateSession(clientSession, identifiers);
 
             //Adding session details
-            List<string> details = new List<string>
+            var details = new List<string>
             {
                 "sampledetail1",
                 "sampledetail2"
@@ -160,7 +155,7 @@ namespace MAT.SQLRace.CreateSessionWIthMultipleParameters
               
             FillSessionDetails(clientSession, details);
             //Adding a sample lap
-            AddSampleLap(clientSession,0,1,0,"Lap1", false);
+            AddSampleLap(clientSession, 0, 1, 0, "Lap1", false);
 
             Console.WriteLine("Press ENTER or RETURN key to finish...");
             Console.ReadLine();

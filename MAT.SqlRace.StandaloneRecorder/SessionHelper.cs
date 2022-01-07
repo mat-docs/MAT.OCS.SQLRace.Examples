@@ -19,7 +19,6 @@ namespace MAT.SqlRace.StandaloneRecorder
             const string ConversionFunctionName = "CONV_MyParam:MyApp";
             const string ApplicationGroupName = "MyApp";
             const string ParameterGroupIdentifier = "MyParamGroup";
-            const string ParameterName = "MyParam";
 
             var session = clientSession.Session;
 

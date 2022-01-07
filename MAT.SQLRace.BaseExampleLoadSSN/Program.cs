@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using MESL.SqlRace.Common;
 using MESL.SqlRace.Common.Extensions;
 using MESL.SqlRace.Domain;
-using MESL.SqlRace.Common.Extensions;
 
 
 
@@ -35,9 +33,8 @@ namespace BaseExampleSSN
     {
         static void Main(string[] args)
         {
-            
-            //TODO: Change the path to file to one sensible location
-            string pathToFile = @"C:\Users\YOUR_USER\SOME_FOLDER\SOME_FILE.ssn";
+            //TODO: Change the path to a .ssn file that you have locally.
+            const string pathToFile = @"C:\Users\YOUR_USER\SOME_FOLDER\SOME_FILE.ssn";
 
             //Initialize SQLRaceAPI
             Console.WriteLine("Initializing SQL Race....");
@@ -52,15 +49,15 @@ namespace BaseExampleSSN
             Console.WriteLine("Press enter to exit...");
             Console.ReadLine();
             Log.SetMinimumLoggingLevel(LogLevel.Warn);
-
         }
 
         private static void ReadSamples(IClientSession clientSession)
         {
-            var vCarIdentifier = "vCar:Chassis";
+            const string vCarIdentifier = "vCar:Chassis";
             using (var pda = clientSession.Session.CreateParameterDataAccess(vCarIdentifier))
             {
-                pda.GoTo(clientSession.Session.StartTime + (clientSession.Session.EndTime - clientSession.Session.StartTime) / 2);
+                var sessionMidPoint = clientSession.Session.StartTime + (clientSession.Session.EndTime - clientSession.Session.StartTime) / 2;
+                pda.GoTo(sessionMidPoint);
                 //MAX SAMPLES RETRIEVED: 10000
                 var samples = pda.GetNextSamples(10);
 
