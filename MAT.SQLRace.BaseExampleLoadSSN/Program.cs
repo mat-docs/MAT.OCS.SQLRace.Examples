@@ -9,8 +9,8 @@ namespace BaseExampleSSN
     class Program
     {
         /// <summary>
-        /// In order to be able to use this example find the NuGet packages required below:
-        /// https://atlas.mclarenapplied.com/developer/nuget/
+        /// In order to be able to use this example follow these instructions;
+        /// https://github.com/mat-docs/packages
         ///
         /// Whenever you are setting up your project you should use .NETFramework 4.8.
         /// 
