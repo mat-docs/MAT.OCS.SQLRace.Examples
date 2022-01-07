@@ -37,7 +37,7 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
         static void Main(string[] args)
         {
             // TODO: Change the location to where do you want the session to be created
-            const string connectionString = $@"DbEngine=SQLite;Data Source=c:\ssn2\test01.ssn2;";
+            const string connectionString = @"DbEngine=SQLite;Data Source=c:\ssn2\test01.ssn2;";
 
             Console.WriteLine("Initializing SQL Race....");
             Console.WriteLine(Directory.GetCurrentDirectory());
