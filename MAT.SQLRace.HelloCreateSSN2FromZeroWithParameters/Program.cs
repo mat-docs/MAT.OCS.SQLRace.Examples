@@ -13,8 +13,8 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
     {
 
         /// <summary>
-        /// In order to be able to use this example you need to register McLaren Applied NuGet repository in Visual Studio. Link below
-        /// https://github.com/mat-docs/packages
+        /// In order to be able to use this example find the NuGet packages required below:
+        /// https://atlas.mclarenapplied.com/developer/nuget/
         ///
         /// Whenever you are setting up your project you should use .NETFramework 4.8.
         /// You need to set up the compilation to be for x64 processors in order for this example to work
