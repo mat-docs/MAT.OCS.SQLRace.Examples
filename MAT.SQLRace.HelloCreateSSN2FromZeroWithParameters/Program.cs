@@ -30,7 +30,6 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
         /// Further examples can be found here:
         /// https://github.com/mat-docs/MAT.OCS.SQLRace.Examples
         /// </summary>
-
         static void Main(string[] args)
         {
             // TODO: Change the location to where do you want the session to be created
