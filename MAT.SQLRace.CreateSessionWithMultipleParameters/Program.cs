@@ -144,7 +144,7 @@ namespace MAT.SQLRace.CreateSessionWIthMultipleParameters
                 "sampleparam2"
             };
 
-           var channels = PopulateSession(clientSession, identifiers);
+            var channels = PopulateSession(clientSession, identifiers);
 
             //Adding session details
             var details = new List<string>

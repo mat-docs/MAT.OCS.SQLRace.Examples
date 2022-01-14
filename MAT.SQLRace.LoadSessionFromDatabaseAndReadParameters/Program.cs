@@ -20,29 +20,29 @@ using MESL.SqlRace.Enumerators;
 
 namespace MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters
 {
+    /// <summary>
+    /// In order to be able to use this example follow these instructions;
+    /// https://github.com/mat-docs/packages
+    ///
+    /// Whenever you are setting up your project you should use .NETFramework 4.8.
+    /// You need to set up the compilation to be for x64 processors in order for this example to work
+    /// 
+    /// Once registered in Visual Studio, you need to install MESL.SQLRace.API package from NuGet making sure that you have selected the McLaren Applied Github packages in the top
+    /// right corner (defaults to nuget.org, where if you search for the package it would not show).
+    /// Apart from this NuGet package, if you plan to load SSN files you need to follow these steps too: (not needed for this example)
+    /// - Install MAT.ATLAS.SupportFiles from NuGet directory making sure that you have selected on the top right corner MA repository
+    /// - Setup the build config to build in x64 based CPUs. This is required for SSNs to be loaded.
+    /// Once this package is installed, you would only need to pay attenion to the TODOs written in the code.
+    ///
+    /// Find the documentation for the API in the link below
+    /// https://mat-docs.github.io/Atlas.SQLRaceAPI.Documentation/api/index.html
+    /// 
+    /// Further examples can be found here:
+    /// https://github.com/mat-docs/MAT.OCS.SQLRace.Examples
+    /// </summary>
     class Program
     {
-        /// <summary>
-        /// In order to be able to use this example follow these instructions;
-        /// https://github.com/mat-docs/packages
-        ///
-        /// Whenever you are setting up your project you should use .NETFramework 4.8.
-        /// You need to set up the compilation to be for x64 processors in order for this example to work
-        /// 
-        /// Once registered in Visual Studio, you need to install MESL.SQLRace.API package from NuGet making sure that you have selected the McLaren Applied Github packages in the top
-        /// right corner (defaults to nuget.org, where if you search for the package it would not show).
-        /// Apart from this NuGet package, if you plan to load SSN files you need to follow these steps too: (not needed for this example)
-        /// - Install MAT.ATLAS.SupportFiles from NuGet directory making sure that you have selected on the top right corner MA repository
-        /// - Setup the build config to build in x64 based CPUs. This is required for SSNs to be loaded.
-        /// Once this package is installed, you would only need to pay attenion to the TODOs written in the code.
-        ///
-        /// Find the documentation for the API in the link below
-        /// https://mat-docs.github.io/Atlas.SQLRaceAPI.Documentation/api/index.html
-        /// 
-        /// Further examples can be found here:
-        /// https://github.com/mat-docs/MAT.OCS.SQLRace.Examples
-        ///
-        /// </summary>
+        
 
         private const int MaxSamplesRequest = 32767;
         // TODO: Change the sessionGUID to something sensible

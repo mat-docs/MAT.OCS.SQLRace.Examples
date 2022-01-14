@@ -6,12 +6,10 @@ using MAT.OCS.Core;
 using MAT.SqlRace.Ssn2Splitter;
 using MESL.SqlRace.Common.Extensions;
 using MESL.SqlRace.Domain;
-
 namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
 {
     class Program
     {
-
         /// <summary>
         /// In order to be able to use this example follow these instructions;
         /// https://github.com/mat-docs/packages
@@ -31,7 +29,6 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
         /// 
         /// Further examples can be found here:
         /// https://github.com/mat-docs/MAT.OCS.SQLRace.Examples
-        ///
         /// </summary>
 
         static void Main(string[] args)
