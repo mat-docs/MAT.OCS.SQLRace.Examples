@@ -6,6 +6,7 @@ using MAT.OCS.Core;
 using MAT.SqlRace.Ssn2Splitter;
 using MESL.SqlRace.Common.Extensions;
 using MESL.SqlRace.Domain;
+
 namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
 {
     class Program
