@@ -21,7 +21,6 @@ namespace MAT.SQLRace.HelloData
             const string ConversionFunctionName = "CONV_MyParam:MyApp";
             const string ApplicationGroupName = "MyApp";
             const string ParameterGroupIdentifier = "MyParamGroup";
-            const string ParameterName = "MyParam";
 
             var session = clientSession.Session;
 
