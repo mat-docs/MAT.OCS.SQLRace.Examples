@@ -15,10 +15,10 @@ See the [API Documentation](https://mat-docs.github.io/)
 Version 2.1.22127.1 of MESL.SQLRace.API upgrades System.Reactive from 3.1.1 to 4.4.1. If you are developing your solution in Visual Studio then be advised that the Nuget upgrade process does not automatically remove any previously dependent packages that are no longer required. 
 In order to reduce the likelihood of runtime errors we strongly recommend you manually remove (in the order specified) these redundant packages following the upgrade:
 
-1. System.Reactive.Interfaces 3.1.1
-2. System.Reactive.Linq 3.1.1
-3. System.Reactive.PlatformServices 3.1.1
+1. System.Reactive.Windows.Threading 3.1.1
+2. System.Reactive.PlatformServices 3.1.1
+3. System.Reactive.Linq 3.1.1
 4. System.Reactive.Core 3.1.1
-5. System.Reactive.Windows.Threading 3.1.1
+5. System.Reactive.Interfaces 3.1.1
 
 
