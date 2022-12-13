@@ -59,8 +59,8 @@
     <Reference Include="JetBrains.Profiler.Windows.SelfApi, Version=104.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
       <HintPath>..\packages\MESL.SQLRace.API.2.1.22315.2\lib\net48\JetBrains.Profiler.Windows.SelfApi.dll</HintPath>
     </Reference>
-    <Reference Include="MAT.OCS.ATLAS.Recording.Interop, Version=1.0.7534.27634, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\MAT.ATLAS.SupportFiles.9.81.2.38\lib\MAT.OCS.ATLAS.Recording.Interop.dll</HintPath>
+    <Reference Include="MAT.OCS.ATLAS.Recording.Interop, Version=1.0.8349.16806, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\MAT.ATLAS.SupportFiles.9.83.4.22\lib\net48\MAT.OCS.ATLAS.Recording.Interop.dll</HintPath>
     </Reference>
     <Reference Include="MAT.OCS.Core, Version=2.1.13.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MAT.OCS.Core.2.1.13\lib\net45\MAT.OCS.Core.dll</HintPath>
@@ -337,7 +337,9 @@
     <Error Condition="!Exists('..\packages\Baseclass.Contrib.Nuget.Output.2.4.3\build\Baseclass.Contrib.Nuget.Output.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Baseclass.Contrib.Nuget.Output.2.4.3\build\Baseclass.Contrib.Nuget.Output.targets'))" />
     <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
     <Error Condition="!Exists('..\packages\MESL.SQLRace.API.2.1.22315.2\build\net48\MESL.SQLRace.API.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MESL.SQLRace.API.2.1.22315.2\build\net48\MESL.SQLRace.API.targets'))" />
+    <Error Condition="!Exists('..\packages\MAT.ATLAS.SupportFiles.9.83.4.22\build\net48\MAT.ATLAS.SupportFiles.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MAT.ATLAS.SupportFiles.9.83.4.22\build\net48\MAT.ATLAS.SupportFiles.targets'))" />
   </Target>
   <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
   <Import Project="..\packages\MESL.SQLRace.API.2.1.22315.2\build\net48\MESL.SQLRace.API.targets" Condition="Exists('..\packages\MESL.SQLRace.API.2.1.22315.2\build\net48\MESL.SQLRace.API.targets')" />
+  <Import Project="..\packages\MAT.ATLAS.SupportFiles.9.83.4.22\build\net48\MAT.ATLAS.SupportFiles.targets" Condition="Exists('..\packages\MAT.ATLAS.SupportFiles.9.83.4.22\build\net48\MAT.ATLAS.SupportFiles.targets')" />
 </Project>
