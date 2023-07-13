@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
@@ -58,12 +59,35 @@ namespace MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters
             Core.LicenceProgramName = "SQLRace";
             Core.Initialize();
 
+            //Uncomment to see example for: LOAD SSN2 WITH ASSOCIATES -> EXAMPLE
+            //var clientSessionWithAssociates = LoadSessionWithAssociates();
+
             Console.WriteLine("SQLRace has been initialized correctly");
             var clientSession = LoadSessionFromGUID(sessionGUID, connectionString);
             ReadSamples(clientSession, parameterList);
 
             Console.WriteLine("Press enter to exit...");
             Console.ReadLine();
+        }
+
+        //In order to load SSN2 with associate sessions you need to pass main session key + connection string
+        //You also need to pass dictionary collection of associate keys and connection strings
+        private static object LoadSessionWithAssociates()
+        {
+            var sessionGUID = "SOME_SESSION_GUID";
+            var connectionString = @"Data Source=SOME_DATABASE_SERVER\LOCAL;Initial Catalog=SOME_DATABASE_NAME;Integrated Security=True";
+            var associates = new Dictionary<SessionKey, string>
+            {
+                {
+                    new SessionKey("Associate GUID"), "cs"
+                },
+                {
+                    new SessionKey("Associate GUID 2"), "cs 2"
+                }
+            };
+
+            var sessionManager = SessionManager.CreateSessionManager();
+            return sessionManager.Load(SessionKey.Parse(sessionGUID), connectionString, associates);
         }
 
         private static void ReadSamples(IClientSession clientSession, List<string> parameterList)
