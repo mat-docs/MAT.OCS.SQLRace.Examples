@@ -8,9 +8,6 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
     runs-on: windows-latest
     env:
       Solution_Name: MAT.OCS.SQLRace.Examples.sln
@@ -47,9 +44,9 @@ jobs:
           nuget sources Add -Name "McLaren Applied GitHub Packages" -Source https://nuget.pkg.github.com/mat-docs/index.json -UserName $env:PackagesUserName -Password $env:PackagesPatToken
           nuget restore $env:Solution_Name
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
 
-      - name: Build solution
-        shell: pwsh    
-        run: msbuild $env:Solution_Name -p:Configuration=${{ matrix.configuration }} -p:Platform="Any CPU"
+      - name: Build 
+        run: dotnet build --configuration Release --no-restore
