@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
-using System.ServiceModel.Configuration;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
