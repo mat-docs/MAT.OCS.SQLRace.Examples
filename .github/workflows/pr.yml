@@ -1,6 +1,5 @@
 name: PR gated build
 on:
-  push:
   pull_request:
     branches: [ master ]
   schedule:
@@ -8,9 +7,6 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
     runs-on: windows-latest
     env:
       Solution_Name: MAT.OCS.SQLRace.Examples.sln
@@ -41,15 +37,12 @@ jobs:
           . ./.github/workflows/Check-References.ps1
           Check-References -Rootdirectory $Env:GITHUB_WORKSPACE -PackageName "MESL.SQLRace.API" -VersionMustContain $latestVersion
 
-      - name: Restore nuget feeds
-        shell: pwsh
-        run: |
-          nuget sources Add -Name "McLaren Applied GitHub Packages" -Source https://nuget.pkg.github.com/mat-docs/index.json -UserName $env:PackagesUserName -Password $env:PackagesPatToken
-          nuget restore $env:Solution_Name
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Install dependencies
+        run: dotnet restore
 
-      - name: Build solution
-        shell: pwsh    
-        run: msbuild $env:Solution_Name -p:Configuration=${{ matrix.configuration }} -p:Platform="Any CPU"
+      - name: Build 
+        run: dotnet build --configuration Release --no-restore

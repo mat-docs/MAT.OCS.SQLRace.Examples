@@ -1,28 +1,28 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAT.SQLRace.HelloData", "MAT.SQLRace.HelloData\MAT.SQLRace.HelloData.csproj", "{FB3E8850-40AF-443E-82C1-183C1C76D460}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.HelloData", "MAT.SQLRace.HelloData\MAT.SQLRace.HelloData.csproj", "{FB3E8850-40AF-443E-82C1-183C1C76D460}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MESL.SqlRace.Examples.Sessions.CSharp", "MESL.SqlRace.Examples.Sessions.CSharp\MESL.SqlRace.Examples.Sessions.CSharp.csproj", "{1ECFBECA-FA58-414F-8F13-6F94747ED086}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MESL.SqlRace.Examples.Sessions.CSharp", "MESL.SqlRace.Examples.Sessions.CSharp\MESL.SqlRace.Examples.Sessions.CSharp.csproj", "{1ECFBECA-FA58-414F-8F13-6F94747ED086}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "MESL.SqlRace.Examples.Installer", "MESL.SqlRace.Installer.WIX\MESL.SqlRace.Examples.Installer.wixproj", "{9327FD99-9F1A-4059-86E4-7EA68B6315CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAT.SqlRace.StandaloneRecorder", "MAT.SqlRace.StandaloneRecorder\MAT.SqlRace.StandaloneRecorder.csproj", "{CED8F031-F058-451E-8B4A-A773D806FC79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SqlRace.StandaloneRecorder", "MAT.SqlRace.StandaloneRecorder\MAT.SqlRace.StandaloneRecorder.csproj", "{CED8F031-F058-451E-8B4A-A773D806FC79}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F7758EB4-AD23-4B60-994E-6832A3230138}"
 	ProjectSection(SolutionItems) = preProject
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAT.SqlRace.Functions.HelloDotNet", "MAT.SqlRace.Functions.HelloDotNet\MAT.SqlRace.Functions.HelloDotNet.csproj", "{4CBB924C-6346-4C08-B1C8-AB5EA2900348}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SqlRace.Functions.HelloDotNet", "MAT.SqlRace.Functions.HelloDotNet\MAT.SqlRace.Functions.HelloDotNet.csproj", "{4CBB924C-6346-4C08-B1C8-AB5EA2900348}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAT.SQLRace.FileLoaderSample", "MAT.SQLRace.FileLoaderSample\MAT.SQLRace.FileLoaderSample.csproj", "{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.FileLoaderSample", "MAT.SQLRace.FileLoaderSample\MAT.SQLRace.FileLoaderSample.csproj", "{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAT.SQLRace.CreateSessionWithMultipleParameters", "MAT.SQLRace.CreateSessionWithMultipleParameters\MAT.SQLRace.CreateSessionWithMultipleParameters.csproj", "{87B98171-87C4-4BF4-AEB9-EB4B7927A66E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.CreateSessionWithMultipleParameters", "MAT.SQLRace.CreateSessionWithMultipleParameters\MAT.SQLRace.CreateSessionWithMultipleParameters.csproj", "{87B98171-87C4-4BF4-AEB9-EB4B7927A66E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAT.SQLRace.BaseExampleLoadSSN", "MAT.SQLRace.BaseExampleLoadSSN\MAT.SQLRace.BaseExampleLoadSSN.csproj", "{31E31856-1ACA-4034-9204-36789E6DDF2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.BaseExampleLoadSSN", "MAT.SQLRace.BaseExampleLoadSSN\MAT.SQLRace.BaseExampleLoadSSN.csproj", "{31E31856-1ACA-4034-9204-36789E6DDF2D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{41650D89-FF13-4859-A107-42236E969BE1}"
 	ProjectSection(SolutionItems) = preProject
@@ -31,9 +31,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{4165
 		.github\workflows\pr.yml = .github\workflows\pr.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters", "MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters\MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters.csproj", "{77769120-AD6B-47C8-AB4D-11CBFF71952E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters", "MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters\MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters.csproj", "{77769120-AD6B-47C8-AB4D-11CBFF71952E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters", "MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters\MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters.csproj", "{FF2BE15F-8E2A-4247-B25D-0FFE2FEFFF20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters", "MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters\MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters.csproj", "{FF2BE15F-8E2A-4247-B25D-0FFE2FEFFF20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

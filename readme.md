@@ -10,6 +10,10 @@ SQLRace API is available as a Nuget package to registered users from the **[McLa
 
 See the [API Documentation](https://mat-docs.github.io/)
 
+## .NET Core support from MESL.SQLRace.API 2.1.23227.6 onwards
+From version 2.1.23227.6, MESL.SQLRace.API will be targetting the .NET Core runtime. This specific version will be multi-targetting (both .NET Framework and Core) but all future releases will be targetting .NET core only. Customers requiring libraries that targets .NET Framework should use this or an earlier version.
+
+
 ## Notes on upgrading MESL.SQLRace.API package from versions prior to 2.1.22127.1
 
 Version 2.1.22127.1 of MESL.SQLRace.API upgrades System.Reactive from 3.1.1 to 4.4.1. If you are developing your solution in Visual Studio then be advised that the Nuget upgrade process does not automatically remove any previously dependent packages that are no longer required. 
