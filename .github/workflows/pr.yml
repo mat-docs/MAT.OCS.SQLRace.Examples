@@ -1,6 +1,5 @@
 name: PR gated build
 on:
-  push:
   pull_request:
     branches: [ master ]
   schedule:
@@ -38,15 +37,17 @@ jobs:
           . ./.github/workflows/Check-References.ps1
           Check-References -Rootdirectory $Env:GITHUB_WORKSPACE -PackageName "MESL.SQLRace.API" -VersionMustContain $latestVersion
 
-      - name: Restore nuget feeds
+      - name: Add McLaren Applied GitHub Packages to feed
         shell: pwsh
         run: |
           nuget sources Add -Name "McLaren Applied GitHub Packages" -Source https://nuget.pkg.github.com/mat-docs/index.json -UserName $env:PackagesUserName -Password $env:PackagesPatToken
-          nuget restore $env:Solution_Name
 
       - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0.x'
+
+      - name: Install dependencies
+        run: dotnet restore
 
       - name: Build 
         run: dotnet build --configuration Release --no-restore
