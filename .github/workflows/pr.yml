@@ -37,11 +37,6 @@ jobs:
           . ./.github/workflows/Check-References.ps1
           Check-References -Rootdirectory $Env:GITHUB_WORKSPACE -PackageName "MESL.SQLRace.API" -VersionMustContain $latestVersion
 
-      - name: Add McLaren Applied GitHub Packages to feed
-        shell: pwsh
-        run: |
-          nuget sources Add -Name "McLaren Applied GitHub Packages" -Source https://nuget.pkg.github.com/mat-docs/index.json -UserName $env:PackagesUserName -Password $env:PackagesPatToken
-
       - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0.x'
