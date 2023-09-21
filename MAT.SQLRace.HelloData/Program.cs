@@ -34,9 +34,7 @@ namespace MAT.SQLRace.HelloData
             //ConnectionString = @"Data Source=MAT-TWFIASQL02\LOCALSERVER1;Initial Catalog=SQLRACE_DEV1;Integrated Security=True";  
 
             //SQLite style connection string
-            ConnectionString = $@"DbEngine=SQLite;Data Source={
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-                }\McLaren Applied Technologies\ATLAS 10\SQL Race\LiveSessionCache.ssn2;";
+            ConnectionString = @"Data Source=localhost\LOCAL;Initial Catalog=SQLRACE01;Integrated Security=True";
 
             //SQLite ssn style connection string
             //ConnectionString = $@"DbEngine=SQLite;Data Source={
@@ -71,7 +69,8 @@ namespace MAT.SQLRace.HelloData
             //LoadLiveSessionAndWaitForEvents();
             //LoadLiveSamples();
             //AddAndProcessMarkers();
-            LoadSSN();
+            AddAndProcessTransientMarkers(ConnectionString);
+            //LoadSSN();
             //GetSessionSummaryBySessionGUID();
             //LoadLiveFunction();
             //WholeSessionsCompareMode();
@@ -846,6 +845,62 @@ namespace MAT.SQLRace.HelloData
 
                     Console.WriteLine();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Load data an SSN file, add some Markers to it if they don't already exist, extract the data in the ranges defined by the Markers.
+        /// </summary>
+        private static void AddAndProcessTransientMarkers(string connectionString)
+        {
+            try
+            {
+                var sessionManager = SessionManager.CreateSessionManager();
+
+                // "E720632B-B135-4409-8E1F-ECFC76BD716A"
+                const string sessionKey = "e720632b-b135-4409-8e1f-ecfc76bd716a";
+
+                var clientSession = sessionManager.Load(new SessionKey(sessionKey), connectionString);
+
+                if (clientSession == null)
+                {
+                    Console.WriteLine("Session not found");
+                    return;
+                }
+
+                var session = clientSession.Session;
+
+                const string markerType = "MARKER";
+
+                var newMarkers = new List<Marker>();
+
+                // Add some demo markers to the sessions to define some arbitrary time ranges
+                for (var i = 1; i <= 3; i++)
+                {
+                    // Start in the middle of the session and mark 20ms every 100s
+                    var markerStartTime = session.StartTime + ((session.EndTime - session.StartTime) / 2) + (i * 100 * NanosecondExtensions.NanosecondsPerSecond);
+                    // 20ms after the start time
+                    var markerEndTime = markerStartTime + (20 * NanosecondExtensions.NanosecondsPerMillisecond);
+
+                    var marker = new Marker(markerStartTime, markerEndTime, "Tansient Marker" + i, markerType, "Demonstration Transient marker " + i);
+                    marker.IsTransient = true;
+
+                    newMarkers.Add(marker);
+                }
+
+                foreach (var marker in newMarkers)
+                {
+                    session.Markers.Add(marker);
+                }
+
+                foreach (var marker in session.Markers.Where(m => m.MarkerType == markerType))
+                {
+                    Console.WriteLine(marker.ToStringWithTransient());
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
