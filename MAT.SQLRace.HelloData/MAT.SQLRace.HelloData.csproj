@@ -33,7 +33,7 @@
     <PackageReference Include="MAT.OCS.RDA" Version="2.1.15" />
     <PackageReference Include="MAT.OCS.Utilities" Version="2.1.15" />
     <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
-    <PackageReference Include="MESL.SQLRace.API" Version="2.1.23264.2-dev" />
+    <PackageReference Include="MESL.SQLRace.API" Version="2.1.23264.3-dev" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.3.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1" />
