@@ -882,8 +882,7 @@ namespace MAT.SQLRace.HelloData
                     // 20ms after the start time
                     var markerEndTime = markerStartTime + (20 * NanosecondExtensions.NanosecondsPerMillisecond);
 
-                    var marker = new Marker(markerStartTime, markerEndTime, "Tansient Marker" + i, markerType, "Demonstration Transient marker " + i);
-                    marker.IsTransient = true;
+                    var marker = Marker.CreateTransientMarker(markerStartTime, markerEndTime, "Tansient Marker" + i, markerType, "Demonstration Transient marker " + i);
 
                     newMarkers.Add(marker);
                 }
