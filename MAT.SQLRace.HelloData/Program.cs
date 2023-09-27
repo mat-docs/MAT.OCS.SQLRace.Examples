@@ -34,7 +34,6 @@ namespace MAT.SQLRace.HelloData
             //ConnectionString = @"Data Source=MAT-TWFIASQL02\LOCALSERVER1;Initial Catalog=SQLRACE_DEV1;Integrated Security=True";  
 
             //SQLite style connection string
-            ConnectionString = @"Data Source=localhost\LOCAL;Initial Catalog=SQLRACE01;Integrated Security=True";
 
             //SQLite ssn style connection string
             //ConnectionString = $@"DbEngine=SQLite;Data Source={
@@ -69,7 +68,7 @@ namespace MAT.SQLRace.HelloData
             //LoadLiveSessionAndWaitForEvents();
             //LoadLiveSamples();
             //AddAndProcessMarkers();
-            AddAndProcessTransientMarkers(ConnectionString);
+            AddAndProcessTransientMarkers();
             //LoadSSN();
             //GetSessionSummaryBySessionGUID();
             //LoadLiveFunction();
@@ -849,12 +848,13 @@ namespace MAT.SQLRace.HelloData
         }
 
         /// <summary>
-        /// Load data an SSN file, add some Markers to it if they don't already exist, extract the data in the ranges defined by the Markers.
+        /// Load data from DB, add some Markers some of them to be transient and some 'ordinary' to allow testing of their persistance or not.
         /// </summary>
-        private static void AddAndProcessTransientMarkers(string connectionString)
+        private static void AddAndProcessTransientMarkers()
         {
             try
             {
+                var connectionString = @"Data Source=localhost\LOCAL;Initial Catalog=SQLRACE01;Integrated Security=True";
                 var sessionManager = SessionManager.CreateSessionManager();
 
                 // "E720632B-B135-4409-8E1F-ECFC76BD716A"
