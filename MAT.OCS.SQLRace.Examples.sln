@@ -1,7 +1,6 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29102.190
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.HelloData", "MAT.SQLRace.HelloData\MAT.SQLRace.HelloData.csproj", "{FB3E8850-40AF-443E-82C1-183C1C76D460}"
 EndProject
@@ -34,6 +33,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters", "MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters\MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters.csproj", "{77769120-AD6B-47C8-AB4D-11CBFF71952E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters", "MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters\MAT.SQLRace.LoadSessionFromDatabaseAndReadParameters.csproj", "{FF2BE15F-8E2A-4247-B25D-0FFE2FEFFF20}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SqlRace.ServerListener", "MAT.SqlRace.ServerListener\MAT.SqlRace.ServerListener.csproj", "{C4281449-70AD-4A9F-A5F8-A11C6E58E460}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -161,6 +162,18 @@ Global
 		{FF2BE15F-8E2A-4247-B25D-0FFE2FEFFF20}.Release|x64.Build.0 = Release|Any CPU
 		{FF2BE15F-8E2A-4247-B25D-0FFE2FEFFF20}.Release|x86.ActiveCfg = Release|Any CPU
 		{FF2BE15F-8E2A-4247-B25D-0FFE2FEFFF20}.Release|x86.Build.0 = Release|Any CPU
+		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Debug|x64.Build.0 = Debug|Any CPU
+		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Debug|x86.Build.0 = Debug|Any CPU
+		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Release|x64.ActiveCfg = Release|Any CPU
+		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Release|x64.Build.0 = Release|Any CPU
+		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Release|x86.ActiveCfg = Release|Any CPU
+		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
