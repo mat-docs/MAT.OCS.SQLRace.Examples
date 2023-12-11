@@ -6,7 +6,7 @@ using MESL.SqlRace.Domain;
 using MESL.SqlRace.Domain.Infrastructure.DataPipeline;
 using MESL.SqlRace.Enumerators;
 
-namespace MAT.SqlRace.StandaloneRecorder
+namespace MAT.SqlRace.ServerListenerLive
 {
     internal class SessionHelper
     {
