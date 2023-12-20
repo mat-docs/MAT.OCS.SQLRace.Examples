@@ -13,8 +13,8 @@ namespace MAT.SqlRace.ServerListenerLive
     /// Record live data to a local SqlRace (Sqlite)
     ///
     /// NOTE: 
-    ///     If the session is in the state LiveNotInServer,
-    ///     make sure Server Listener port in ATLAS is different to the one specified here. 
+    ///     If the session is in the state LiveNotInServer, make sure Server Listener port in ATLAS is different to the one specified here. 
+    ///     Additionally, ensure UDP and TCP packets are allowed through the firewall settings on the Server Listener Port configured. 
     /// </summary>
     internal class Program
     {
@@ -27,21 +27,22 @@ namespace MAT.SqlRace.ServerListenerLive
             var dataSource = @"C:\temp\livesession.ssndb";
             Console.WriteLine(dataSource);
 
-            /// connection strings are case and whitespace sensitive, the following format must be strightly followed for the Server Listener Protocol to successfully establish.
+            /// connection strings are case and whitespace sensitive, the following format must be strictly followed for the Server Listener Protocol to successfully establish.
             /// SQLite: "DbEngine=SQLite;Data Source={dataSource};Pooling=false;"
             /// SQLServer: "server={dataSource};Initial Catalog={database};Trusted_Connection=True;"
             var connectionString = $@"DbEngine=SQLite;Data Source={dataSource};Pooling=false;";
+            string recorderDbEngine = "SQLite"; // SQLite or SQLServer
             var sessionIdentifier = "Server Listener Live Demo";
 
             Console.WriteLine("Initialising");
             Core.Initialize();
 
             Console.WriteLine("Setting up Server Listener Instance");
-            Core.ConfigureServer(true, new IPEndPoint(IPAddress.Parse(ServerListenerIpAddress),ServerListenerPortNumber));
+            Core.ConfigureServer(true, new IPEndPoint(IPAddress.Parse(ServerListenerIpAddress), ServerListenerPortNumber));
             var sessionManager = SessionManager.CreateSessionManager();
             var recordersConfiguration = RecordersConfiguration.GetRecordersConfiguration();
-            recordersConfiguration.AddConfiguration(Guid.NewGuid(), "SQLite", dataSource, dataSource, connectionString, false);
-            
+            recordersConfiguration.AddConfiguration(Guid.NewGuid(), recorderDbEngine, dataSource, dataSource, connectionString, false);
+
 
             Console.WriteLine("Creating new Session");
             var clientSession = sessionManager.CreateSession(connectionString, SessionKey.NewKey(), sessionIdentifier, DateTime.Now, "Session");
