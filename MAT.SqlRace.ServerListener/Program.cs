@@ -24,7 +24,7 @@ namespace MAT.SqlRace.ServerListenerLive
 
         public static void Main(string[] args)
         {
-            var dataSource = @"C:\temp\livesession.ssndb";
+            var dataSource = @"C:\Temp\livesession.ssndb";
             Console.WriteLine(dataSource);
 
             /// connection strings are case and whitespace sensitive, the following format must be strictly followed for the Server Listener Protocol to successfully establish.
