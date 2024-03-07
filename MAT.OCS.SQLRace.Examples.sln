@@ -17,8 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SqlRace.Functions.HelloDotNet", "MAT.SqlRace.Functions.HelloDotNet\MAT.SqlRace.Functions.HelloDotNet.csproj", "{4CBB924C-6346-4C08-B1C8-AB5EA2900348}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.FileLoaderSample", "MAT.SQLRace.FileLoaderSample\MAT.SQLRace.FileLoaderSample.csproj", "{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.CreateSessionWithMultipleParameters", "MAT.SQLRace.CreateSessionWithMultipleParameters\MAT.SQLRace.CreateSessionWithMultipleParameters.csproj", "{87B98171-87C4-4BF4-AEB9-EB4B7927A66E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.BaseExampleLoadSSN", "MAT.SQLRace.BaseExampleLoadSSN\MAT.SQLRace.BaseExampleLoadSSN.csproj", "{31E31856-1ACA-4034-9204-36789E6DDF2D}"
@@ -102,18 +100,6 @@ Global
 		{4CBB924C-6346-4C08-B1C8-AB5EA2900348}.Release|x64.Build.0 = Release|Any CPU
 		{4CBB924C-6346-4C08-B1C8-AB5EA2900348}.Release|x86.ActiveCfg = Release|Any CPU
 		{4CBB924C-6346-4C08-B1C8-AB5EA2900348}.Release|x86.Build.0 = Release|Any CPU
-		{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}.Debug|x64.Build.0 = Debug|Any CPU
-		{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}.Debug|x86.Build.0 = Debug|Any CPU
-		{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}.Release|x64.ActiveCfg = Release|Any CPU
-		{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}.Release|x64.Build.0 = Release|Any CPU
-		{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}.Release|x86.ActiveCfg = Release|Any CPU
-		{5FF97A82-A86D-4C72-AC2A-65F91AE370D0}.Release|x86.Build.0 = Release|Any CPU
 		{87B98171-87C4-4BF4-AEB9-EB4B7927A66E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{87B98171-87C4-4BF4-AEB9-EB4B7927A66E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87B98171-87C4-4BF4-AEB9-EB4B7927A66E}.Debug|x64.ActiveCfg = Debug|Any CPU
