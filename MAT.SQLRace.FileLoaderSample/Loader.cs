@@ -24,7 +24,7 @@ namespace MAT.SQLRace.FileLoaderSample
     {
         private CsvAdapter csvAdapter;
 
-        private const uint UnrestrictedOwnerId = 0xFFFF;
+        private const uint OwnerId = 0xABCD;
         private const string GroupName = "CsvParameters";
 
         public event EventHandler<FileSessionConfigurationAvailableEventArgs> OnFileSessionConfigurationAvailableEvent;
@@ -135,7 +135,7 @@ namespace MAT.SQLRace.FileLoaderSample
                 Laps = this.csvAdapter.Laps,
                 StartTime = this.csvAdapter.StartTime,
                 TimeOfRecording = this.csvAdapter.TimeOfRecording,
-                OwnerId = UnrestrictedOwnerId,
+                OwnerId = OwnerId,
                 Constants = Enumerable.Empty<Constant>(), // to implement if needed
                 SessionDataItems = Enumerable.Empty<SessionDataItem>(), // to implement if needed
             };
