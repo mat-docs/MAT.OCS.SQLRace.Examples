@@ -173,12 +173,12 @@ def set_cursor(keys, connection_strings, timestamp):
     def client_connected(client_name):
         # event handler for OnClientConnected
         print('\nATLAS Client connected.')
-        print(f'ATLAS version: {app.GetVersion()}')
         connect.release()
 
     app.OnClientConnected += client_connected
     app.Connect(Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName));
-    
+    print(f'ATLAS version: {app.GetVersion()}')
+
     # Wait until client is connected. The next line cannot run until connect is released by the handeler function.
     connect.acquire()
     connect.release()
