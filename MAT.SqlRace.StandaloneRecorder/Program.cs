@@ -27,6 +27,8 @@ namespace MAT.SqlRace.StandaloneRecorder
         // The ADS Host:Name
         private const string RecorderDataServer = "M801338:Default";
 
+        private static string sqlConnectionString;
+
         private static DataServerTelemetryRecorder recorder;
         private static RecorderState recordingState;
 
@@ -37,7 +39,7 @@ namespace MAT.SqlRace.StandaloneRecorder
                 var dbEngine = "SQLite";
                 var dataSource = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
                                  @"\McLaren Applied Technologies\ATLAS 10\SQL Race\LiveSessionCache.ssn2";
-                var sqlConnString = $@"DbEngine={dbEngine};Data Source={dataSource};";
+                sqlConnectionString = $@"DbEngine={dbEngine};Data Source={dataSource};";
 
                 Core.Initialize();
                 var sessionManager = SessionManager.CreateSessionManager();
@@ -54,7 +56,7 @@ namespace MAT.SqlRace.StandaloneRecorder
                 recorder = Recorders.CreateDataServerTelemetryRecorder();
                 recorder.SetSessionIdentifier("%y%m%d%H%M%S");
                 recorder.OnStatusChanged += recorder_OnStatusChanged;
-                recorder.SetSQLRaceConnection(Guid.NewGuid(), dbEngine, dataSource, sqlConnString, sqlConnString, false);
+                recorder.SetSQLRaceConnection(Guid.NewGuid(), dbEngine, dataSource, sqlConnectionString, sqlConnectionString, false);
 
                 Console.WriteLine("Getting Available Server List");
                 recorder.RefreshServerList();
@@ -96,45 +98,47 @@ namespace MAT.SqlRace.StandaloneRecorder
                 {
                     var sessionManager = SessionManager.CreateSessionManager();
 
-                    var session = sessionManager.GetActiveSessions(x => x.Key == sessionKey)
-                        .FirstOrDefault()
-                        .Value;
-
-                    var mrs = new ManualResetEvent(false);
-                    session.RdaParametersChanged += (sender, args) =>
+                    var sessionSummary = sessionManager.FindSummaryBy(sessionKey, sqlConnectionString);
+                    using (var clientSession = sessionManager.Load(sessionSummary.Key, sessionSummary.GetConnectionString()))
                     {
-                        Console.WriteLine($"Parameter number is {session.Parameters.Count}");
-                        if (session.ContainsParameter("vCar:Chassis"))
+                        var session = clientSession.Session;
+
+                        var mrs = new ManualResetEvent(false);
+                        session.RdaParametersChanged += (sender, args) =>
                         {
-                            mrs.Set();
-                        }
-                    };
-
-                    // wait for the configuration to be processed
-                    mrs.WaitOne();
-
-                    var parameter = SessionHelper.CreateSessionConfigurationForOneParameter(session);
-
-                    // pulls vCar data out every 2 seconds
-                    try
-                    {
-                        using (var pda = session.CreateParameterDataAccess("vCar:Chassis"))
-                        {
-                            using (var pdaNewParameter = session.CreateParameterDataAccess(parameter.Identifier))
+                            Console.WriteLine($"Parameter number is {session.Parameters.Count}");
+                            if (session.ContainsParameter("vCar:Chassis"))
                             {
-                                while (true)
-                                {
-                                    var samples = ReadData(session, pda);
-                                    WriteData(session, parameter, pdaNewParameter, samples);
+                                mrs.Set();
+                            }
+                        };
 
-                                    Thread.Sleep(2000);
+                        // wait for the configuration to be processed
+                        mrs.WaitOne();
+
+                        var parameter = SessionHelper.CreateSessionConfigurationForOneParameter(session);
+
+                        // pulls vCar data out every 2 seconds
+                        try
+                        {
+                            using (var pda = session.CreateParameterDataAccess("vCar:Chassis"))
+                            {
+                                using (var pdaNewParameter = session.CreateParameterDataAccess(parameter.Identifier))
+                                {
+                                    while (true)
+                                    {
+                                        var samples = ReadData(session, pda);
+                                        WriteData(session, parameter, pdaNewParameter, samples);
+
+                                        Thread.Sleep(2000);
+                                    }
                                 }
                             }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error occurred" + ex.Message);
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error occurred" + ex.Message);
+                        }
                     }
                 });
         }
