@@ -15,7 +15,7 @@ sql_race_dll_path = r"C:\Program Files\McLaren Applied Technologies\ATLAS 10\MES
 automation_api_dll_path = r"C:\Program Files\McLaren Applied Technologies\ATLAS 10\MAT.Atlas.Automation.Api.dll"
 automation_client_dll_path = r"C:\Program Files\McLaren Applied Technologies\ATLAS 10\MAT.Atlas.Automation.Client.dll"
 # The connection string to the database containing our sessions
-connection_string = r"Server=MCLA-F8ZLSQ3\LOCAL;Initial Catalog=SQLRACE01_LOCAL;Trusted_Connection=True;"
+connection_string = r"Server=CLU-LDF01\LOCAL;Initial Catalog=SQLRACE01_2019;Trusted_Connection=True;"
 
 # Configure Pythonnet and reference the required assemblies for dotnet and SQL Race
 clr.AddReference("System.Collections")
