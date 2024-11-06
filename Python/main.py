@@ -1,8 +1,13 @@
 import os
 import time
-import clr # Pythonnet
 import subprocess
 import threading
+
+from pythonnet import load
+
+load("coreclr", runtime_config=r"C:\Program Files\McLaren Applied Technologies\ATLAS 10\MAT.Atlas.Host.runtimeconfig.json")
+
+import clr # Pythonnet
 
 # The path to the main SQL Race DLL. This is the default location when installed with Atlas 10
 sql_race_dll_path = r"C:\Program Files\McLaren Applied Technologies\ATLAS 10\MESL.SqlRace.Domain.dll"
