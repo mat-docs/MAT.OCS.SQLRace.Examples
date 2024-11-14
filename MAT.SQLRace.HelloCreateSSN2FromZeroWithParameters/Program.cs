@@ -34,7 +34,7 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
         static void Main(string[] args)
         {
             // TODO: Change the location to where do you want the session to be created
-            const string connectionString = @"DbEngine=SQLite;Data Source=c:\ssn2\test01.ssn2;";
+            const string connectionString = @"DbEngine=SQLite;Data Source=C:\temp\MyTestSession.ssn2;";
 
             Console.WriteLine("Initializing SQL Race....");
             Console.WriteLine(Directory.GetCurrentDirectory());
@@ -42,30 +42,22 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
             Core.Initialize();
 
             Console.WriteLine("SQLRace has been initialized correctly");
+
             // Setting up the components of a session
             var sessionKey = SessionKey.NewKey();
             var sessionName = "MyTestSession";
             var clientSession = CreateSession(sessionKey, connectionString, sessionName, DateTime.Now, "Session");
+
             // Adding a channel with some samples
             clientSession = CreateParameter(clientSession, 1000);
 
             //// Adding 1 lap to the example
             clientSession.Session.LapCollection.Add(new Lap(DateTime.Now.TimeOfDay.ToNanoseconds() - 1000000, 1, byte.MinValue, "Lap1", true));
 
-            // Closing the session before exporting.
+            // Closing the session.
             clientSession.Close();
 
-            // A session cannot be exported if it is open.
-            // TODO: Change the target and path to session variables
-            var targetDirectory = @"C:\ssn2\Exported";
-            var pathToSession = @"C:\ssn2\test01.ssn2";
-            WriteToSSN2FromSQLLite(sessionKey.ToString(), pathToSession, targetDirectory);
-
-            // As a reminder:
-            // Before exporting the session it has to be closed
-            // You can add as many params as you want by using the code present in SessionHelper.cs
-            // Don't forget to install SQLRaceAPI package.
-            // Don't forget to compile for .NET Framework 4.8 and x64 systems.
+            Console.WriteLine("Finished!..");
         }
 
         public static IClientSession CreateSession(SessionKey sessionKey, string connectionString, string sessionName, DateTime dateOfRecording, string sessionType)
@@ -101,16 +93,5 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
 
             return clientSession;
         }
-
-        public static void WriteToSSN2FromSQLLite(string sessionKey, string pathToSession, string targetDirectory)
-        {
-            var sqliteExporter = new Ssn2SessionExporter();
-
-            sqliteExporter.Export(
-                 sessionKey,
-                 pathToSession,
-                 targetDirectory);
-        }
-
     }
 }
