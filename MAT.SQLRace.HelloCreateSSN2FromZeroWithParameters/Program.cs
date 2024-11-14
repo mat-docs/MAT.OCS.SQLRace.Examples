@@ -39,7 +39,7 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
             // TODO: Change the location to where do you want the session to be created
             const string fileFullPath = "C:\\temp\\MyTestSession.ssn2";
 
-            string connectionString = @"DbEngine=SQLite;Data Source={fileFullPath};";
+            string connectionString = $"DbEngine=SQLite;Data Source={fileFullPath};";
 
             // new requirement in #86540:  
             // We should check whether the file exists before the SSN2 file is created.
