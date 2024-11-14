@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Google.Protobuf.Collections;
+using System.Runtime.Intrinsics.X86;
+using System.Windows.Shapes;
 using MAT.OCS.Core;
 using MAT.SqlRace.Ssn2Splitter;
 using MESL.SqlRace.Common.Extensions;
@@ -34,7 +37,20 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
         static void Main(string[] args)
         {
             // TODO: Change the location to where do you want the session to be created
-            const string connectionString = @"DbEngine=SQLite;Data Source=C:\temp\MyTestSession.ssn2;";
+            const string fileFullPath = "C:\\temp\\MyTestSession.ssn2";
+
+            string connectionString = @"DbEngine=SQLite;Data Source={fileFullPath};";
+
+            // new requirement in #86540:  
+            // We should check whether the file exists before the SSN2 file is created.
+            // If it does exist then display the following message: "The file <path to SSN2 file including filename> already exists" and do not continue with the file/session creation - this is to prevent multiple sessions being added to the same SSN2 file/database.
+
+            if (File.Exists(fileFullPath))
+            {
+                Console.WriteLine($"The file \'{fileFullPath}\' already exists");
+                Console.WriteLine("Finished!..");
+                return;
+            }
 
             Console.WriteLine("Initializing SQL Race....");
             Console.WriteLine(Directory.GetCurrentDirectory());
