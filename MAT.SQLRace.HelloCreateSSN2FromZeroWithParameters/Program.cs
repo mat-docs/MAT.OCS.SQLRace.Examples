@@ -41,10 +41,6 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
 
             string connectionString = $"DbEngine=SQLite;Data Source={fileFullPath};";
 
-            // new requirement in #86540:  
-            // We should check whether the file exists before the SSN2 file is created.
-            // If it does exist then display the following message: "The file <path to SSN2 file including filename> already exists" and do not continue with the file/session creation - this is to prevent multiple sessions being added to the same SSN2 file/database.
-
             if (File.Exists(fileFullPath))
             {
                 Console.WriteLine($"The file \'{fileFullPath}\' already exists");
