@@ -6,6 +6,7 @@ using MAT.OCS.Core;
 using MAT.SqlRace.Ssn2Splitter;
 using MESL.SqlRace.Common.Extensions;
 using MESL.SqlRace.Domain;
+using MESL.SqlRace.Matlab;
 
 namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
 {
@@ -50,14 +51,20 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
             // Adding a channel with some samples
             clientSession = CreateParameter(clientSession, 1000);
 
-            // Adding 1 lap to the example
+            // Add Laps
+            var random = new Random();
             long startTime = SessionHelper.ConvertDateTimeToNanoseconds(DateTime.Now);
             var time = 20000000000;
-            var timeStamp = startTime / 100;
-            timeStamp += time + 500;
+            var timeStamp = startTime;
 
-            var newLap = new Lap(timeStamp, 1, byte.MinValue, "Lap1", true);
-            clientSession.Session.LapCollection.Add(newLap);
+            for (var i = 0; i < 5; i++)
+            {
+                timeStamp += time + (i * 100000000 * random.Next(1, 500));
+
+                var newLap = new Lap(timeStamp, Convert.ToInt16(i + 1), byte.MinValue, string.Format("Lap{0}", i + 1), true);
+                clientSession.Session.LapCollection.Add(newLap);
+            }
+
 
             // Closing the session before exporting.
             clientSession.Close();
@@ -67,7 +74,7 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
 
         public static IClientSession CreateSession(SessionKey sessionKey, string connectionString, string sessionName, DateTime dateOfRecording, string sessionType)
         {
-            var sessionManager = SessionManager.CreateSessionManager();
+            var sessionManager = MESL.SqlRace.Domain.SessionManager.CreateSessionManager();
             return sessionManager.CreateSession(connectionString, sessionKey, sessionName, dateOfRecording, sessionType);
 
         }
