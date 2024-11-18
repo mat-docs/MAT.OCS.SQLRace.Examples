@@ -35,9 +35,7 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
         {
             // TODO: Change the location to where do you want the session to be created
             //const string connectionString = @"Data Source=atlas-sr-scratch;Initial Catalog=MK_SQLRACE01;Integrated Security=True";
-            //const string connectionString = @"DbEngine=SQLite;Data Source=c:\ssn2\test01.ssn2;";
-            //const string connectionString = @"DbEngine=SQLite;Data Source=D:\Atlas Data\ssn2\new\test01.ssn2;";
-            const string connectionString = @"DbEngine=SqLite;Data Source=D:\Atlas Data\ssn2\new\test02.ssn2;";
+            const string connectionString = @"DbEngine=SQLite;Data Source=c:\temp\MyTestSession.ssn2;";
 
             Console.WriteLine("Initializing SQL Race....");
             Console.WriteLine(Directory.GetCurrentDirectory());
@@ -52,28 +50,17 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
             // Adding a channel with some samples
             clientSession = CreateParameter(clientSession, 1000);
 
-            //// Adding 1 lap to the example
-            long startTime = 508500000000;
-                //SessionHelper.ConvertDateTimeToNanoseconds(DateTime.Now);
-            //long endTime = SessionHelper.ConvertDateTimeToNanoseconds(DateTime.Now.AddMinutes(2));
+            // Adding 1 lap to the example
+            long startTime = SessionHelper.ConvertDateTimeToNanoseconds(DateTime.Now);
+            var time = 20000000000;
+            var timeStamp = startTime / 100;
+            timeStamp += time + 500;
 
-            var newLap = new Lap(startTime, 1, byte.MinValue, "Lap1", true);
+            var newLap = new Lap(timeStamp, 1, byte.MinValue, "Lap1", true);
             clientSession.Session.LapCollection.Add(newLap);
 
             // Closing the session before exporting.
             clientSession.Close();
-
-            // A session cannot be exported if it is open.
-            // TODO: Change the target and path to session variables
-            var targetDirectory = @"D:\Atlas Data\ssn2\new\Exported";
-            var pathToSession = @"D:\Atlas Data\ssn2\new\test02.ssn2";
-            WriteToSSN2FromSQLLite(sessionKey.ToString(), pathToSession, targetDirectory);
-
-            // As a reminder:
-            // Before exporting the session it has to be closed
-            // You can add as many params as you want by using the code present in SessionHelper.cs
-            // Don't forget to install SQLRaceAPI package.
-            // Don't forget to compile for .NET Framework 4.8 and x64 systems.
 
             Console.WriteLine("Finished.");
         }
@@ -111,16 +98,5 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
 
             return clientSession;
         }
-
-        public static void WriteToSSN2FromSQLLite(string sessionKey, string pathToSession, string targetDirectory)
-        {
-            var sqliteExporter = new Ssn2SessionExporter();
-
-            sqliteExporter.Export(
-                 sessionKey,
-                 pathToSession,
-                 targetDirectory);
-        }
-
     }
 }
