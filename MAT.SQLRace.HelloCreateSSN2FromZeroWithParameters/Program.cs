@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using MAT.OCS.Core;
-using MAT.SqlRace.Ssn2Splitter;
 using MESL.SqlRace.Common.Extensions;
 using MESL.SqlRace.Domain;
-using MESL.SqlRace.Matlab;
 
 namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
 {
@@ -35,7 +34,6 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
         static void Main(string[] args)
         {
             // TODO: Change the location to where do you want the session to be created
-            //const string connectionString = @"Data Source=atlas-sr-scratch;Initial Catalog=MK_SQLRACE01;Integrated Security=True";
             const string connectionString = @"DbEngine=SQLite;Data Source=c:\temp\MyTestSession.ssn2;";
 
             Console.WriteLine("Initializing SQL Race....");
@@ -44,27 +42,56 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
             Core.Initialize();
 
             Console.WriteLine("SQLRace has been initialized correctly");
-            // Setting up the components of a session
+
+            // Creating a Session
+            var dateTimeNow = DateTime.Now;
+            var endDateTime = dateTimeNow.AddMinutes(5);
+
+            var timeToday = dateTimeNow - DateTime.Today;
+            var endTimeToday = endDateTime - DateTime.Today;
+
+            long startTime = timeToday.ToNanoseconds();
+            long endTime = endTimeToday.ToNanoseconds(); ;
+
+            // This is another way to get the Nanoseconds values,
+            // some people may find it to be more explicit and illustrative.
+            //
+            //long startTime = SessionHelper.ConvertDateTimeToNanoseconds(dateTimeNow);
+            //long endTime = SessionHelper.ConvertDateTimeToNanoseconds(endDateTime);
+
+            string sessionDescription = string.Format("Example::: {0}", dateTimeNow.ToString("dd-MMM-yy hh:mm:ss tt"));
+
             var sessionKey = SessionKey.NewKey();
             var sessionName = "MyTestSession";
-            var clientSession = CreateSession(sessionKey, connectionString, sessionName, DateTime.Now, "Session");
+
+            // Create a session first
+            var clientSession = CreateSession(sessionKey, connectionString, sessionName, dateTimeNow, "Session");
+
+            var session = clientSession.Session;
+
+            // Add some session details which allows values as String, Long, Double, Bool, Datetime, Byte[] etc.
+            session.Items.Add(new SessionDataItem("Driver Name", "Test Driver"));
+            session.Items.Add(new SessionDataItem("Car", "Test Cat"));
+
+            // Setting up the components of a session
+            var random = new Random();
+
             // Adding a channel with some samples
-            clientSession = CreateParameter(clientSession, 1000);
+            var numSamples = 1000;
+            clientSession = CreateParameter(clientSession, 1000, startTime, endTime);
 
             // Add Laps
-            var random = new Random();
-            long startTime = SessionHelper.ConvertDateTimeToNanoseconds(DateTime.Now);
-            var time = 20000000000;
+            var lapNumber = 5;
+            var lapTimeDelta = (endTime - startTime) / (lapNumber + 1);
             var timeStamp = startTime;
 
             for (var i = 0; i < 5; i++)
             {
-                timeStamp += time + (i * 100000000 * random.Next(1, 500));
+                timeStamp += lapTimeDelta;
 
                 var newLap = new Lap(timeStamp, Convert.ToInt16(i + 1), byte.MinValue, string.Format("Lap{0}", i + 1), true);
                 clientSession.Session.LapCollection.Add(newLap);
             }
-
 
             // Closing the session before exporting.
             clientSession.Close();
@@ -79,7 +106,7 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
 
         }
 
-        public static IClientSession CreateParameter(IClientSession clientSession, int numSamples)
+        public static IClientSession CreateParameter(IClientSession clientSession, int numSamples, long startTime, long endTime)
         {
             //Creating the parameter object that will be populated
             var parameter = SessionHelper.CreateSessionConfigurationForOneParameter(clientSession);
@@ -88,10 +115,17 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
             var sampleData = new List<double>(numSamples);
             var sampleTimeStamps = new List<long>(numSamples);
             var random = new Random(42);
+
+            var currentTime = startTime;
+            var timeDelta = (endTime - startTime) / numSamples;
+
             for (int i = 0; i < numSamples; i++)
             {
                 sampleData.Add(random.NextDouble());
-                sampleTimeStamps.Add(10.SecondsToNanoseconds() + i * parameter.Channels[0].Interval);
+
+                sampleTimeStamps.Add(currentTime);
+
+                currentTime += timeDelta;
             }
 
             // Adding the samples to the parameter inside the session
