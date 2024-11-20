@@ -71,11 +71,9 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
 
             // Add some session details which allows values as String, Long, Double, Bool, Datetime, Byte[] etc.
             session.Items.Add(new SessionDataItem("Driver Name", "Test Driver"));
-            session.Items.Add(new SessionDataItem("Car", "Test Cat"));
+            session.Items.Add(new SessionDataItem("Car", "Test Car"));
 
             // Setting up the components of a session
-            var random = new Random();
-
             // Adding a channel with some samples
             var numSamples = 1000;
             clientSession = CreateParameter(clientSession, 1000, startTime, endTime);
