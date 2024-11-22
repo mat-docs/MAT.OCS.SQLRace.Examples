@@ -51,7 +51,7 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
             var endTimeToday = endDateTime - DateTime.Today;
 
             long startTime = timeToday.ToNanoseconds();
-            long endTime = endTimeToday.ToNanoseconds(); ;
+            long endTime = endTimeToday.ToNanoseconds();
 
             // This is another way to get the Nanoseconds values,
             // some people may find it to be more explicit and illustrative.
@@ -70,7 +70,7 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
             var session = clientSession.Session;
 
             // Add some session details which allows values as String, Long, Double, Bool, Datetime, Byte[] etc.
-            session.Items.Add(new SessionDataItem("Driver Name", "Test Driver"));
+            session.Items.Add(new SessionDataItem("Driver", "Test Driver"));
             session.Items.Add(new SessionDataItem("Car", "Test Car"));
 
             // Setting up the components of a session
@@ -85,9 +85,10 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
 
             for (var i = 0; i < 5; i++)
             {
-                timeStamp += lapTimeDelta;
+                if (i > 0)
+                    timeStamp += lapTimeDelta;
 
-                var newLap = new Lap(timeStamp, Convert.ToInt16(i + 1), byte.MinValue, string.Format("Lap{0}", i + 1), true);
+                var newLap = new Lap(timeStamp, Convert.ToInt16(i + 1), byte.MinValue, string.Format("Lap {0}", i + 1), true);
                 clientSession.Session.LapCollection.Add(newLap);
             }
 
