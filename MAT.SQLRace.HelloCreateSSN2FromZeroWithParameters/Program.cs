@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Google.Protobuf.Collections;
-using System.Runtime.Intrinsics.X86;
-using System.Windows.Shapes;
 using MAT.OCS.Core;
-using MAT.SqlRace.Ssn2Splitter;
 using MESL.SqlRace.Common.Extensions;
 using MESL.SqlRace.Domain;
 
