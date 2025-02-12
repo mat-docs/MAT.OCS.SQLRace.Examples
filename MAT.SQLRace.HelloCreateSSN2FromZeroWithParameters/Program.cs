@@ -34,6 +34,15 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
         static void Main(string[] args)
         {
             // TODO: Change the location to where do you want the session to be created
+            const string fileFullPath = "C:\\temp\\MyTestSession.ssn2";
+
+            if (File.Exists(fileFullPath))
+            {
+                Console.WriteLine($"The file \'{fileFullPath}\' already exists");
+                Console.WriteLine("Finished!..");
+                return;
+            }
+
             const string connectionString = @"DbEngine=SQLite;Data Source=c:\temp\MyTestSession.ssn2;";
 
             Console.WriteLine("Initializing SQL Race....");
