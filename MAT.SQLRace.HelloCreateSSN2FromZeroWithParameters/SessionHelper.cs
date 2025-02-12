@@ -2,6 +2,7 @@
 // Copyright (c) McLaren Applied Technologies Ltd.</copyright>
 
 
+using System;
 using System.Collections.Generic;
 
 using MESL.SqlRace.Domain;
@@ -155,6 +156,21 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
             config.Commit();
 
             return myParameter;
+        }
+
+        /// <summary>
+        /// Converts a DateTime to nanoseconds
+        /// </summary>
+        /// <param name="time">DateTime object</param>
+        /// <returns>Time in nanoseconds</returns>
+        public static long ConvertDateTimeToNanoseconds(DateTime time)
+        {
+            int hours = time.Hour * 3600000;
+            int minutes = time.Minute * 60000;
+            int seconds = time.Second * 1000;
+            int milliseconds = time.Millisecond;
+            string nanosecondString = Convert.ToString(milliseconds + seconds + minutes + hours) + "000000";
+            return Convert.ToInt64(nanosecondString);
         }
     }
 }
