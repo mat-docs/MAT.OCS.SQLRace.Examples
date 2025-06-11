@@ -75,6 +75,7 @@ namespace MAT.SQLRace.HelloData
             //GetSessionSummaryBySessionGUID();
             //LoadLiveFunction();
             //WholeSessionsCompareMode();
+            //TestMaxAndMinSampleIntervals();
 
             Console.WriteLine("Press ENTER key to close.");
             Console.ReadLine();
@@ -230,6 +231,34 @@ namespace MAT.SQLRace.HelloData
             //session.AssociateWithParent(/*Parent session key*/);
 
             clientSession.Close();
+        }
+
+        private static void TestMaxAndMinSampleIntervals()
+        {
+            ConnectionString = $@"DbEngine=SQLite;Data Source=c:\ssn2\test01.ssn2;";
+
+            var sessionManager = SessionManager.CreateSessionManager();
+
+            var clientSession = sessionManager.CreateSession(
+                ConnectionString,
+                SessionKey.NewKey(),
+                "Add data session test",
+                DateTime.Now,
+                "Session");
+
+            Console.WriteLine($"Creating session");
+            var parameter = SessionHelper.CreateSessionConfigurationForOneParameterWithMultipleChannels(clientSession);
+
+            var session = clientSession.Session;
+
+            using (var pda = clientSession.Session.CreateParameterDataAccess(parameter.Identifier))
+            {
+                var minimumSampleInterval = pda.GetMinimumSampleInterval(0, false);
+                Console.WriteLine("Minimum sample interval in nanoseconds:" + minimumSampleInterval);
+
+                var maximumSampleInterval = pda.GetMaximumSampleInterval(0, false);
+                Console.WriteLine("Maximum sample interval in nanoseconds:" + maximumSampleInterval);
+            }
         }
 
         private static long[] CreateTimestamps(long startTime, int numberOfTimestamps, long interval)

@@ -157,6 +157,90 @@ namespace MAT.SQLRace.HelloData
             return myParameter;
         }
 
+        public static Parameter CreateSessionConfigurationForOneParameterWithMultipleChannels(IClientSession clientSession)
+        {
+            const string ConversionFunctionName = "CONV_MyParam:MyApp";
+            const string ApplicationGroupName = "MyApp";
+            const string ParameterGroupIdentifier = "MyParamGroup";
+            const string ParameterName = "MyParam";
+            const int ApplicationId = 998;
+            var parameterIdentifier = $"{ParameterName}:{ApplicationGroupName}";
+
+            var paramChannelIds = new List<uint>() { 925431, 985439, 886634 };
+            var randomFrequenciesList = new List<double> { 200, 100, 500 };
+
+            var session = clientSession.Session;
+
+            var config = session.CreateConfiguration();
+
+            var paramGroup = new ParameterGroup(ParameterGroupIdentifier, "pg_description");
+
+            var applicationGroup = new ApplicationGroup(
+                ApplicationGroupName,
+                ApplicationGroupName,
+                ApplicationId,
+                new List<string>
+                {
+                    paramGroup.Identifier
+                })
+            {
+                SupportsRda = false
+            };
+
+            config.AddGroup(applicationGroup);
+            config.AddParameterGroup(paramGroup);
+
+            config.AddConversion(
+                new RationalConversion(ConversionFunctionName, "kph", "%5.2f", 0.0, 1.0, 0.0, 0.0, 0.0, 1.0));
+
+            var parameterChannel1 = new Channel(
+                paramChannelIds[0],
+                "paramChannel1",
+                new Frequency(randomFrequenciesList[0], FrequencyUnit.Hz).ToInterval(),
+                DataType.Signed16Bit,
+                ChannelDataSourceType.Periodic);
+
+            var parameterChannel2 = new Channel(
+                paramChannelIds[1],
+                "paramChannel2",
+                new Frequency(randomFrequenciesList[1], FrequencyUnit.Hz).ToInterval(),
+                DataType.Signed16Bit,
+                ChannelDataSourceType.Periodic);
+
+            var parameterChannel3 = new Channel(
+                paramChannelIds[2],
+                "paramChannel3",
+                new Frequency(randomFrequenciesList[2], FrequencyUnit.Hz).ToInterval(),
+                DataType.Signed16Bit,
+                ChannelDataSourceType.Periodic);
+
+            var myParameter = new Parameter(
+                parameterIdentifier,
+                ParameterName,
+                ParameterName + "Description",
+                400,
+                0,
+                1,
+                0,
+                0,
+                0xFFFF,
+                0,
+                ConversionFunctionName,
+                new List<string>
+                {
+                    ParameterGroupIdentifier
+                },
+                paramChannelIds,
+                ApplicationGroupName);
+
+            config.AddChannels(new List<IChannel>{parameterChannel1, parameterChannel2, parameterChannel3});
+            config.AddParameter(myParameter);
+
+            config.Commit();
+
+            return myParameter;
+        }
+
         public static Parameter CreateTransientConfigurationForOneParameter(IClientSession clientSession)
         {
             const string ConversionFunctionName = "CONV_MyParam:MyApp";
