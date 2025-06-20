@@ -32,6 +32,10 @@ namespace MAT.SqlRace.ServerListenerLive
 
         public static void Main(string[] args)
         {
+            // Some clients writing a client site of using SQL Race Api may found this validation step handy, 
+            // and the step is based on the basic calls as defined in System.Net.
+            // However, stricktly speaking it is not necesary here from point of view of how to use the SQL Race Api. 
+            //
             if (!IsPortInUse(ServerListenerPortNumber))
             {
                 Console.WriteLine($"Could not establish tcp connection on Port {ServerListenerPortNumber}.");
@@ -48,7 +52,14 @@ namespace MAT.SqlRace.ServerListenerLive
 
             Console.WriteLine("Setting up Server Listener Instance\r\n");
 
-            Core.ConfigureServer(true, new IPEndPoint(IPAddress.Parse(ServerListenerIpAddress), ServerListenerPortNumber));
+        // This will start MESL.SqlRace.Domain.Remoting.Server's server of IServerListener type.
+        //
+        Core.ConfigureServer(true, 
+                                 new IPEndPoint(
+                                                IPAddress.Parse(ServerListenerIpAddress), 
+                                                ServerListenerPortNumber
+                                               )
+                                );
 
             var connectionString = GetSqlRaceConnectionString(DbName);
 
@@ -75,8 +86,6 @@ namespace MAT.SqlRace.ServerListenerLive
 
             while (ss.State == SessionState.Live)
             {
-                connectionString = GetSqlRaceConnectionString(DbName);
-
                 ss = GetMostRecentLiveSession(connectionString);
 
                 if (ss == null)
@@ -127,6 +136,7 @@ namespace MAT.SqlRace.ServerListenerLive
         private static string GetSqlRaceConnectionString(string connectionFriendlyName)
         {
             var connectionManager = new DatabaseConnectionManager();
+
             var databaseConnection = connectionManager.GetDatabaseConnections()
                 .FirstOrDefault(c => c.FriendlyName == connectionFriendlyName);
             var connectionString = databaseConnection?.GetConnectionString();
