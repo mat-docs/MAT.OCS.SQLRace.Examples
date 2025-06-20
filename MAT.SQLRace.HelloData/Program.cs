@@ -27,17 +27,16 @@ namespace MAT.SQLRace.HelloData
     {
         public static string ConnectionString;
         //a337e5f0-72fe-4691-8627-e45530ff5012
-        public const string DbName = "MK_SQLRACE01_Local"; // MK_SQLRACE02_on_C        MK_SQLRACE01_Local
 
         private static void Main(string[] args)
         {
             //SQLServer style connection string
-            ConnectionString = @"DbEngine=SQLServer;Data Source=MCLA-2DSBLR3;Initial Catalog={DbName};Integrated Security=True";
+            //ConnectionString = @"Data Source=MAT-TWFIASQL02\LOCALSERVER1;Initial Catalog=SQLRACE_DEV1;Integrated Security=True";  
 
             //SQLite style connection string
-            //ConnectionString = $@"DbEngine=SQLite;Data Source={
-            //        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-            //    }\McLaren Applied Technologies\ATLAS 10\SQL Race\LiveSessionCache.ssn2;";
+            ConnectionString = $@"DbEngine=SQLite;Data Source={
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+                }\McLaren Applied Technologies\ATLAS 10\SQL Race\LiveSessionCache.ssn2;";
 
             //SQLite ssn style connection string
             //ConnectionString = $@"DbEngine=SQLite;Data Source={
@@ -68,11 +67,11 @@ namespace MAT.SQLRace.HelloData
 
             //LoadSSNWithAssociatedMerge();
             //AddEvents();
-            LoadLiveSessionAndWaitForLapEvents();
+            //LoadLiveSessionAndWaitForLapEvents();
             //LoadLiveSessionAndWaitForEvents();
             //LoadLiveSamples();
             //AddAndProcessMarkers();
-            //LoadSSN();
+            LoadSSN();
             //GetSessionSummaryBySessionGUID();
             //LoadLiveFunction();
             //WholeSessionsCompareMode();
@@ -327,7 +326,9 @@ namespace MAT.SQLRace.HelloData
         /// </summary>
         private static async void LoadLiveSessionAndWaitForLapEvents()
         {
-            var connectionString = GetSqlRaceConnectionString(DbName);
+            const string connectionFriendlyName = "<REPLACE WITH A KNOWN DATABASE>";
+
+            var connectionString = GetSqlRaceConnectionString(connectionFriendlyName);
 
             var ss = GetMostRecentLiveSession(connectionString);
 
@@ -339,48 +340,17 @@ namespace MAT.SQLRace.HelloData
 
             Console.WriteLine($"Loading session {ss.Identifier}");
 
-            var clientSession = LoadSession(ss.Key, connectionString);
-            
+            var clientSession = LoadSession(ss.Key, ss.GetConnectionString());
             clientSession.Session.LoadConfiguration();
             var session = clientSession.Session;
 
             // listen to laps added events
-            session.LapStarted += OnLapStarted;
-            session.LapCompleted += OnLapCompleted;
-
-            // listen to laps added events
-            session.EventDataAdded += Session_EventDataAdded;
-
+            session.LapStarted += Session_LapStarted;
 
             // wait events without blocking the main thread
-            //await Task.Delay(TimeSpan.FromHours(1));
+            await Task.Delay(TimeSpan.FromHours(1));
 
-            while (session.State == SessionState.LiveNotInServer)           // Live
-            {
-                connectionString = GetSqlRaceConnectionString(DbName);
-
-                ss = GetMostRecentLiveSession(connectionString);
-
-                if (ss == null)
-                {
-                    Console.WriteLine("No live session found");
-                    return;
-                }
-
-                clientSession = LoadSession(ss.Key, connectionString);
-                clientSession.Session.LoadConfiguration();
-                session = clientSession.Session;
-
-                Console.WriteLine($"Loading session {ss.Identifier}");
-                Console.WriteLine($"Time: {DateTime.Now.ToLocalTime()}, Laps count: {ss.Laps.Count}");
-
-                foreach (var lap in ss.Laps.OrderBy(x => x.LapId))
-                {
-                    Console.WriteLine($"LapId: {lap.LapId}, Number: {lap.Number}, lap Name: {lap.Name}, StartTime: {lap.StartTime}, EndTime: {lap.EndTime}, LapTime: {lap.LapTime}, TimeRange: {lap.TimeRange}, TriggerSource: {lap.TriggerSource}");        // , CountForFastestLap: {lap.CountForFastestLap}
-                }
-
-                Thread.Sleep(30000);
-            }
+            Console.WriteLine();
         }
 
         public static void QueryByDataItem()
@@ -447,20 +417,12 @@ namespace MAT.SQLRace.HelloData
 
         private static SessionSummary GetMostRecentLiveSession(string connectionString)
         {
-            using (var qm = QueryManager.CreateQueryManager(connectionString))
-            {
-                var sessionSummaries = qm.ExecuteQuery()
-                                            .Where(x => x.State == SessionState.LiveNotInServer)       // SessionState.Live
-                                            .OrderByDescending(x => x.TimeOfRecording)
-                                            .ToList();
-                var summary = sessionSummaries.FirstOrDefault();
-                if (summary != null)
-                {
-                    return summary;
-                }
-            }
+            var qm = QueryManager.CreateQueryManager(connectionString);
 
-            return null;
+            var ss = qm.ExecuteQuery()
+                .OrderByDescending(x => x.TimeOfRecording)
+                .FirstOrDefault(y => y.State == SessionState.Live && !y.Identifier.Contains("VTS"));
+            return ss;
         }
 
         private static IClientSession LoadSession(SessionKey sessionKey, string connection)
@@ -1404,22 +1366,6 @@ namespace MAT.SQLRace.HelloData
         private static void Session_LapStarted(object sender, LapEventArgs e)
         {
             Console.WriteLine($"Lap started {e.Lap.Name}");
-        }
-
-        public static void OnLapStarted(object sender, LapEventArgs e)
-        {
-            DateTime utcDate = DateTime.UtcNow;
-            Lap lap = e.Lap;
-            string message = $@"OnLapStarted event triggered => UTC Date: {utcDate} | Name: {lap.Name} | Number: {lap.Number} | LapStart: {lap.StartTime} | LapTime: {lap.LapTime}";
-            Console.WriteLine(message);
-        }
-        public static void OnLapCompleted(object sender, LapEventArgs e)
-        {
-
-            DateTime utcDate = DateTime.UtcNow;
-            Lap lap = e.Lap;
-            string message = $@"OnLapCompleted event triggered => UTC Date: {utcDate} | Name: {lap.Name} | Number: {lap.Number} | LapStart: {lap.StartTime} | LapTime: {lap.LapTime}";
-            Console.WriteLine(message);
         }
     }
 }
