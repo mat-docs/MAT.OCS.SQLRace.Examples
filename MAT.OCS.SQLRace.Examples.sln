@@ -34,6 +34,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.LoadSessionFrom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SqlRace.ServerListener", "MAT.SqlRace.ServerListener\MAT.SqlRace.ServerListener.csproj", "{C4281449-70AD-4A9F-A5F8-A11C6E58E460}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAT.SqlRace.ServerListenerToADS", "MAT.SqlRace.ServerListenerToADS\MAT.SqlRace.ServerListenerToADS.csproj", "{DE0F1372-0717-4B83-BD17-44D79482ADFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -160,6 +162,18 @@ Global
 		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Release|x64.Build.0 = Release|Any CPU
 		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Release|x86.ActiveCfg = Release|Any CPU
 		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Release|x86.Build.0 = Release|Any CPU
+		{DE0F1372-0717-4B83-BD17-44D79482ADFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE0F1372-0717-4B83-BD17-44D79482ADFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE0F1372-0717-4B83-BD17-44D79482ADFB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DE0F1372-0717-4B83-BD17-44D79482ADFB}.Debug|x64.Build.0 = Debug|Any CPU
+		{DE0F1372-0717-4B83-BD17-44D79482ADFB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DE0F1372-0717-4B83-BD17-44D79482ADFB}.Debug|x86.Build.0 = Debug|Any CPU
+		{DE0F1372-0717-4B83-BD17-44D79482ADFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE0F1372-0717-4B83-BD17-44D79482ADFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE0F1372-0717-4B83-BD17-44D79482ADFB}.Release|x64.ActiveCfg = Release|Any CPU
+		{DE0F1372-0717-4B83-BD17-44D79482ADFB}.Release|x64.Build.0 = Release|Any CPU
+		{DE0F1372-0717-4B83-BD17-44D79482ADFB}.Release|x86.ActiveCfg = Release|Any CPU
+		{DE0F1372-0717-4B83-BD17-44D79482ADFB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
