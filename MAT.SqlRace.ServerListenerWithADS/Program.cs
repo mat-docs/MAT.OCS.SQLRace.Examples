@@ -15,7 +15,6 @@ namespace MAT.SqlRace.ServerListenerLive
     /// This class defines a console application that interacts with the SQLRace system to retrieve live telemetry data. 
     /// The program establishes a connection to a SQL Server database, configures a server listener, and identifies live sessions. 
     /// It then retrieves data for each session, specifically extracting and printing information related to laps. 
-    /// An example of a use case for this scenarion can be found in #85881 - Missing Out Lap at start of Lap 1 using SQLRace.
     /// </summary>
     internal class Program
     {
@@ -51,15 +50,6 @@ namespace MAT.SqlRace.ServerListenerLive
             Core.Initialize();
 
             Console.WriteLine("Setting up Server Listener Instance\r\n");
-
-        // This will start MESL.SqlRace.Domain.Remoting.Server's server of IServerListener type.
-        //
-        Core.ConfigureServer(true, 
-                                 new IPEndPoint(
-                                                IPAddress.Parse(ServerListenerIpAddress), 
-                                                ServerListenerPortNumber
-                                               )
-                                );
 
             var connectionString = GetSqlRaceConnectionString(DbName);
 
@@ -97,7 +87,7 @@ namespace MAT.SqlRace.ServerListenerLive
                 Console.WriteLine($"Session Identifier: {ss.Identifier}");
                 Console.WriteLine($"Time: {DateTime.Now.ToLocalTime()}, Laps count: {ss.Laps.Count}");
 
-                foreach (var lap in ss.Laps.OrderBy(x => x.LapId))
+                foreach (var lap in ss.Laps.OrderBy(x => x.StartTime))
                 {
                     Console.WriteLine($"LapId: {lap.LapId}, Number: {lap.Number}, lap Name: {lap.Name}, StartTime: {lap.StartTime}, EndTime: {lap.EndTime}, LapTime: {lap.LapTime}");
 
