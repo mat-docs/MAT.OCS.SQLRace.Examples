@@ -1,146 +1,164 @@
-﻿// <copyright file="Program.cs" company="McLaren Applied Ltd.">
-// Copyright (c) McLaren Applied Ltd.</copyright>
+﻿// <copyright file="Program.cs" company="Motion Applied Ltd.">
+// Copyright (c) Motion Applied Ltd.</copyright>
 
-using System.Net.Sockets;
+using System.Net;
 
+using MAT.OCS.Core;
 using MESL.SqlRace.Common.Extensions;
 using MESL.SqlRace.Domain;
-using MESL.SqlRace.Domain.Query;
-
 
 namespace MAT.SqlRace.ServerListenerLive
 {
     /// <summary>
-    /// This class defines a console application that interacts with the SQLRace system to retrieve live telemetry data. 
-    /// The program establishes a connection to a SQL Server database, configures a server listener, and identifies live sessions. 
-    /// It then retrieves data for each session, specifically extracting and printing information related to laps. 
+    /// Record live data to a local SqlRace (Sqlite)
+    ///
+    /// NOTE: 
+    ///     If the session is in the state LiveNotInServer, make sure Server Listener port in ATLAS is different to the one specified here. 
+    ///     Additionally, ensure UDP and TCP packets are allowed through the firewall settings on the Server Listener Port configured. 
     /// </summary>
     internal class Program
     {
         // The server listener configuration
-        #region constants
-        public static int ServerListenerPortNumber = 6565;
-        public const string ServerListenerIpAddress = "127.0.0.1";
-        public static string DataSource = "MCLA-2DSBLR3";
-        public const string DbName = "MK_SQLRACE02_on_C";           // MK_SQLRACE02_on_C        MK_SQLRACE01_Local
-        public const int TimerInterval = 20000;                     // 20 sec.
-        public static string recorderDbEngine = "SQLServer";
-        public static string ConnectionString;
-        #endregion constants
+        private const int ServerListenerPortNumber = 6566;
+        private const string ServerListenerIpAddress = "127.0.0.1";
 
         public static void Main(string[] args)
         {
-            // Some clients writing a client site of using SQL Race Api may found this validation step handy, 
-            // and the step is based on the basic calls as defined in System.Net.
-            // However, stricktly speaking it is not necesary here from point of view of how to use the SQL Race Api. 
-            //
-            if (!IsPortInUse(ServerListenerPortNumber))
-            {
-                Console.WriteLine($"Could not establish tcp connection on Port {ServerListenerPortNumber}.");
-                return;
-            }
+            var dataSource = @"C:\temp\test\livesession_85307.ssndb";
+            Console.WriteLine(dataSource);
 
-            //SQLServer style connection string
-            ConnectionString = @"DbEngine=SQLServer;Data Source={DataSource};Initial Catalog={DbName};Integrated Security=True";
+            /// connection strings are case and whitespace sensitive, the following format must be strictly followed for the Server Listener Protocol to successfully establish.
+            /// SQLite: "DbEngine=SQLite;Data Source={dataSource};Pooling=false;"
+            /// SQLServer: "server={dataSource};Initial Catalog={database};Trusted_Connection=True;"
+            var connectionString = $@"DbEngine=SQLite;Data Source={dataSource};Pooling=false;";
+            string recorderDbEngine = "SQLite"; // SQLite or SQLServer
+            var sessionIdentifier = "ServerListener Live 85307 test";
 
-#pragma warning disable CA1416 // Validate platform compatibility
-
-            Console.WriteLine("Initialising SQL Race...");
+            Console.WriteLine("Initialising");
+            Console.WriteLine(Directory.GetCurrentDirectory());
+            Core.LicenceProgramName = "SQLRace";
             Core.Initialize();
 
-            Console.WriteLine("Setting up Server Listener Instance\r\n");
+            Console.WriteLine("Setting up Server Listener Instance");
+            Core.ConfigureServer(true, new IPEndPoint(IPAddress.Parse(ServerListenerIpAddress), ServerListenerPortNumber));
+            var recordersConfiguration = RecordersConfiguration.GetRecordersConfiguration();
+            recordersConfiguration.AddConfiguration(Guid.NewGuid(), recorderDbEngine, dataSource, dataSource, connectionString, false);
 
-            var connectionString = GetSqlRaceConnectionString(DbName);
+            // Creating a Session
+            Console.WriteLine("Creating new Session");
 
-            Console.WriteLine($"connectionString: {connectionString}");
+            var dateTimeNow = DateTime.Now;
+            var endDateTime = dateTimeNow.AddMinutes(5);
 
-            var qm = QueryManager.CreateQueryManager(connectionString);
+            var timeToday = dateTimeNow - DateTime.Today;
+            var endTimeToday = endDateTime - DateTime.Today;
 
-            var ss = GetMostRecentLiveSession(connectionString, qm);
+            long startTime = timeToday.ToNanoseconds();
+            long endTime = endTimeToday.ToNanoseconds();
 
-            if (ss == null)
+            string sessionDescription = string.Format("Example::: {0}", dateTimeNow.ToString("dd-MMM-yy hh:mm:ss tt"));
+
+            var sessionKey = SessionKey.NewKey();
+
+            // Create a session first
+            var clientSession = CreateSession(sessionKey, connectionString, sessionIdentifier, dateTimeNow, "Session");
+
+            var session = clientSession.Session;
+
+            // Add some session details which allows values as String, Long, Double, Bool, Datetime, Byte[] etc.
+            session.Items.Add(new SessionDataItem("Driver", "Test Driver"));
+            session.Items.Add(new SessionDataItem("Car", "Test Car"));
+
+            // Setting up the components of a session
+            // Adding a channel with some samples
+            var numSamples = 1000;
+
+            try
             {
-                Console.WriteLine("No live session found");
-                return;
-            }
+                clientSession = CreateParameter(clientSession, 1000, startTime, endTime);
 
-            while (ss.State == SessionState.Live)
-            {
-                ss = GetMostRecentLiveSession(connectionString, qm);
+                // Add Laps
+                var lapNumber = 5;
+                var lapTimeDelta = (endTime - startTime) / (lapNumber + 1);
+                var timeStamp = startTime;
 
-                if (ss == null)
+                for (var i = 0; i < 5; i++)
                 {
-                    Console.WriteLine("No live session found");
-                    return;
-                }
-
-                Console.WriteLine($"Session Identifier: {ss.Identifier}");
-                Console.WriteLine($"Time: {DateTime.Now.ToLocalTime()}, Laps count: {ss.Laps.Count}");
-
-                foreach (var lap in ss.Laps.OrderBy(x => x.StartTime))
-                {
-                    Console.WriteLine($"LapId: {lap.LapId}, Number: {lap.Number}, lap Name: {lap.Name}, StartTime: {lap.StartTime}, EndTime: {lap.EndTime}, LapTime: {lap.LapTime}");
-
-                    if (lap.TimeRange.HasValue)
+                    if (i > 0)
                     {
-                        Console.WriteLine($"\t\t\tTimeRange/TimeSpan: {lap.TimeRange.Value.Span.ToTimeSpan()}, TriggerSource: {lap.TriggerSource}, CountForFastestLap: {lap.CountForFastestLap}");
+                        timeStamp += lapTimeDelta;
                     }
-                    Console.WriteLine("");
+
+                    var newLap = new Lap(timeStamp, Convert.ToInt16(i + 1), byte.MinValue, string.Format("Lap {0}", i + 1), true);
+
+                    clientSession.Session.LapCollection.Add(newLap);
+
+                    Console.WriteLine($"New Lap: Id = {newLap.LapId}, Name = {newLap.Name}, StartTime = {newLap.StartTime},  EndTime = {newLap.EndTime}");
+
+                    Thread.Sleep(5000);         // 5 sec;
                 }
 
-                Thread.Sleep(TimerInterval);
             }
-#pragma warning restore CA1416 // Validate platform compatibility
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                session.EndData();
+                clientSession.Close();
+            }
 
-            Console.WriteLine("Press ENTER key to close.");
+            Console.WriteLine("Finished!. \r\nHit any key to close the app.");
             Console.ReadLine();
         }
 
-        static bool IsPortInUse(int port)
+        public static IClientSession CreateSession(SessionKey sessionKey, string connectionString, string sessionIdentifier, DateTime dateOfRecording, string sessionType)
         {
-            using (TcpClient tcpClient = new TcpClient())
-            {
-                try
-                {
-                    tcpClient.Connect("localhost", port);
-                    return true;
-                }
-                catch (SocketException ex)
-                {
-                    return false;
-                }
-            }
+            var sessionManager = SessionManager.CreateSessionManager();
+            return sessionManager.CreateSession(connectionString, sessionKey, sessionIdentifier, dateOfRecording, sessionType);
+
         }
 
-#pragma warning disable CA1416 // Validate platform compatibility
-        private static string GetSqlRaceConnectionString(string connectionFriendlyName)
+        public static IClientSession CreateParameter(IClientSession clientSession, int numSamples, long startTime, long endTime)
         {
-            var connectionManager = new DatabaseConnectionManager();
+            //Creating the parameter object that will be populated
+            var parameter = SessionHelper.CreateSessionConfigurationForOneParameter(clientSession.Session);
 
-            var databaseConnection = connectionManager.GetDatabaseConnections()
-                .FirstOrDefault(c => c.FriendlyName == connectionFriendlyName);
-            var connectionString = databaseConnection?.GetConnectionString();
+            // Populating timestamps and data initially (simulating generating data to be added to the session)
+            var sampleData = new List<double>(numSamples);
+            var sampleTimeStamps = new List<long>(numSamples);
+            var random = new Random(42);
 
-            return connectionString;
-        }
+            var currentTime = startTime;
+            var timeDelta = (endTime - startTime) / numSamples;
 
-        private static SessionSummary GetMostRecentLiveSession(string connectionString, QueryManager qm)
-        {
-            var sessionSummaries = qm.ExecuteQuery()
-                                        .Where(x => x.State == SessionState.Live)
-                                        .OrderByDescending(x => x.TimeOfRecording)
-                                        .ToList();
-
-            var summary = sessionSummaries.FirstOrDefault();
-            if (summary != null)
+            for (int i = 0; i < numSamples; i++)
             {
-                return summary;
+                sampleData.Add(random.NextDouble());
+
+                sampleTimeStamps.Add(currentTime);
+
+                currentTime += timeDelta;
             }
-            else
+
+            // Adding the samples to the parameter inside the session
+            for (int i = 0; i < numSamples; i++)
             {
-                return null;
+                var newTimestamp = DateTime.Now.ToNanoseconds();
+                var newValue = Math.Sin(i / 360.0);
+
+                clientSession.Session.AddChannelData(
+                    parameter.ChannelIds.FirstOrDefault(),
+                    sampleTimeStamps[i],
+                    1,
+                    BitConverter.GetBytes(sampleData[i]));
+
+                Thread.Sleep(100);
+                Console.WriteLine($"Written sample. Timestamp: {newTimestamp.ToTimeString()} Value:{newValue}");
             }
+
+            return clientSession;
         }
-#pragma warning restore CA1416 // Validate platform compatibility
     }
 }
