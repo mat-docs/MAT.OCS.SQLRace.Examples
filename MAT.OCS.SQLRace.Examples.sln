@@ -34,7 +34,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.LoadSessionFrom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SqlRace.ServerListener", "MAT.SqlRace.ServerListener\MAT.SqlRace.ServerListener.csproj", "{C4281449-70AD-4A9F-A5F8-A11C6E58E460}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAT.SqlRace.ServerListener_for_85307_testing", "MAT.SqlRace.ServerListener_for_85307_testing\MAT.SqlRace.ServerListener_for_85307_testing.csproj", "{88C8C11F-2A01-2419-D723-EC9489D91ED4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAT.SqlRace.ServerListener_for_testing_LapCollectionsLive", "MAT.SqlRace.ServerListener_for_85307_testing\MAT.SqlRace.ServerListener_for_testing_LapCollectionsLive.csproj", "{88C8C11F-2A01-2419-D723-EC9489D91ED4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
