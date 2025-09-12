@@ -8,14 +8,14 @@
   <!--Set the product name-->
   <?define productName="SQL Race Examples"?>
   <!--Manufacturer-->
-  <?define Manufacturer="McLaren Applied Technologies"?>
+  <?define Manufacturer="Motion Applied Ltd"?>
   <?define ManufacturerOld="McLaren Electronic Systems"?>
   <?define IsWin64="yes"?>
   <!--Product information-->
   <Product Id="*" Name="$(var.productName)" Language="1033" Version="$(var.productVersion)" Manufacturer="$(var.Manufacturer)" UpgradeCode="$(var.upgradeCode)">
     <!--Package information-->
     <Package Id="*" Description="$(var.productName) $(var.productVersion) Installer" Manufacturer="$(var.Manufacturer)"
-             Comments="$(var.productName) is a registered trademark of McLaren Applied Technologies Ltd." Keywords="$(var.productName) Installer McLaren Applied Technologies Ltd"
+             Comments="$(var.productName) is a registered trademark of Motion Applied Ltd." Keywords="$(var.productName) Installer Motion Applied Ltd"
              InstallerVersion="450" Compressed="yes" InstallScope="perMachine" Platform="x64" />
 
     <Icon Id="sqlrace.ico" SourceFile="$(var.ProjectDir)\Resources\sqlrace.ico"/>
@@ -46,17 +46,17 @@
 
     <!--Add/Remove Programs properties-->
     <Property Id="ARPCOMMENTS">$(var.productName)</Property>
-    <Property Id="ARPCONTACT">support@mclaren.com</Property>
-    <Property Id="ARPHELPLINK">http://www.mclarenappliedtechnologies.com/</Property>
+    <Property Id='ARPCONTACT'>support@motionapplied.com</Property>
+    <Property Id='ARPHELPLINK'>https://motionapplied.com/</Property>
     <!--"Support Information" link - ARPCOMMENT is the display text for this link -->
-    <Property Id="ARPURLINFOABOUT">http://www.mclarenappliedtechnologies.com/</Property>
+    <Property Id="ARPURLINFOABOUT">https://motionapplied.com/</Property>
     <!--"Publisher" link-->
-    <Property Id="ARPURLUPDATEINFO">http://www.sqlrace.com</Property>
+    <Property Id="ARPURLUPDATEINFO">https://motionapplied.com/</Property>
     <!--"Product Updates" link-->
-    <Property Id="ARPTELEPHONE">+44 (0)1483 261400</Property>
+    <Property Id='ARPHELPTELEPHONE'>+44 1483 966800</Property>
     <!--Suppress the Modify button-->
     <!--General Properties-->
-    <Property Id="URL_SQLRACE" Value="http://www.sqlrace.com"></Property>
+    <Property Id="URL_SQLRACE" Value="https://motionapplied.com/"></Property>
 
     <!--Include files-->
     <?include PathVariables.wxi ?>

@@ -1,5 +1,5 @@
-﻿// <copyright file="MainForm.cs" company="McLaren Applied Technologies Ltd">
-// Copyright (c) McLaren Applied Technologies Ltd</copyright>
+﻿// <copyright file="MainForm.cs" company="Motion Applied Ltd">
+// Copyright (c) Motion Applied Ltd</copyright>
 
 using System;
 using System.Collections.Generic;
