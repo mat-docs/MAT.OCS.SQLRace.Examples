@@ -1,5 +1,5 @@
-﻿// <copyright file="Program.cs" company="McLaren Applied Technologies Ltd">
-// Copyright (c) McLaren Applied Technologies Ltd</copyright>
+﻿// <copyright file="Program.cs" company="Motion Applied Ltd">
+// Copyright (c) Motion Applied Ltd</copyright>
 
 using System;
 using System.Windows.Forms;

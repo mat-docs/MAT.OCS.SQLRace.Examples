@@ -1,5 +1,5 @@
-﻿// <copyright file="LoadSessionExample.cs" company="McLaren Applied Technologies Ltd">
-// Copyright (c) McLaren Applied Technologies Ltd</copyright>
+﻿// <copyright file="LoadSessionExample.cs" company="Motion Applied Ltd">
+// Copyright (c) Motion Applied Ltd</copyright>
 
 using MAT.OCS.Core;
 using MESL.SqlRace.Domain;

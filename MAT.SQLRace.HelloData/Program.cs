@@ -1,5 +1,5 @@
-﻿// <copyright file="Program.cs" company="McLaren Applied Ltd.">
-// Copyright (c) McLaren Applied Ltd.</copyright>
+﻿// <copyright file="Program.cs" company="Motion Applied Ltd.">
+// Copyright (c) Motion Applied Ltd.</copyright>
 
 using MAT.OCS.Core;
 using MESL.SqlRace.Common.Extensions;
