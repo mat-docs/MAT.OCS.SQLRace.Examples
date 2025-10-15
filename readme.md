@@ -10,9 +10,11 @@ SQLRace API is available as a Nuget package to registered users from our **[Nuge
 
 See the [API Documentation](https://mat-docs.github.io/)
 
-## .NET Core support from MESL.SQLRace.API 2.1.23227.6 onwards
-From version 2.1.23227.6, MESL.SQLRace.API will be targetting the .NET Core runtime. This specific version will be multi-targetting (both .NET Framework and Core) but all future releases will be targetting .NET core only. Customers requiring libraries that targets .NET Framework should use this or an earlier version.
+## .NET 8 support from MESL.SQLRace.API TBC
+Version TBC of MESL.SQLRace.API will target and support only .NET 8 and will drop support for .NET 6. Customers requiring .NET Framework or .NET 6 compatibility must remain on version TBC or any earlier release.
 
+## .NET Core support from MESL.SQLRace.API 2.1.23227.6 onwards
+Version 2.1.23227.6 is targetting the .NET Core runtime. This specific version will be multi-targetting (both .NET Framework and Core) but all future releases will be targetting .NET core only. Customers requiring libraries that targets .NET Framework should use this or an earlier version.
 
 ## Notes on upgrading MESL.SQLRace.API package from versions prior to 2.1.22127.1
 
