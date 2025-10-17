@@ -66,7 +66,7 @@ namespace MAT.SQLRace.HelloData
             //Benchmark();
             //LoadAssociated();
 
-            //LoadSSNWithAssociatedMerge();
+            //LoadSSNWithAssociated();
             //AddEvents();
             //LoadLiveSessionAndWaitForLapEvents();
             //LoadLiveSessionAndWaitForEvents();
@@ -295,13 +295,13 @@ namespace MAT.SQLRace.HelloData
             var sessionManager = SessionManager.CreateSessionManager();
             var sessionSummaries = sessionManager.LoadAssociatesForSession(sessionKey, ConnectionString);
             var additionalSessionKey = sessionSummaries.OrderBy(ss => ss.TimeOfRecording).Last();
-            IClientSession clientSession = sessionManager.Load(sessionKey, ConnectionString, new[] { additionalSessionKey.Key });
+            ICompositeSession compositeSession = sessionManager.LoadCompositeSession(sessionKey, ConnectionString, new[] { additionalSessionKey.Key });
 
-            var containsChannel = clientSession.Session.ContainsParameter(parameterIdentifier);
+            var containsChannel = compositeSession.ContainsParameter(parameterIdentifier);
             Console.WriteLine(
                 $"Parameter {parameterIdentifier} exists in session: {containsChannel}");
 
-            using (var pda = clientSession.Session.CreateParameterDataAccess(parameterIdentifier))
+            using (var pda = compositeSession.CreateParameterDataAccess(parameterIdentifier))
             {
                 Console.WriteLine(
                     $"PDA {parameterIdentifier} successfully created");
@@ -882,21 +882,21 @@ namespace MAT.SQLRace.HelloData
             var fileSessionManager = FileSessionManager.CreateFileSessionManager();
 
             //var session01 = fileSessionManager.Load(@"C:\Session Location\Session To Load.ssn");
-            var session01 = fileSessionManager.Load(@"C:\Session Location\Session To Load.ssn", new List<string>
+            ICompositeSession compositeSession = fileSessionManager.LoadCompositeSession(@"C:\Session Location\Session To Load.ssn", new List<string>
             {
                 @"C:\Session Location\Session To Load.VTS.001.ssv"
             }); // session with associates
 
-            if (session01 == null)
+            if (compositeSession == null)
             {
                 Console.WriteLine("Session not found");
                 return;
             }
 
             var vCarIdentifier = "vCar:Chassis";
-            using (var pda = session01.Session.CreateParameterDataAccess(vCarIdentifier))
+            using (var pda = compositeSession.CreateParameterDataAccess(vCarIdentifier))
             {
-                pda.GoTo(session01.Session.StartTime + (session01.Session.EndTime - session01.Session.StartTime) / 2);
+                pda.GoTo(compositeSession.StartTime + (compositeSession.EndTime - compositeSession.StartTime) / 2);
                 var samples = pda.GetNextSamples(10);
 
                 Console.WriteLine($"** Data for {vCarIdentifier}");
@@ -907,7 +907,7 @@ namespace MAT.SQLRace.HelloData
             }
         }
 
-        private static void LoadSSNWithAssociatedMerge()
+        private static void LoadSSNWithAssociated()
         {
             //SQLite ssn style connection string
             ConnectionString = $@"DbEngine=SQLite;Data Source={
@@ -931,14 +931,13 @@ namespace MAT.SQLRace.HelloData
             Console.WriteLine("Loading session...");
             var sessionManager = SessionManager.CreateSessionManager();
 
-            var session01 = sessionManager.Load(sessionSummary01.Key, ConnectionString, new[] { sessionSummary01.Associates.Last() });
-            var session = session01.Session;
+            ICompositeSession compositeSession = sessionManager.LoadCompositeSession(sessionSummary01.Key, ConnectionString, new[] { sessionSummary01.Associates.Last() });
             Console.WriteLine("Session loaded");
 
             var muTyreRLIdentifier = "muTyreRL:MRLTyres";
-            using (var pda = session01.Session.CreateParameterDataAccess(muTyreRLIdentifier))
+            using (var pda = compositeSession.CreateParameterDataAccess(muTyreRLIdentifier))
             {
-                pda.GoTo(session.StartTime + (session.EndTime - session.StartTime) / 2);
+                pda.GoTo(compositeSession.StartTime + (compositeSession.EndTime - compositeSession.StartTime) / 2);
                 var samples = pda.GetNextSamples(10);
 
                 Console.WriteLine($"** Data for {muTyreRLIdentifier}");
@@ -949,9 +948,9 @@ namespace MAT.SQLRace.HelloData
             }
 
             var vCarIdentifier = "vCar:Chassis";
-            using (var pda = session01.Session.CreateParameterDataAccess(vCarIdentifier))
+            using (var pda = compositeSession.CreateParameterDataAccess(vCarIdentifier))
             {
-                pda.GoTo(session.StartTime + (session.EndTime - session.StartTime) / 2);
+                pda.GoTo(compositeSession.StartTime + (compositeSession.EndTime - compositeSession.StartTime) / 2);
                 var samples = pda.GetNextSamples(10);
 
                 Console.WriteLine($"** Data for {vCarIdentifier}");
