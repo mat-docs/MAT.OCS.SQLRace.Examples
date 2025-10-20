@@ -12,7 +12,7 @@ namespace BaseExampleSSN
         /// In order to be able to use this example follow these instructions;
         /// https://github.com/mat-docs/packages
         ///
-        /// Whenever you are setting up your project you should use .NETCore 6.0.
+        /// Whenever you are setting up your project you should use .NET 8.
         /// 
         /// Once registered in Visual Studio, you need to install MESL.SQLRace.API package from NuGet making sure that you have selected the McLaren Applied Github packages in the top
         /// right corner (defaults to nuget.org, where if you search for the package it would not show).
