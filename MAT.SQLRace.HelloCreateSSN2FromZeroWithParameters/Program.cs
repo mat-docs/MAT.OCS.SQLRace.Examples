@@ -15,7 +15,7 @@ namespace MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters
         /// In order to be able to use this example follow these instructions;
         /// https://github.com/mat-docs/packages
         ///
-        /// Whenever you are setting up your project you should use .NET 6.
+        /// Whenever you are setting up your project you should use .NET 8.
         /// You need to set up the compilation to be for x64 processors in order for this example to work
         /// 
         /// Once registered in Visual Studio, you need to install MESL.SQLRace.API package from NuGet making sure that you have selected the McLaren Applied Github packages in the top
