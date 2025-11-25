@@ -886,10 +886,11 @@ namespace MAT.SQLRace.HelloData
             var fileSessionManager = FileSessionManager.CreateFileSessionManager();
 
             //var session01 = fileSessionManager.Load(@"C:\Session Location\Session To Load.ssn");
-            var session01 = fileSessionManager.Load(@"C:\Session Location\Session To Load.ssn", new List<string>
-            {
-                @"C:\Session Location\Session To Load.VTS.001.ssv"
-            }); // session with associates
+            var session01 =
+                fileSessionManager.Load(@"C:\dev\Data\SSNs\Associate\5Silverstone NOR CH03  140005 Q1R01.ssn");//w List<string>
+            //{
+            //    @"C:\Session Location\Session To Load.VTS.001.ssv"
+            //}); // session with associates
 
             if (session01 == null)
             {
