@@ -14,7 +14,7 @@ namespace MAT.SQLRace.HelloData
     {
         public static IFunctionDefinition CreateFdlFunctionDefinition(IFunctionManager functionManager, FunctionMode functionMode = FunctionMode.Instantaneous)
         {
-            //Create function
+            //Create function test
             const string CarSpeedDoubledInFdl = "return ($vCar:Chassis * 2)";
 
             var functionDefinition = functionManager.CreateFunctionDefinition(FdlFunctionConstants.UniqueId);
