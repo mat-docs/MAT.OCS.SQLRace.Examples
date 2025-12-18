@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SQLRace.LoadSessionFrom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAT.SqlRace.ServerListener", "MAT.SqlRace.ServerListener\MAT.SqlRace.ServerListener.csproj", "{C4281449-70AD-4A9F-A5F8-A11C6E58E460}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters", "MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters\MAT.SQLRace.HelloCreateSSN2FromZeroWithParameters.csproj", "{BEC4FC19-D289-7BF4-0529-3A063957A6F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -146,6 +148,18 @@ Global
 		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Release|x64.Build.0 = Release|Any CPU
 		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Release|x86.ActiveCfg = Release|Any CPU
 		{C4281449-70AD-4A9F-A5F8-A11C6E58E460}.Release|x86.Build.0 = Release|Any CPU
+		{BEC4FC19-D289-7BF4-0529-3A063957A6F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEC4FC19-D289-7BF4-0529-3A063957A6F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEC4FC19-D289-7BF4-0529-3A063957A6F8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BEC4FC19-D289-7BF4-0529-3A063957A6F8}.Debug|x64.Build.0 = Debug|Any CPU
+		{BEC4FC19-D289-7BF4-0529-3A063957A6F8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BEC4FC19-D289-7BF4-0529-3A063957A6F8}.Debug|x86.Build.0 = Debug|Any CPU
+		{BEC4FC19-D289-7BF4-0529-3A063957A6F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEC4FC19-D289-7BF4-0529-3A063957A6F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEC4FC19-D289-7BF4-0529-3A063957A6F8}.Release|x64.ActiveCfg = Release|Any CPU
+		{BEC4FC19-D289-7BF4-0529-3A063957A6F8}.Release|x64.Build.0 = Release|Any CPU
+		{BEC4FC19-D289-7BF4-0529-3A063957A6F8}.Release|x86.ActiveCfg = Release|Any CPU
+		{BEC4FC19-D289-7BF4-0529-3A063957A6F8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
