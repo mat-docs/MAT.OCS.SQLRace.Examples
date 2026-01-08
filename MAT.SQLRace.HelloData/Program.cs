@@ -784,7 +784,7 @@ namespace MAT.SQLRace.HelloData
         {
             var fileSessionManager = FileSessionManager.CreateFileSessionManager();
 
-            var session = fileSessionManager.Load(@"<REPLACE WITH A KNOWN PATH TO .ssn")?.Session;
+            var session = fileSessionManager.Load(@"<REPLACE WITH A KNOWN PATH TO>.ssn")?.Session;
 
             if (session == null)
             {
