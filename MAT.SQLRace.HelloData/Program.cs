@@ -45,6 +45,7 @@ namespace MAT.SQLRace.HelloData
 
             Console.WriteLine("Initializing SQL Race....");
 
+            // To use functions LicenceProgramName needs to be "ATLAS Data Platform"
             Core.LicenceProgramName = "SQLRace";
             Core.Initialize();
 
@@ -652,12 +653,7 @@ namespace MAT.SQLRace.HelloData
 
 
             ParameterValues samples;
-            var startTime = session.StartTime;
             var endTime = session.EndTime;
-
-
-            var interval = (endTime - startTime) / 2800;
-            var timeStamps = CreateTimestampsForTimerange(startTime, endTime, interval);
 
             using (var pda = clientSession.Session.CreateParameterDataAccess("vCar:Chassis"))
             {
@@ -788,7 +784,7 @@ namespace MAT.SQLRace.HelloData
         {
             var fileSessionManager = FileSessionManager.CreateFileSessionManager();
 
-            var session = fileSessionManager.Load(@"C:\McLaren\Sessions\MarkersDemo.ssn")?.Session;
+            var session = fileSessionManager.Load(@"<REPLACE WITH A KNOWN PATH TO>.ssn")?.Session;
 
             if (session == null)
             {
@@ -919,6 +915,7 @@ namespace MAT.SQLRace.HelloData
                 }\McLaren Applied Technologies\ATLAS 10\SQL Race\IndexingSessionCache.ssn2;";
 
             var qm = QueryManager.CreateQueryManager(ConnectionString);
+            qm.SearchOptions = SearchOptions.RetrieveAssociateSessionSummaries;
             // Get the most recent live session from the database
             var sessionSummaries = qm.ExecuteQuery().ToList();
 
