@@ -246,7 +246,7 @@ namespace MAT.SQLRace.HelloData
             const string ConversionFunctionName = "CONV_MyParam:MyApp";
             const string ApplicationGroupName = "MyApp";
             const string ParameterGroupIdentifier = "MyParamGroup";
-            const string ParameterName = "MyParam";
+            const string ParameterName = "MyTransientParam";
             const uint MyParamChannelId = 999999;   //must be unique
             const int ApplicationId = 999;
             var parameterIdentifier = $"{ParameterName}:{ApplicationGroupName}";
