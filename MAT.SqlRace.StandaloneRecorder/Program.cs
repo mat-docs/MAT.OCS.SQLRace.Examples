@@ -56,7 +56,12 @@ namespace MAT.SqlRace.StandaloneRecorder
                 recorder = Recorders.CreateDataServerTelemetryRecorder();
                 recorder.SetSessionIdentifier("%y%m%d%H%M%S");
                 recorder.OnStatusChanged += recorder_OnStatusChanged;
-                recorder.SetSQLRaceConnection(Guid.NewGuid(), dbEngine, dataSource, sqlConnectionString, sqlConnectionString, false);
+                recorder.SetSQLRaceConnection(
+                    Guid.NewGuid(),
+                    dbEngine, dataSource,
+                    sqlConnectionString,
+                    sqlConnectionString,
+                    0); // DeleteSessionOnClose: 0 - no delete, 1 - delete the session on close, 2 - delete the DB
 
                 Console.WriteLine("Getting Available Server List");
                 recorder.RefreshServerList();
