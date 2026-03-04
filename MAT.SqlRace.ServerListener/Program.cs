@@ -41,7 +41,13 @@ namespace MAT.SqlRace.ServerListenerLive
             Core.ConfigureServer(true, new IPEndPoint(IPAddress.Parse(ServerListenerIpAddress), ServerListenerPortNumber));
             var sessionManager = SessionManager.CreateSessionManager();
             var recordersConfiguration = RecordersConfiguration.GetRecordersConfiguration();
-            recordersConfiguration.AddConfiguration(Guid.NewGuid(), recorderDbEngine, dataSource, dataSource, connectionString, false);
+            recordersConfiguration.AddConfiguration(
+                Guid.NewGuid(),
+                recorderDbEngine,
+                dataSource, 
+                dataSource, 
+                connectionString, 
+                0); // DeleteSessionOnClose: 0 - no delete, 1 - delete the session on close, 2 - delete the DB
 
 
             Console.WriteLine("Creating new Session");
