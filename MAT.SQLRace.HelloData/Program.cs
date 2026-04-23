@@ -77,6 +77,7 @@ namespace MAT.SQLRace.HelloData
             //LoadLiveFunction();
             //WholeSessionsCompareMode();
             //TestMaxAndMinSampleIntervals();
+            //CreateSessionWithTimeZoneValue();
 
             Console.WriteLine("Press ENTER key to close.");
             Console.ReadLine();
