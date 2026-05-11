@@ -245,7 +245,7 @@ namespace MAT.SQLRace.HelloData
                 ConnectionString,
                 SessionKey.NewKey(),
                 "clientSession1",
-                DateTime.Now,
+                DateTime.UtcNow,
                 45,
                 "Session",
                 "UTC+00:00");
@@ -254,14 +254,14 @@ namespace MAT.SQLRace.HelloData
                 ConnectionString,
                 SessionKey.NewKey(),
                 "clientSession2",
-                DateTime.Now,
+                DateTime.UtcNow,
                 "Session");
 
             var session1 = clientSession1.Session;
             var session2 = clientSession2.Session;
 
             Console.WriteLine($"Session one created with timezone: {session1.TimeZone}");
-            Console.WriteLine($"Session one created with timezone: {session2.TimeZone}");
+            Console.WriteLine($"Session two created with timezone: {session2.TimeZone}");
         }
 
         private static void TestMaxAndMinSampleIntervals()
