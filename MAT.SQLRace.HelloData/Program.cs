@@ -77,6 +77,7 @@ namespace MAT.SQLRace.HelloData
             //LoadLiveFunction();
             //WholeSessionsCompareMode();
             //TestMaxAndMinSampleIntervals();
+            //CreateSessionWithTimeZoneValue();
 
             Console.WriteLine("Press ENTER key to close.");
             Console.ReadLine();
@@ -232,6 +233,35 @@ namespace MAT.SQLRace.HelloData
             //session.AssociateWithParent(/*Parent session key*/);
 
             clientSession.Close();
+        }
+
+        private static void CreateSessionWithTimeZoneValue()
+        {
+            ConnectionString = $@"DbEngine=SQLite;Data Source=c:\ssn2\test01.ssn2;";
+
+            var sessionManager = SessionManager.CreateSessionManager();
+
+            var clientSession1 = sessionManager.CreateSessionWithTeamId(
+                ConnectionString,
+                SessionKey.NewKey(),
+                "clientSession1",
+                DateTime.UtcNow,
+                45,
+                "Session",
+                "UTC+00:00");
+
+            var clientSession2 = sessionManager.CreateSession(
+                ConnectionString,
+                SessionKey.NewKey(),
+                "clientSession2",
+                DateTime.UtcNow,
+                "Session");
+
+            var session1 = clientSession1.Session;
+            var session2 = clientSession2.Session;
+
+            Console.WriteLine($"Session one created with timezone: {session1.TimeZone}");
+            Console.WriteLine($"Session two created with timezone: {session2.TimeZone}");
         }
 
         private static void TestMaxAndMinSampleIntervals()
