@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MAT.ATLAS.SupportFilesLite" Version="*" />
-    <PackageReference Include="MESL.SQLRace.API" Version="2.1.26152.20-dev" />
+    <PackageReference Include="MESL.SQLRace.API" Version="*" />
   </ItemGroup>
   <PropertyGroup>
     <StartupObject>MAT.SQLRace.HelloData.Program</StartupObject>
