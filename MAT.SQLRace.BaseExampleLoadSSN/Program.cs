@@ -69,7 +69,7 @@ namespace BaseExampleSSN
         private static IClientSession LoadSession(string pathToFile)
         {
             var fileSessionManager = FileSessionManager.CreateFileSessionManager();
-            var clientSession = fileSessionManager.Load(pathToFile); // session with associates
+            var clientSession = fileSessionManager.Load(pathToFile);
 
             if (clientSession == null)
             {

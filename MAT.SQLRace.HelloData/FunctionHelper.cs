@@ -2,6 +2,7 @@
 // Copyright (c) Motion Applied Ltd.</copyright>
 
 using System;
+using System.Text;
 
 using MESL.SqlRace.Domain.Functions;
 using MESL.SqlRace.Domain.Functions.Fdl;
@@ -40,6 +41,71 @@ namespace MAT.SQLRace.HelloData
             // what a function executes. ATLAS 10 will add more of these properties. Each value here is the
             // default for its property, shown for illustration.
             functionDefinition.Name = $"DoubleCarSpeed_{Environment.TickCount}";
+            functionDefinition.FunctionMode = functionMode;
+            functionDefinition.CalculationModeInfoDefinition.Mode = CalculationMode.EachSamplePoint;
+            functionDefinition.InterpolateBetweenSamples = false;
+            functionDefinition.JoinGapsAroundNull = true;
+            functionDefinition.CalculateOverWholeSession = false;
+            functionDefinition.StoreInSession = false;
+            functionDefinition.ShouldHide = false;
+            functionDefinition.ShouldPersist = false;
+
+            return functionDefinition;
+        }
+
+        public static IFunctionDefinition CreateFdlFunctionDefinition(
+              IFunctionManager functionManager,
+              string[] parameterIdentifiers,
+              FunctionMode functionMode = FunctionMode.Instantaneous)
+        {
+            if (parameterIdentifiers == null ||
+                parameterIdentifiers.Length == 0)
+            {
+                throw new InvalidOperationException("Parameters expected not to be empty.");
+            }
+
+            const string FunctionName = "ParametersCombined";
+
+            //Create function
+            var parameterCode = new StringBuilder();
+            for (var i = 0; i < parameterIdentifiers.Length; i++)
+            {
+                var parameterIdentifier = parameterIdentifiers[i];
+
+                parameterCode.Append("$");
+                parameterCode.Append(parameterIdentifier);
+
+                if (i < parameterIdentifiers.Length - 1)
+                {
+                    parameterCode.Append(" + ");
+                }
+            }
+
+            var parametersDoubled = $"return ({parameterCode})";
+
+            var functionDefinition = functionManager.CreateFunctionDefinition(FdlFunctionConstants.UniqueId);
+
+            // The implementation of a function is completely agnostic. We requested a function definition from
+            // the FDL runtime, so the generic function implementation definition in the definition returned can
+            // be safely cast to the more specific FDL implementation definition.
+            var fdlFunctionImplementationDefinition = (IFdlFunctionImplementationDefinition)functionDefinition.ImplementationDefinition;
+            fdlFunctionImplementationDefinition.FunctionCode = parametersDoubled;
+
+            // FDL doesn't define the output for a single parameter - it's simply the return value of the
+            // function - so we have to tell the function executor what to do with the output it generates
+            var outputParameter = FunctionOutputParameterDefinition
+                .Create($"{FunctionName}", "FunctionParameters", "Parameters Combined")
+                .Units("kph")
+                .FormatOverride("%.2f")
+                .MinimumValue("0.0")
+                .MaximumValue("700.0");
+
+            functionDefinition.OutputParameterDefinitions.Add(outputParameter);
+
+            // Functions in ATLAS 9 have a number of different properties that define how, where, when and on
+            // what a function executes. ATLAS 10 will add more of these properties. Each value here is the
+            // default for its property, shown for illustration.
+            functionDefinition.Name = $"{FunctionName}";
             functionDefinition.FunctionMode = functionMode;
             functionDefinition.CalculationModeInfoDefinition.Mode = CalculationMode.EachSamplePoint;
             functionDefinition.InterpolateBetweenSamples = false;

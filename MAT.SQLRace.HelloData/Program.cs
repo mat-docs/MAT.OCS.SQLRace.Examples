@@ -2,24 +2,25 @@
 // Copyright (c) Motion Applied Ltd.</copyright>
 
 using MAT.OCS.Core;
+
 using MESL.SqlRace.Common.Extensions;
 using MESL.SqlRace.Domain;
 using MESL.SqlRace.Domain.Collections;
+using MESL.SqlRace.Domain.Events;
 using MESL.SqlRace.Domain.Functions;
+using MESL.SqlRace.Domain.Infrastructure.DataPipeline;
 using MESL.SqlRace.Domain.Infrastructure.Enumerators;
 using MESL.SqlRace.Domain.Query;
 using MESL.SqlRace.Enumerators;
+using MESL.SqlRace.Functions.Interfaces.Enums;
 using MESL.SqlRace.UI;
-using MESL.SqlRace.Domain.Events;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
-using MESL.SqlRace.Domain.Infrastructure.DataPipeline;
-using MESL.SqlRace.Functions.Interfaces.Enums;
 
 namespace MAT.SQLRace.HelloData
 {
@@ -57,24 +58,27 @@ namespace MAT.SQLRace.HelloData
             //LapStatistics();
             //ConnectionManagerTest();
             //CreateSessionAndAddData();
-            //CompositeSessionTestWithAppendedSessions();
+            //AppendSessions();
 
             //CompositeSessionWithvTagSessionsTest();
             //AddInMemoryParameterToSession();
             //AddParameterToExistingSession();
             //ChannelStats();
             //Benchmark();
-            //LoadAssociated();
+            //GetAssociatedSessionSummaries();
 
-            //LoadSSNWithAssociatedMerge();
             //AddEvents();
             //LoadLiveSessionAndWaitForLapEvents();
             //LoadLiveSessionAndWaitForEvents();
             //LoadLiveSamples();
             //AddAndProcessMarkers();
             LoadSSN();
+            //LoadSSNWtihAssociates();
+            //LoadSqlRaceDatabaseSessionWithAssociates();
+            //LoadSessionViaQueryManagerWithAssociate();
             //GetSessionSummaryBySessionGUID();
             //LoadLiveFunction();
+            //CreateFunctionAcrossMultipleSessionsWithCompositeSession();
             //WholeSessionsCompareMode();
             //TestMaxAndMinSampleIntervals();
             //CreateSessionWithTimeZoneValue();
@@ -313,28 +317,31 @@ namespace MAT.SQLRace.HelloData
         }
 
         /// <summary>
-        ///     Loads a session with an associated session
+        ///     This example demonstrates how to get associated session summaries for a given session
+        ///     from a SQL backed session database. It retrieves the list of associated sessions
+        ///     and prints their identifiers.
+        /// 
+        ///     This is particularly useful in situations where you know you want to load associate
+        ///     sessions but do not yet know which associates are available. The returned summaries
+        ///     can be inspected to decide which associates to load or process next.
         /// </summary>
-        private static void LoadAssociated()
+        private static void GetAssociatedSessionSummaries()
         {
-            ConnectionString = @"Data Source=mesltgs1;Initial Catalog=SQLRACE143;Integrated Security=True";
+            // ========= EDITABLE SECTION (tweak these values for your run) =========
+            const string connectionString = @"<CONNECTION STRING>";
+            const string sessionKeyValue = "<SESSION KEY>";
+            // =====================================================================
 
-            string parameterIdentifier = "BAeroAutoZero:MRLAero";
-            SessionKey sessionKey = new SessionKey("3FA70D1D-F526-4A10-9396-589B3BE23625");
+            ConnectionString = connectionString;
+
+            var sessionKey = new SessionKey(sessionKeyValue);
 
             var sessionManager = SessionManager.CreateSessionManager();
+
             var sessionSummaries = sessionManager.LoadAssociatesForSession(sessionKey, ConnectionString);
-            var additionalSessionKey = sessionSummaries.OrderBy(ss => ss.TimeOfRecording).Last();
-            IClientSession clientSession = sessionManager.Load(sessionKey, ConnectionString, new[] { additionalSessionKey.Key });
-
-            var containsChannel = clientSession.Session.ContainsParameter(parameterIdentifier);
-            Console.WriteLine(
-                $"Parameter {parameterIdentifier} exists in session: {containsChannel}");
-
-            using (var pda = clientSession.Session.CreateParameterDataAccess(parameterIdentifier))
+            foreach (var sessionSummary in sessionSummaries)
             {
-                Console.WriteLine(
-                    $"PDA {parameterIdentifier} successfully created");
+                Console.WriteLine($"{sessionSummary.Identifier}");
             }
         }
 
@@ -905,31 +912,31 @@ namespace MAT.SQLRace.HelloData
         }
 
         /// <summary>
-        /// Load data from an SSN file
+        ///     This example demonstrates how to load a .ssn file using the FileSessionManager,
+        ///     and then request and print sample data for a given Parameter Identifier.
         /// </summary>
         private static void LoadSSN()
         {
+            // ========= EDITABLE SECTION (tweak these values for your run) =========
+            const string ssnPath = @"<FILE PATH TO .SSN>";
+            const string parameterIdentifier = "<PARAMETER IDENTIFIER>";
+            // =====================================================================
+
             var fileSessionManager = FileSessionManager.CreateFileSessionManager();
 
-            //var session01 = fileSessionManager.Load(@"C:\Session Location\Session To Load.ssn");
-            var session01 = fileSessionManager.Load(@"C:\Session Location\Session To Load.ssn", new List<string>
+            var session = fileSessionManager.Load(ssnPath);
+            if (session == null)
             {
-                @"C:\Session Location\Session To Load.VTS.001.ssv"
-            }); // session with associates
-
-            if (session01 == null)
-            {
-                Console.WriteLine("Session not found");
+                Console.WriteLine("Session not found.");
                 return;
             }
-
-            var vCarIdentifier = "vCar:Chassis";
-            using (var pda = session01.Session.CreateParameterDataAccess(vCarIdentifier))
+            
+            using (var pda = session.Session.CreateParameterDataAccess(parameterIdentifier))
             {
-                pda.GoTo(session01.Session.StartTime + (session01.Session.EndTime - session01.Session.StartTime) / 2);
+                pda.GoTo(session.Session.StartTime + (session.Session.EndTime - session.Session.StartTime) / 2);
                 var samples = pda.GetNextSamples(10);
 
-                Console.WriteLine($"** Data for {vCarIdentifier}");
+                Console.WriteLine($"** Data for {parameterIdentifier}");
                 for (var i = 0; i < samples.SampleCount; i++)
                 {
                     Console.WriteLine($"{samples.Timestamp[i].ToTimeString()} {samples.Data[i]}");
@@ -937,54 +944,180 @@ namespace MAT.SQLRace.HelloData
             }
         }
 
-        private static void LoadSSNWithAssociatedMerge()
+        /// <summary>
+        ///     This example loads a Primary session and an Associate session in order to
+        ///     create a Composite Session (a session made up of one or more sessions).
+        ///     It then retrieves and prints a small number of sample values for a
+        ///     specified parameter from both the Primary and the Associate sessions.
+        /// </summary>
+        private static void LoadSSNWtihAssociates()
         {
-            //SQLite ssn style connection string
-            ConnectionString = $@"DbEngine=SQLite;Data Source={
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-                }\McLaren Applied Technologies\ATLAS 10\SQL Race\IndexingSessionCache.ssn2;";
+            // ========= EDITABLE SECTION (tweak these values for your run) =========
+            const string primarySsnPath = @"<FILE PATH TO .SSN>";
+            const string associateSsnPath = @"<FILE PATH TO ASSOCIATE .SSN>";
+            const string primaryParamId = "<PARAMETER IDENTIFIER FROM SESSION>";
+            const string associateParamId = "<PARAMETER IDENTIFIER FROM ASSOCIATE>";
+            // =====================================================================
+
+            var fileSessionManager = FileSessionManager.CreateFileSessionManager();
+
+            var compositeSession = fileSessionManager.LoadCompositeSession(primarySsnPath,new List<string> { associateSsnPath });
+
+            if (compositeSession == null)
+            {
+                Console.WriteLine("Failed to create composite session.");
+                return;
+            }
+
+            using (var pda = compositeSession.CreateParameterDataAccess(primaryParamId))
+            {
+                pda.GoTo(compositeSession.StartTime + (compositeSession.EndTime - compositeSession.StartTime) / 2);
+                var samples = pda.GetNextSamples(10);
+
+                Console.WriteLine($"** Data for {primaryParamId}");
+                for (var i = 0; i < samples.SampleCount; i++)
+                {
+                    Console.WriteLine($"{samples.Timestamp[i].ToTimeString()} {samples.Data[i]}");
+                }
+            }
+
+            using (var pda = compositeSession.CreateParameterDataAccess(associateParamId))
+            {
+                pda.GoTo(compositeSession.StartTime + (compositeSession.EndTime - compositeSession.StartTime) / 2);
+                var samples = pda.GetNextSamples(10);
+
+                Console.WriteLine($"** Data for {associateParamId}");
+                for (var i = 0; i < samples.SampleCount; i++)
+                {
+                    Console.WriteLine($"{samples.Timestamp[i].ToTimeString()} {samples.Data[i]}");
+                }
+            }
+        }
+
+        /// <summary>
+        ///     This example demonstrates how to load a Primary session and an Associate session
+        ///     from a SQL backed session database in order to create a Composite Session
+        ///     (a session made up of one or more sessions). It then retrieves and prints
+        ///     a small number of sample values for a specified parameter from both the
+        ///     Primary session and its Associate.
+        /// </summary>
+        private static void LoadSqlRaceDatabaseSessionWithAssociates()
+        {
+            // ========= EDITABLE SECTION (tweak these values for your run) =========
+            const string connectionString = @"<CONNECTION STRING>";
+            const string primarySessionKey = "<SESSION KEY>";
+            const string associateSessionKey = "<SESSION IDENTIFIER>";
+            const string sessionParamId = "<PARAMETER IDENTIFIER FROM SESSION>";
+            const string associateParamId = "<PARAMETER IDENTIFIER FROM ASSOCIATE>";
+            // =====================================================================
+
+            ConnectionString = connectionString;
+            var sessionKey = new SessionKey(primarySessionKey);
+            var associateKey = new SessionKey(associateSessionKey);
+
+            var sessionManager = SessionManager.CreateSessionManager();
+
+            Console.WriteLine("Loading session...");
+            var compositeSession = sessionManager.LoadCompositeSession(
+                sessionKey,
+                ConnectionString,
+                [associateKey]);
+            Console.WriteLine("Session loaded");
+
+            using (var pda = compositeSession.CreateParameterDataAccess(sessionParamId))
+            {
+                pda.GoTo(compositeSession.StartTime +
+                        (compositeSession.EndTime - compositeSession.StartTime) / 2);
+
+                var samples = pda.GetNextSamples(10);
+
+                Console.WriteLine($"** Data for {sessionParamId}");
+                for (var i = 0; i < samples.SampleCount; i++)
+                {
+                    Console.WriteLine($"{samples.Timestamp[i].ToTimeString()} {samples.Data[i]}");
+                }
+            }
+
+            using (var pda = compositeSession.CreateParameterDataAccess(associateParamId))
+            {
+                pda.GoTo(compositeSession.StartTime +
+                        (compositeSession.EndTime - compositeSession.StartTime) / 2);
+
+                var samples = pda.GetNextSamples(10);
+
+                Console.WriteLine($"** Data for {associateParamId}");
+                for (var i = 0; i < samples.SampleCount; i++)
+                {
+                    Console.WriteLine($"{samples.Timestamp[i].ToTimeString()} {samples.Data[i]}");
+                }
+            }
+        }
+
+        /// <summary>
+        ///     This example demonstrates how to use QueryManager to retrieve session summaries,
+        ///     select a specific session by Identifier, and then load that session together with
+        ///     one of its associates as a Composite Session. It then retrieves and prints a small
+        ///     number of sample values for a specified parameter from both the Primary session
+        ///     and its Associate.
+        /// </summary>
+        private static void LoadSessionViaQueryManagerWithAssociate()
+        {
+            // ========= EDITABLE SECTION (tweak these values for your run) =========
+            const string connectionString = @"<CONNECTION STRING>";
+            const string sessionIdentifier = "<SESSION IDENTIFIER>";
+            const string sessionParamId = "<PARAMETER IDENTIFIER FROM SESSION>";
+            const string associateParamId = "<PARAMETER IDENTIFIER FROM ASSOCIATE>";
+            // =====================================================================
+
+            ConnectionString = connectionString;
 
             var qm = QueryManager.CreateQueryManager(ConnectionString);
             qm.SearchOptions = SearchOptions.RetrieveAssociateSessionSummaries;
-            // Get the most recent live session from the database
-            var sessionSummaries = qm.ExecuteQuery().ToList();
 
-            var sessionSummary01 =
-                sessionSummaries.FirstOrDefault(
-                    x => x.Identifier == "<SESSION IDENTIFIER>");
-            if (sessionSummary01 == null)
+            // Discover sessions in the store and find the one we want by human friendly Identifier
+            var sessionSummaries = qm.ExecuteQuery().ToList();
+            var sessionSummary = sessionSummaries.FirstOrDefault(x => x.Identifier == sessionIdentifier);
+            if (sessionSummary == null)
             {
                 Console.WriteLine("Session not found");
                 return;
             }
+
+            if (sessionSummary.Associates == null || sessionSummary.Associates.Count == 0)
+            {
+                Console.WriteLine("No associates found for the selected session.");
+                return;
+            }
+
+            var sessionManager = SessionManager.CreateSessionManager();
 
             Console.WriteLine("Loading session...");
-            var sessionManager = SessionManager.CreateSessionManager();
-
-            var session01 = sessionManager.Load(sessionSummary01.Key, ConnectionString, new[] { sessionSummary01.Associates.Last() });
-            var session = session01.Session;
+            var compositeSession = sessionManager.LoadCompositeSession(
+                sessionSummary.Key,
+                ConnectionString,
+                [sessionSummary.Associates.Last()]);
             Console.WriteLine("Session loaded");
 
-            var muTyreRLIdentifier = "muTyreRL:MRLTyres";
-            using (var pda = session01.Session.CreateParameterDataAccess(muTyreRLIdentifier))
+            var midpoint = compositeSession.StartTime + (compositeSession.EndTime - compositeSession.StartTime) / 2;
+
+            using (var pda = compositeSession.CreateParameterDataAccess(sessionParamId))
             {
-                pda.GoTo(session.StartTime + (session.EndTime - session.StartTime) / 2);
+                pda.GoTo(midpoint);
                 var samples = pda.GetNextSamples(10);
 
-                Console.WriteLine($"** Data for {muTyreRLIdentifier}");
+                Console.WriteLine($"** Data for {sessionParamId}");
                 for (var i = 0; i < samples.SampleCount; i++)
                 {
                     Console.WriteLine($"{samples.Timestamp[i].ToTimeString()} {samples.Data[i]}");
                 }
             }
 
-            var vCarIdentifier = "vCar:Chassis";
-            using (var pda = session01.Session.CreateParameterDataAccess(vCarIdentifier))
+            using (var pda = compositeSession.CreateParameterDataAccess(associateParamId))
             {
-                pda.GoTo(session.StartTime + (session.EndTime - session.StartTime) / 2);
+                pda.GoTo(midpoint);
                 var samples = pda.GetNextSamples(10);
 
-                Console.WriteLine($"** Data for {vCarIdentifier}");
+                Console.WriteLine($"** Data for {associateParamId}");
                 for (var i = 0; i < samples.SampleCount; i++)
                 {
                     Console.WriteLine($"{samples.Timestamp[i].ToTimeString()} {samples.Data[i]}");
@@ -992,31 +1125,42 @@ namespace MAT.SQLRace.HelloData
             }
         }
 
-        private static void CompositeSessionTestWithAppendedSessions()
+        /// <summary>
+        ///     This example demonstrates how to load two individual sessions from a SQL backed
+        ///     session database, append them into a Composite Session, and then request and
+        ///     print sample data for a specified parameter across the combined session range.
+        /// </summary>
+        private static void AppendSessions()
         {
-            ConnectionString = @"Data Source=mesltgs1;Initial Catalog=SQLRACE143;Integrated Security=True";
+            // ========= EDITABLE SECTION (tweak these values for your run) =========
+            const string connectionString = @"<CONNECTION STRING>";
+            const string sessionIdentifier1 = "<SESSION 1 IDENTIFIER>";
+            const string sessionIdentifier2 = "<SESSION 2 IDENTIFIER>";
+            const string parameterIdentifier = "<PARAMETER IDENTIFIER>";
+            // =====================================================================
 
-            var compositeSession = new CompositeSession(CompositeSessionKey.NewKey(), "CompositeSessionWithvTagSessionsTest");
+            ConnectionString = connectionString;
+
+            var compositeSession = new CompositeSession(
+                CompositeSessionKey.NewKey(),
+                "CompositeSessionWithvTagSessionsTest");
 
             var qm = QueryManager.CreateQueryManager(ConnectionString);
-            // Get the most recent live session from the database
+
+            // Get the most recent live sessions from the database
             var sessionSummaries = qm.ExecuteQuery().ToList();
 
-            var sessionSummary01 =
-                sessionSummaries.FirstOrDefault(
-                    x => x.Identifier == "<SESSION 1 IDENTIFIER>");
+            var sessionSummary01 = sessionSummaries.FirstOrDefault(x => x.Identifier == sessionIdentifier1);
             if (sessionSummary01 == null)
             {
-                Console.WriteLine("Session not found");
+                Console.WriteLine("Session 1 not found");
                 return;
             }
 
-            var sessionSummary02 =
-                sessionSummaries.FirstOrDefault(
-                    x => x.Identifier == "<SESSION 2 IDENTIFIER>");
+            var sessionSummary02 = sessionSummaries.FirstOrDefault(x => x.Identifier == sessionIdentifier2);
             if (sessionSummary02 == null)
             {
-                Console.WriteLine("Session not found");
+                Console.WriteLine("Session 2 not found");
                 return;
             }
 
@@ -1025,109 +1169,29 @@ namespace MAT.SQLRace.HelloData
             Console.WriteLine("Loading sessions...");
 
             var session01 = sessionManager.Load(sessionSummary01.Key, ConnectionString);
-            Console.WriteLine($"Session 1 loaded (start: {session01.Session.StartTime.ToTimeString()} end: {session01.Session.EndTime.ToTimeString()}");
+            Console.WriteLine($"Session 1 loaded (start: {session01.Session.StartTime.ToTimeString()} end: {session01.Session.EndTime.ToTimeString()})");
 
             var session02 = sessionManager.Load(sessionSummary02.Key, ConnectionString);
-            Console.WriteLine($"Session 2 loaded (start: {session02.Session.StartTime.ToTimeString()} end: {session02.Session.EndTime.ToTimeString()}");
+            Console.WriteLine($"Session 2 loaded (start: {session02.Session.StartTime.ToTimeString()} end: {session02.Session.EndTime.ToTimeString()})");
 
             compositeSession.Add(session01);
             compositeSession.Add(session02);
 
-            var parametervCar = session01.Session.GetParameter("vCar:Chassis");
-            if (parametervCar == null)
+            var parameter = session01.Session.GetParameter(parameterIdentifier);
+            if (parameter == null)
             {
                 Console.WriteLine("Parameter not found");
                 return;
             }
 
-            using (var pda = compositeSession.CreateParameterDataAccess(parametervCar.Identifier))
+            using (var pda = compositeSession.CreateParameterDataAccess(parameter.Identifier))
             {
                 pda.GoTo(compositeSession.StartTime);
+
+                // Request all samples until the end of the composite session
                 var samples = pda.GetNextSamples(compositeSession.EndTime);
 
-                Console.WriteLine($"** Data for {parametervCar.Identifier}");
-                for (var i = 0; i < samples.SampleCount; i++)
-                {
-                    Console.WriteLine($"{samples.Timestamp[i].ToTimeString()} {samples.Data[i]}");
-                }
-            }
-        }
-
-        private static void CompositeSessionWithvTagSessionsTest()
-        {
-            //SQLite ssn style connection string
-            ConnectionString = @"Data Source=mesltgs1;Initial Catalog=SQLRACE143;Integrated Security=True";
-
-            var compositeSession = new CompositeSession(CompositeSessionKey.NewKey(), "CompositeSessionWithvTagSessionsTest");
-
-
-            var qm = QueryManager.CreateQueryManager(ConnectionString);
-            // Get the most recent live session from the database
-            var sessionSummaries = qm.ExecuteQuery().ToList();
-
-            var sessionSummary01 =
-                sessionSummaries.FirstOrDefault(
-                    x => x.Identifier == "<SESSION IDENTIFIER>");
-            if (sessionSummary01 == null)
-            {
-                Console.WriteLine("Session not found");
-                return;
-            }
-
-            var sessionSummary02 =
-                sessionSummaries.FirstOrDefault(
-                    x => x.Identifier == "<ASSOCIATED SESSION IDENTIFIER>");
-            if (sessionSummary02 == null)
-            {
-                Console.WriteLine("Session not found");
-                return;
-            }
-
-            var sessionManager = SessionManager.CreateSessionManager();
-
-            Console.WriteLine("Loading sessions...");
-
-            var session01 = sessionManager.Load(sessionSummary01.Key, ConnectionString);
-            Console.WriteLine("Session loaded");
-
-            var session02 = sessionManager.Load(sessionSummary02.Key, ConnectionString);
-            Console.WriteLine("Associated SSV loaded");
-
-            compositeSession.Add(session01);
-            compositeSession.Add(session02);
-
-            var parameterAero = session02.Session.GetParameter("muTyreRL:MRLTyres");
-            if (parameterAero == null)
-            {
-                Console.WriteLine("Parameter not found");
-                return;
-            }
-
-            using (var pda = compositeSession.CreateParameterDataAccess(parameterAero.Identifier))
-            {
-                pda.GoTo(compositeSession.StartTime + (compositeSession.EndTime - compositeSession.StartTime) / 2);
-                var samples = pda.GetNextSamples(10);
-
-                Console.WriteLine($"** Data for {parameterAero.Identifier}");
-                for (var i = 0; i < samples.SampleCount; i++)
-                {
-                    Console.WriteLine($"{samples.Timestamp[i].ToTimeString()} {samples.Data[i]}");
-                }
-            }
-
-            var parametervCar = session01.Session.GetParameter("vCar:Chassis");
-            if (parametervCar == null)
-            {
-                Console.WriteLine("Parameter not found");
-                return;
-            }
-
-            using (var pda = compositeSession.CreateParameterDataAccess(parametervCar.Identifier))
-            {
-                pda.GoTo(compositeSession.StartTime + (compositeSession.EndTime - compositeSession.StartTime) / 2);
-                var samples = pda.GetNextSamples(10);
-
-                Console.WriteLine($"** Data for {parametervCar.Identifier}");
+                Console.WriteLine($"** Data for {parameter.Identifier}");
                 for (var i = 0; i < samples.SampleCount; i++)
                 {
                     Console.WriteLine($"{samples.Timestamp[i].ToTimeString()} {samples.Data[i]}");
@@ -1417,6 +1481,96 @@ namespace MAT.SQLRace.HelloData
             }
 
             Console.WriteLine();
+        }
+
+
+        /// <summary>
+        ///     This example demonstrates how to build and evaluate a Function that uses parameters
+        ///     originating from different sessions when they are loaded together as a Composite Session
+        ///     (a session made up of multiple sessions). It loads a primary session together with an
+        ///     associate session to form a Composite Session, then creates a Function definition that
+        ///     combines the specified parameters. ParameterDataAccess (PDA) objects are created
+        ///     for the primary parameter, the associate parameter, and the Function itself. Each PDA is
+        ///     used to retrieve samples. The example prints both the raw parameter values and the
+        ///     resulting Function values to the console.
+        /// </summary>
+        private static void CreateFunctionAcrossMultipleSessionsWithCompositeSession()
+        {
+            // ========= EDITABLE SECTION (tweak these values for your run) =========
+            const string connectionString = @"<CONNECTION STRING>";
+            const string primarySessionKey = "<SESSION KEY>";
+            const string associateSessionKey = "<SESSION IDENTIFIER>";
+            const string primarySessionParameterIdentifier = "<PARAMETER IDENTIFIER FROM SESSION>";
+            const string associateParameterIdentifier  = "<PARAMETER IDENTIFIER FROM ASSOCIATE>";
+            // =====================================================================
+
+            ConnectionString = connectionString;
+            var sessionKey = new SessionKey(primarySessionKey);
+            var associateKey = new SessionKey(associateSessionKey);
+
+            var sessionManager = SessionManager.CreateSessionManager();
+
+            Console.WriteLine("Loading session...");
+            var compositeSession = sessionManager.LoadCompositeSession(
+                sessionKey,
+                ConnectionString,
+                [associateKey]);
+            Console.WriteLine("Session loaded");
+
+            // Create & Build Function
+            var functionManager = FunctionManagerFactory.Create();
+            var functionDefinition = FunctionHelper.CreateFdlFunctionDefinition(
+                functionManager,
+                [
+                    primarySessionParameterIdentifier,
+                    associateParameterIdentifier
+                ]);
+
+            var functionIdentifier = functionDefinition.OutputParameterDefinitions.First().Identifier;
+            var functionPda = compositeSession.CreateParameterDataAccess(functionIdentifier);
+
+            // Get Data
+            var startTime = compositeSession.PrimarySession.LapCollection.FastestLap.StartTime;
+
+            functionPda.GoTo(startTime);
+            var functionSamples = functionPda.GetNextSamples(5);
+            if (functionSamples == null)
+            {
+                Console.WriteLine($"** {functionIdentifier} Failed to get function samples **");
+                return;
+            }
+
+            var primarySessionParameterPda = compositeSession.CreateParameterDataAccess(primarySessionParameterIdentifier);
+            var primarySessionSamples = primarySessionParameterPda.GetNextSamples(5);
+            if (primarySessionSamples == null)
+            {
+                Console.WriteLine($"** {primarySessionParameterIdentifier} Failed to get function samples **");
+                return;
+            }
+
+            var associateParameterIdentifierPda = compositeSession.CreateParameterDataAccess(associateParameterIdentifier);
+            var associateParameterSamples = associateParameterIdentifierPda.GetNextSamples(5);
+            if (associateParameterSamples == null)
+            {
+                Console.WriteLine($"** {associateParameterIdentifier} Failed to get function samples **");
+                return;
+            }
+
+            // Print results
+            // Header
+            Console.WriteLine(" i |     P |     A |     F | F == P + A");
+            Console.WriteLine("----+-------+-------+-------+------------");
+
+            // Body
+            for (var i = 0; i < primarySessionSamples.Data.Length; i++)
+            {
+                var ok = functionSamples.Data[i] == primarySessionSamples.Data[i] + associateParameterSamples.Data[i];
+                Console.WriteLine(
+                    $"{i,2} | {primarySessionSamples.Data[i],5} | {associateParameterSamples.Data[i],5} | {functionSamples.Data[i],5} | {(ok ? "✓" : "✗")} ({functionSamples.Data[i]} {(ok ? "=" : "≠")} {primarySessionSamples.Data[i]}+{associateParameterSamples.Data[i]})"
+                );
+            }
+
+            Console.WriteLine("");
         }
 
         private static void Session_LapStarted(object sender, LapEventArgs e)
