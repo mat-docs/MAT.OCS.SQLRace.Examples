@@ -2,10 +2,10 @@ name: Validate Notebooks
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths: ['notebooks/**']
   pull_request:
-    branches: [main]
+    branches: [master]
     paths: ['notebooks/**']
 
 jobs:

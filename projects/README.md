@@ -1,3 +1,5 @@
+<img src="../images/ATLAS_logo_GR.png" alt="ATLAS" width="200">
+
 # Projects (Tier 2)
 
 Complete, buildable solutions demonstrating production-quality patterns with the SQL Race API.

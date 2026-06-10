@@ -1,3 +1,5 @@
+<img src="../images/ATLAS_logo_GR.png" alt="ATLAS" width="200">
+
 # Notebooks (Tier 3)
 
 Interactive Jupyter notebooks for exploring SQL Race session data with narrative, code, and visualisation.

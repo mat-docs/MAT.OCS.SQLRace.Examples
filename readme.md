@@ -1,3 +1,5 @@
+<img src="images/ATLAS_logo_GR.png" alt="ATLAS" width="260">
+
 # SQL Race API Examples
 
 Examples for the [SQL Race API](https://github.com/mat-docs/packages) — a .NET library for reading and writing high-frequency time-series data stored in SQLite (`.ssn2`) and SQL Server databases.

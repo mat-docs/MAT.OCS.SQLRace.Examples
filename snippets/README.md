@@ -1,3 +1,5 @@
+<img src="../images/ATLAS_logo_GR.png" alt="ATLAS" width="200">
+
 # Snippets (Tier 1)
 
 Single-file, self-contained examples you can copy-paste into your own project.
