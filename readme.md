@@ -1,30 +1,101 @@
-<img src="/images/atlaslogo.png" width="300" align="right" /><br><br><br>
+# SQL Race API Examples
 
-# **SQLRace API Sample Code**.
+Examples for the [SQL Race API](https://github.com/mat-docs/packages) — a .NET library for reading and writing high-frequency time-series data stored in SQLite (`.ssn2`) and SQL Server databases.
 
-Collection of example code and best practices to use the SQLRace API.
+SQL Race is used across **motorsport, aerospace, automotive, energy, and defence** for recording and analysing sensor data from test sessions.
 
-The SQLRace API is used to read and write time-series data stored in supported database and file formats. It provides mechanisms for querying sessions, extracting and analysing data, statistical operations and custom defined maths functions, as well as recording live data.
+## Quick Start
 
-SQLRace API is available as a Nuget package to registered users from our **[Nuget Repository](https://github.com/mat-docs/packages)**. 
+```bash
+# 1. Create a new .NET 8 console project
+dotnet new console -n MyFirstSession
+cd MyFirstSession
 
-See the [API Documentation](https://mat-docs.github.io/)
+# 2. Add the SQL Race NuGet package
+dotnet nuget add source https://nuget.pkg.github.com/mat-docs/index.json --name mat-docs
+dotnet add package MESL.SQLRace.API
 
-## .NET 8 support from MESL.SQLRace.API 2.1.25317.2
-Version `2.1.25317.2` of MESL.SQLRace.API will target and support only .NET 8 and will drop support for .NET 6. Customers requiring .NET Framework or .NET 6 compatibility must remain on version `2.1.25213.3` or any earlier release.
+# 3. Copy a snippet and run
+# Copy the contents of snippets/csharp/getting-started/01-load-session-from-file.cs
+# into Program.cs, then:
+dotnet run
+```
 
-## .NET Core support from MESL.SQLRace.API 2.1.23227.6 onwards
-Version `2.1.23227.6` is targetting the .NET Core runtime. This specific version will be multi-targetting (both .NET Framework and Core) but all future releases will be targetting .NET core only. Customers requiring libraries that targets .NET Framework should use this or an earlier version.
+> **No server required.** All getting-started snippets default to a local SQLite file — no SQL Server, no configuration.
 
-## Notes on upgrading MESL.SQLRace.API package from versions prior to 2.1.22127.1
+## I want to...
 
-Version ` 2.1.22127.1` of MESL.SQLRace.API upgrades System.Reactive from 3.1.1 to 4.4.1. If you are developing your solution in Visual Studio then be advised that the Nuget upgrade process does not automatically remove any previously dependent packages that are no longer required. 
-In order to reduce the likelihood of runtime errors we strongly recommend you manually remove (in the order specified) these redundant packages following the upgrade:
+| Task | Language | Example |
+|------|----------|---------|
+| Load a session from a `.ssn2` file | C# | [`01-load-session-from-file.cs`](snippets/csharp/getting-started/01-load-session-from-file.cs) |
+| Load a session from a database | C# | [`02-load-session-from-database.cs`](snippets/csharp/getting-started/02-load-session-from-database.cs) |
+| Read parameter samples | C# | [`03-read-parameter-samples.cs`](snippets/csharp/getting-started/03-read-parameter-samples.cs) |
+| Create a session and write data | C# | [`04-create-session-write-data.cs`](snippets/csharp/getting-started/04-create-session-write-data.cs) |
+| Query sessions by metadata | C# | [`05-query-sessions-by-metadata.cs`](snippets/csharp/getting-started/05-query-sessions-by-metadata.cs) |
+| Read data in a time range | C# | [`read-samples-between.cs`](snippets/csharp/data-access/read-samples-between.cs) |
+| Downsample data | C# | [`read-subsampled-data.cs`](snippets/csharp/data-access/read-subsampled-data.cs) |
+| Read data in reverse | C# | [`reverse-iteration.cs`](snippets/csharp/data-access/reverse-iteration.cs) |
+| Align multi-rate parameters | C# | [`multi-rate-alignment.cs`](snippets/csharp/data-access/multi-rate-alignment.cs) |
+| Read many parameters efficiently | C# | [`bulk-parameter-read.cs`](snippets/csharp/data-access/bulk-parameter-read.cs) |
+| Handle missing data | C# | [`data-status-filtering.cs`](snippets/csharp/data-access/data-status-filtering.cs) |
+| Build timestamp arrays | C# | [`timestamp-array-construction.cs`](snippets/csharp/data-access/timestamp-array-construction.cs) |
+| Load a session | Python | [`01_load_session.py`](snippets/python/getting-started/01_load_session.py) |
+| Load a session | MATLAB | [`load_session.m`](snippets/matlab/getting-started/load_session.m) |
 
-1. System.Reactive.Windows.Threading 3.1.1
-2. System.Reactive.PlatformServices 3.1.1
-3. System.Reactive.Linq 3.1.1
-4. System.Reactive.Core 3.1.1
-5. System.Reactive.Interfaces 3.1.1
+See [COOKBOOK.md](COOKBOOK.md) for a complete task-based index.
 
+## Repository Map
 
+```
+sql-race/
+├── snippets/          Tier 1 — Single-file, copy-pasteable examples (C#, Python, MATLAB)
+├── projects/          Tier 2 — Complete, buildable projects with shared Core library
+├── notebooks/         Tier 3 — Interactive Jupyter notebooks with narrative and plots
+├── docs/              Guides: getting started, connection strings, troubleshooting
+├── tests/             Compilation and integration tests
+└── .github/           CI workflows and issue templates
+```
+
+### Tiers explained
+
+| Tier | What | Who it's for |
+|------|------|-------------|
+| **Snippets** (`snippets/`) | Single-file, self-contained examples. Copy, paste, run. | Developers evaluating the API or looking for a quick recipe. |
+| **Projects** (`projects/`) | Complete, buildable solutions with a shared Core library. | Teams building production applications. |
+| **Notebooks** (`notebooks/`) | Interactive Jupyter notebooks with narrative and visualisation. | Data scientists and analysts exploring session data. |
+
+## Language Support
+
+| Language | Snippets | Projects | Notebooks |
+|----------|----------|----------|-----------|
+| C# (.NET 8) | Yes | Yes | — |
+| Python (pythonnet) | Yes | Yes | Yes |
+| MATLAB | Yes | Yes | — |
+
+## Industry Applicability
+
+SQL Race uses generic concepts that map to any domain:
+
+| SQL Race | Motorsport | Aerospace | Energy | Automotive |
+|----------|-----------|-----------|--------|------------|
+| Session | Race / Practice | Flight / Sortie | Test Run | Drive Cycle |
+| Lap | Lap | Test Point | Regime | Segment |
+| Parameter | Channel | Measurement | Tag | Signal |
+
+See [CONCEPTS.md](CONCEPTS.md) for a complete mapping.
+
+## Prerequisites
+
+- **.NET 8 SDK** — [Download](https://dotnet.microsoft.com/download/dotnet/8.0)
+- **MESL.SQLRace.API** NuGet package from the [MA GitHub Packages feed](https://nuget.pkg.github.com/mat-docs/index.json)
+- **ATLAS 11+** (optional) — required only for live data and server-connected scenarios
+
+See [docs/getting-started.md](docs/getting-started.md) for detailed setup instructions.
+
+## Contributing
+
+See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md) for guidelines.
+
+## License
+
+See [LICENSE](LICENSE) for details.

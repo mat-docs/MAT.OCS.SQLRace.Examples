@@ -1,0 +1,48 @@
+name: Validate Notebooks
+
+on:
+  push:
+    branches: [main]
+    paths: ['notebooks/**']
+  pull_request:
+    branches: [main]
+    paths: ['notebooks/**']
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install nbformat
+
+      - name: Validate notebook JSON structure
+        run: |
+          python -c "
+          import nbformat, glob, sys
+          errors = []
+          for nb_path in sorted(glob.glob('notebooks/**/*.ipynb', recursive=True)):
+              try:
+                  nb = nbformat.read(nb_path, as_version=4)
+                  # Check basic structure
+                  assert len(nb.cells) > 0, 'No cells'
+                  assert nb.cells[0].cell_type == 'markdown', 'First cell should be markdown'
+                  print(f'  OK: {nb_path} ({len(nb.cells)} cells)')
+              except Exception as e:
+                  errors.append(f'{nb_path}: {e}')
+          if errors:
+              print('\nErrors:')
+              print('\n'.join(errors))
+              sys.exit(1)
+          print(f'\nAll {len(list(glob.glob(\"notebooks/**/*.ipynb\", recursive=True)))} notebooks valid.')
+          "
+
+      - name: Check helpers module syntax
+        run: |
+          python -c "import ast; ast.parse(open('notebooks/sqlrace_helpers.py').read()); print('sqlrace_helpers.py syntax OK')"

@@ -1,0 +1,39 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore projects
+        run: dotnet restore projects/csharp/SqlRace.Examples.sln
+        env:
+          NUGET_AUTH_USERNAME: github-actions
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build projects
+        run: dotnet build projects/csharp/SqlRace.Examples.sln --no-restore --configuration Release
+
+      - name: Restore tests
+        run: dotnet restore tests/SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj
+        env:
+          NUGET_AUTH_USERNAME: github-actions
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build tests
+        run: dotnet build tests/SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test tests/SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj --no-build --configuration Release --verbosity normal
