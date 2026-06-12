@@ -1,15 +1,16 @@
 % ─────────────────────────────────────────────────────────────
-% SQL Race Example: Query Sessions
+% SQL Race Example: Reverse Iteration
 % ─────────────────────────────────────────────────────────────
 %
-% Demonstrates: Using QueryManager with ScalarFilter from MATLAB
+% Demonstrates: Using GoTo and GetNextSamples with StepDirection.Reverse to
+%               read data backwards from the end of a session
 % Prerequisites: MATLAB R2023a+, .NET 8 runtime, MESL.SqlRace.Domain DLL
 %                Run dotnetenv('core') once before using this snippet.
-% Input: A SQLite database with sessions
-% Output: Matching session identifiers and recording times
+% Input: A .ssn2 SQLite database file (defaults to scenario data)
+% Output: Samples printed in reverse chronological order
 %
-% Related: snippets/matlab/getting-started/load_session.m
-% Docs: https://atlas.motionapplied.com/developer-resources/atlas/sql-race/examples/session-loading/
+% Related: snippets/matlab/data-access/read_samples_between.m
+% Docs: https://atlas.motionapplied.com/developer-resources/atlas/sql-race/examples/parameter-data-access/
 % ─────────────────────────────────────────────────────────────
 
 % --- Configure .NET runtime (run once per MATLAB session) ---
@@ -31,64 +32,57 @@ end
 
 NET.addAssembly(sqlraceDll);
 import MESL.SqlRace.Domain.*;
-import MESL.SqlRace.Domain.Query.*;
+import MESL.SqlRace.Domain.Infrastructure.Enumerators.*;
 
 NET.setStaticProperty('MESL.SqlRace.Domain.Core.LicenceProgramName', 'SQLRace');
 Core.Initialize();
 
-% --- Connection string ---
+% --- Connection and session ---
 % Default: use the flight-test scenario data file bundled in the repo
 dataDir = fullfile(fileparts(mfilename('fullpath')), '..', '..', '..', ...
     'notebooks', 'scenarios', 'data');
 dbPath = fullfile(dataDir, 'flight-test-manoeuvre-extraction.ssn2');
+paramId = 'Temperature:Sensors';
 
 if ~exist(dbPath, 'file')
     error('File not found: %s\nCheck that notebooks/scenarios/data/ contains the .ssn2 files.', dbPath);
 end
 connectionString = sprintf('DbEngine=SQLite;Data Source=%s;', dbPath);
 
-% --- Create query manager with filter ---
-qm = QueryManager.CreateQueryManager(connectionString);
+sessionManager = SessionManager.CreateSessionManager();
+sessions = sessionManager.FindBySessionState(SessionState.Historical, connectionString);
+if sessions.Count == 0
+    error('No sessions found in %s', dbPath);
+end
+sessionKey = sessions.Item(0).Key;
+clientSession = sessionManager.Load(sessionKey, connectionString);
 
-% 'Test' matches the bundled scenario sessions (e.g. "Flight Test FT-042").
-% Change this to filter for your own session identifiers.
-searchTerm = 'Test';
-queryFilter = ScalarFilter('Identifier', MatchingRule.Contains, searchTerm, false);
-qm.Filter = queryFilter;
+try
+    session = clientSession.Session;
+    pda = session.CreateParameterDataAccess(paramId);
+    try
+        % --- Position the PDA at the end of the session ---
+        pda.GoTo(session.EndTime);
 
-fprintf('Searching for sessions matching "%s"...\n', searchTerm);
-fprintf('%-40s %-30s %s\n', 'Session Key', 'Identifier', 'Recorded');
-fprintf('%s\n', repmat('-', 1, 94));
+        % --- Read 10 samples backwards ---
+        % StepDirection lives in MESL.SqlRace.Domain.Infrastructure.Enumerators
+        samples = pda.GetNextSamples(10, StepDirection.Reverse);
 
-queryResult = qm.ExecuteQuery();
+        fprintf('Parameter: %s\n', paramId);
+        fprintf('Last %d samples (reverse order):\n', samples.SampleCount);
+        fprintf('%20s  %12s\n', 'Timestamp (ns)', 'Value');
+        fprintf('%s\n', repmat('-', 1, 34));
 
-% --- Enumerate results via reflection (required for .NET Core interop) ---
-t = queryResult.GetType();
-ienumIface = t.GetInterface('System.Collections.IEnumerable');
-miGetEnum = ienumIface.GetMethod('GetEnumerator');
-emptyArgs = NET.createArray('System.Object', 0);
-en = miGetEnum.Invoke(queryResult, emptyArgs);
-
-ienumeratorT = System.Type.GetType('System.Collections.IEnumerator');
-miMoveNext = ienumeratorT.GetMethod('MoveNext');
-propCurrent = ienumeratorT.GetProperty('Current');
-miGetCurrent = propCurrent.GetGetMethod();
-
-count = 0;
-while miMoveNext.Invoke(en, emptyArgs)
-    summary = miGetCurrent.Invoke(en, emptyArgs);
-    fprintf('%-40s %-30s %s\n', ...
-        char(summary.Key.ToString()), ...
-        char(summary.Identifier), ...
-        char(summary.TimeOfRecording.ToString()));
-    count = count + 1;
-    if count >= 20
-        break;
+        for i = 1:samples.SampleCount
+            fprintf('%20d  %12.4f\n', samples.Timestamp(i), samples.Data(i));
+        end
+    catch ex
+        fprintf('Error reading data: %s\n', ex.message);
     end
+    pda.Dispose();
+catch ex
+    fprintf('Error: %s\n', ex.message);
 end
 
-if count == 0
-    disp('No sessions found. Run create_session_write_data.m to create some.');
-else
-    fprintf('\n%d session(s) found.\n', count);
-end
+clientSession.Dispose();
+disp('Done.');

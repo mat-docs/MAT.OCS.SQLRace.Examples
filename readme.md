@@ -43,6 +43,14 @@ dotnet run
 | Build timestamp arrays | C# | [`timestamp-array-construction.cs`](snippets/csharp/data-access/timestamp-array-construction.cs) |
 | Load a session | Python | [`01_load_session.py`](snippets/python/getting-started/01_load_session.py) |
 | Load a session | MATLAB | [`load_session.m`](snippets/matlab/getting-started/load_session.m) |
+| Connect to a SQL Server database | MATLAB | [`load_session_from_database.m`](snippets/matlab/getting-started/load_session_from_database.m) |
+| List all parameters in a session | MATLAB | [`list_parameters.m`](snippets/matlab/getting-started/list_parameters.m) |
+| Create a session and write data | MATLAB | [`create_session_write_data.m`](snippets/matlab/getting-started/create_session_write_data.m) |
+| Read data in a time range | MATLAB | [`read_samples_between.m`](snippets/matlab/data-access/read_samples_between.m) |
+| Plot a set of parameters | MATLAB | [`plot_parameters.m`](snippets/matlab/data-access/plot_parameters.m) |
+| Work with markers, laps, events, metadata | MATLAB | [`session-management/`](snippets/matlab/session-management/) |
+| Inspect session configuration and units | MATLAB | [`configuration/`](snippets/matlab/configuration/) |
+| Poll the latest live samples | MATLAB | [`poll_live_samples.m`](snippets/matlab/live-data/poll_live_samples.m) |
 
 See [COOKBOOK.md](COOKBOOK.md) for a complete task-based index.
 
