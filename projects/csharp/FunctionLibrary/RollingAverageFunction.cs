@@ -1,65 +1,112 @@
 using System.ComponentModel.Composition;
-using MESL.SqlRace.Domain;
 using MESL.SqlRace.Domain.Functions;
 using MESL.SqlRace.Domain.Functions.DotNet;
+using MESL.SqlRace.Enumerators;
 
 namespace FunctionLibrary;
 
 /// <summary>
-/// A .NET function that computes a rolling average over a configurable time window.
-/// Demonstrates state management and timestamp-based windowing.
+/// A .NET function that computes a rolling (trailing) average over a fixed time window.
+/// Demonstrates timestamp-based windowing across a batch of input samples.
 /// </summary>
 /// <remarks>
 /// .NET functions are discovered via MEF [Export] and initialised by the function manager.
-/// The framework handles execution scheduling; the Initialize method configures the
-/// function definition with input/output bindings.
+/// Initialize configures the function definition (input, output parameter and the link
+/// back to this implementation); Execute is called once per data request to compute values.
 /// </remarks>
 [Export(typeof(IDotNetFunction))]
 [Serializable]
 public class RollingAverageFunction : IDotNetFunction
 {
     private const string InputParameter = "Temperature:Sensors";
-    private const string OutputParameter = "TemperatureAvg:Calculated";
-    private const long WindowNs = 1_000_000_000L; // 1 second window
-
-    [NonSerialized]
-    private readonly Queue<(long Timestamp, double Value)> _window = new();
+    private const string OutputName = "TemperatureAvg";
+    private const string OutputGroup = "Calculated";
+    private const string OutputIdentifier = OutputName + ":" + OutputGroup;
+    private const long WindowNs = 1_000_000_000L; // 1-second trailing window (nanoseconds)
 
     /// <inheritdoc/>
     public string Name => "RollingAverage";
 
     /// <summary>
-    /// Initialises the function definition with input/output parameter binding.
-    /// The framework discovers this function via MEF and calls Initialize at load time.
+    /// Creates the function definition, binds the input parameter, declares the output
+    /// parameter, and links the definition to this implementation so the framework
+    /// calls <see cref="Execute"/>.
     /// </summary>
     public void Initialize(IFunctionManager functionManager)
     {
-        // TODO: Verify — CreateFunctionDefinition parameter and IFunctionDefinition
-        // configuration API may differ across SQL Race versions.
-        var definition = functionManager.CreateFunctionDefinition(
-            DotNetFunctionConstants.UniqueId);
+        var definition = functionManager.CreateFunctionDefinition(DotNetFunctionConstants.UniqueId);
+        definition.Name = Name;
+        definition.CalculateOverWholeSession = false;
+        definition.InterpolateBetweenSamples = false;
+        definition.JoinGapsAroundNull = false;
+        definition.StoreInSession = false;
 
-        // Configure input/output via IFunctionDefinition properties.
+        // Link the definition to this .NET implementation; without this the framework
+        // has no Execute() body to invoke.
+        var implementation = (DotNetFunctionImplementationDefinition)definition.ImplementationDefinition;
+        implementation.Function = this;
+
         definition.InputParameterIdentifiers.Add(InputParameter);
 
-        // TODO: Verify — OutputParameterDefinitions configuration pattern.
-        // Output parameter setup varies by API version; consult the SQL Race
-        // function authoring guide for the installed version.
+        definition.OutputParameterDefinitions.Add(new FunctionOutputParameterDefinition
+        {
+            Name = OutputName,
+            ApplicationName = OutputGroup,
+            Description = "1-second rolling average of temperature",
+            Units = "degC",
+            FormatOverride = "%6.2f",
+            ByteOrder = ByteOrderType.BigEndian,
+            MinimumValue = "0",
+            MaximumValue = "1000",
+            ShowInBrowser = true,
+        });
 
         var buildResult = functionManager.Build(definition);
-        if (buildResult?.Errors?.Any() == true)
+        if (buildResult.Errors.Count > 0)
         {
             throw new InvalidOperationException(
-                $"RollingAverageFunction build failed: {string.Join("; ", buildResult.Errors)}");
+                $"RollingAverageFunction build failed: {buildResult.Errors.FirstOrDefault()?.ErrorText}");
         }
     }
 
     /// <summary>
-    /// Executes the function. Called by the framework for each execution cycle.
+    /// For each sample, averages all input samples within the trailing <see cref="WindowNs"/>
+    /// window. Uses a two-pointer sweep so the whole batch is processed in a single pass.
     /// </summary>
     public void Execute(IExecutionContext context)
     {
-        // TODO: Verify — IExecutionContext usage pattern for reading inputs
-        // and writing outputs varies by SQL Race version.
+        var timestamps = context.FunctionInput.Timestamps;
+        var sampleCount = timestamps.Length;
+        var inputIndex = context.FunctionInput.InputParameterIndexes[InputParameter];
+        var outputIndex = context.FunctionOutput.OutputParameterIndexes[OutputIdentifier];
+
+        var input = context.FunctionInput.Values[inputIndex];
+        var output = context.FunctionOutput.OutputParametersValues[outputIndex];
+
+        ComputeTrailingAverage(timestamps, input, output, WindowNs);
+    }
+
+    /// <summary>
+    /// Writes into <paramref name="output"/> the trailing-window average of <paramref name="input"/>:
+    /// each element is the mean of all samples within <paramref name="windowNs"/> before (and
+    /// including) its timestamp. Single-pass two-pointer sweep.
+    /// </summary>
+    public static void ComputeTrailingAverage(long[] timestamps, double[] input, double[] output, long windowNs)
+    {
+        var windowStart = 0;
+        var windowSum = 0.0;
+        for (var i = 0; i < timestamps.Length; i++)
+        {
+            windowSum += input[i];
+
+            // Drop samples that have fallen outside the trailing time window.
+            while (timestamps[i] - timestamps[windowStart] > windowNs)
+            {
+                windowSum -= input[windowStart];
+                windowStart++;
+            }
+
+            output[i] = windowSum / (i - windowStart + 1);
+        }
     }
 }

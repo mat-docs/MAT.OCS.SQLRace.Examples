@@ -61,7 +61,6 @@ foreach (var param in session.Parameters)
     var unit = "(unknown)";
     var format = "";
 
-    // TODO: Verify — GetConversion may be on ConfigurationSet or Session
     try
     {
         var conversion = session.GetConversion(conversionName);

@@ -16,9 +16,11 @@ A console application that demonstrates the pattern for connecting to an ATLAS D
 2. Multi-parameter configuration with `ParameterBuilder`
 3. A **read-transform-write** loop: raw telemetry → exponential moving average → derived parameter
 4. Async operation with `CancellationToken` for graceful Ctrl+C shutdown
-5. The pattern for detecting new sessions via `SessionManager.SessionEventOccurred`
+5. The pattern for detecting new sessions as part of the ADS streaming flow
 
-The ADS connection code is stubbed with `// TODO: Verify` comments since it requires a running ADS instance.
+The ADS connection code is illustrative only (commented out). Live recording requires a
+running ATLAS Data Server (ADS) instance and additional recorder types that aren't shown
+in this example.
 
 ## Prerequisites
 

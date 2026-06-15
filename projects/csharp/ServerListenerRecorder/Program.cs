@@ -34,8 +34,8 @@ Console.WriteLine($"Connection: {connectionString}");
 Console.WriteLine($"Listener:   {recorderConfig.ListenerIpAddress}:{recorderConfig.ListenerPort}");
 
 // ─── Configure Server Listener ───────────────────────────────
-// TODO: Verify — Core.ConfigureServer() and RecordersConfiguration API signatures
-// The server listener receives data pushed from ATLAS or another telemetry source.
+// The server listener (Core.ConfigureServer(bool, IPEndPoint) + RecordersConfiguration)
+// receives data pushed from ATLAS or another telemetry source.
 // In a real deployment, the server listener port in this application and the
 // corresponding port in ATLAS (Tools → SqlRace → Settings) must be different.
 Console.WriteLine($"Data source: {recorderConfig.ResolvedDataSourcePath}");

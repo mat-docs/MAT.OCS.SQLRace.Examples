@@ -6,8 +6,8 @@
 // Prerequisites: MESL.SQLRace.API NuGet package, .NET 8
 // Input: None (creates its own session)
 // Output: Event definitions structure and API usage patterns
-// TODO: Verify — EventDefinition persistence via ConfigurationSet.Commit() may require
-//       a full config (with at least one channel/parameter) to work with SQLite sessions.
+// Note: event definitions are persisted on ConfigurationSet.Commit(); on a brand-new
+//       SQLite session you may need at least one committed parameter/channel first.
 //
 // Related: snippets/csharp/session-management/marker-management.cs
 // Docs: https://mat-docs.github.io/Atlas.SQLRaceAPI.Documentation/api/index.html

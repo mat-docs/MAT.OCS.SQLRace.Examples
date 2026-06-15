@@ -44,19 +44,6 @@ foreach (var param in session.Parameters)
     Console.WriteLine($"{param.Identifier,-30} {param.ConversionFunctionName,-25} {param.ApplicationName,-15}");
 }
 
-// --- Channels ---
-// TODO: Verify — channel enumeration may require iterating parameters
-Console.WriteLine($"\n=== Channels ===");
-Console.WriteLine($"{"ID",8} {"Name",-20} {"Interval (ns)",15} {"DataType",-20}");
-Console.WriteLine(new string('─', 65));
-
-var seenChannels = new HashSet<string>();
-foreach (var param in session.Parameters)
-{
-    if (!seenChannels.Add(param.Name)) continue;
-    Console.WriteLine($"{"—",8} {param.Name,-20} {"(see channel)",15} {"(see channel)",-20}");
-}
-
 // --- Application Groups and Parameter Groups ---
 Console.WriteLine($"\n=== Application Groups ===");
 var appGroups = session.Parameters.Select(p => p.ApplicationName).Distinct();

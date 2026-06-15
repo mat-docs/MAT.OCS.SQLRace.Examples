@@ -14,3 +14,9 @@ dotnet run --project GettingStarted
 ```
 
 This creates a session in the default SQLite database at `%TEMP%/sqlrace-examples.ssn2`.
+
+## End-to-end validation
+
+For deterministic, verified-input/verified-output testing of the examples, see
+[the tests README](../README.md). It describes the `FixtureGenerator`, the capability and
+function tests, and the snippet smoke-runner.

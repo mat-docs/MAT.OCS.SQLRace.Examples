@@ -36,12 +36,12 @@ Console.WriteLine($"Listener:    {config.ListenerIpAddress}:{config.ListenerPort
 Console.WriteLine($"Connection:  {connectionString}");
 
 // ─── Initialise Recorder ─────────────────────────────────────
-// TODO: Verify — Recorders.Initialise() API signature
-// In production: Recorders.Initialise(config.ListenerIpAddress, config.ListenerPort);
+// NOTE: Live recording requires a running ATLAS Data Server (ADS) and recorder types
+// that aren't exercised in this example. The commented lines below sketch that
+// production flow; this example simulates the data instead, so it runs without a live ADS.
 Console.WriteLine("\nInitialising recorder subsystem...");
 
 // ─── Create Data Server Telemetry Recorder ───────────────────
-// TODO: Verify — DataServerTelemetryRecorder creation API
 // var recorder = new DataServerTelemetryRecorder();
 // recorder.ServerList.Refresh();
 //
@@ -56,15 +56,8 @@ Console.WriteLine("\nInitialising recorder subsystem...");
 var sessionCreated = new TaskCompletionSource<SessionKey>();
 var sessionManager = SessionManager.CreateSessionManager();
 
-// TODO: Verify — SessionManager.SessionEventOccurred event signature
-// sessionManager.SessionEventOccurred += (sender, e) =>
-// {
-//     if (e.EventType == SessionEventType.SessionCreated)
-//     {
-//         Console.WriteLine($"  Session detected: {e.SessionKey}");
-//         sessionCreated.TrySetResult(e.SessionKey);
-//     }
-// };
+// With a live ADS, new sessions arrive through the streaming flow and are surfaced by
+// the recorder; this example completes the task below from its simulation instead.
 
 Console.WriteLine("Waiting for session to be created...");
 Console.WriteLine("(In production, this waits for ADS to start streaming data)");
@@ -160,7 +153,8 @@ catch (Exception ex)
 }
 finally
 {
-    // TODO: Verify — recorder.StopRecording(), recorder.AutoRecordEnable = false, recorder.Dispose()
+    // With a live ADS recorder you would also stop and dispose it here
+    // (e.g. recorder.AutoRecordEnable = false; recorder.StopRecording(); recorder.Dispose()).
     clientSession?.Dispose();
     Console.WriteLine("Session closed. Recorder shut down.");
 }

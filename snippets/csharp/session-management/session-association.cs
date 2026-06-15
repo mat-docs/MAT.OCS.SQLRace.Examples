@@ -38,7 +38,6 @@ using (var associate = sessionManager.CreateSession(connectionString, associateK
 }
 
 // --- Associate them ---
-// TODO: Verify — association API may vary; some versions use SessionManager methods
 using (var primary = sessionManager.Load(primaryKey, connectionString))
 {
     primary.Session.AssociateWithParent(associateKey);
@@ -52,6 +51,6 @@ var session = loaded.Session;
 Console.WriteLine($"\nLoaded primary session: {session.Identifier}");
 Console.WriteLine($"  Items: {session.Items.Count}");
 
-// TODO: Verify — enumerate associated sessions via session.Associates or similar
-Console.WriteLine($"\nAssociation established. Use SessionManager.LoadAssociatesForSession()");
-Console.WriteLine($"to access the associated session's data alongside the primary.");
+// --- Load the associated sessions alongside the primary ---
+var associates = sessionManager.LoadAssociatesForSession(primaryKey, connectionString);
+Console.WriteLine($"  Associated sessions loaded: {associates.Count}");

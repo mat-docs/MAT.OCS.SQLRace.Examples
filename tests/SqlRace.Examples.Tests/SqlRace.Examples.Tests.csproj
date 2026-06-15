@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\projects\csharp\SqlRace.Examples.Core\SqlRace.Examples.Core.csproj" />
+    <ProjectReference Include="..\..\projects\csharp\FunctionLibrary\FunctionLibrary.csproj" />
+    <ProjectReference Include="..\..\tools\FixtureGenerator\FixtureGenerator.csproj" />
   </ItemGroup>
 
 </Project>
