@@ -28,7 +28,6 @@ dotnet build SqlRace.Examples.sln
 | Project | Description |
 |---------|-------------|
 | [session_explorer](python/session_explorer/) | Interactive CLI for browsing sessions and exporting to CSV/pickle |
-| [atlas_automation](python/atlas_automation/) | ATLAS Automation API controller (connection pattern, stubbed) |
 
 ## MATLAB
 

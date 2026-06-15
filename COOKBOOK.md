@@ -89,7 +89,6 @@ For complete, buildable applications, see [projects/](projects/).
 | Monitor a live session in real time? | [LiveDashboard](projects/csharp/LiveDashboard/) |
 | Create custom .NET functions? | [FunctionLibrary](projects/csharp/FunctionLibrary/) |
 | Browse and export sessions from Python? | [session_explorer](projects/python/session_explorer/) |
-| Control ATLAS from Python? | [atlas_automation](projects/python/atlas_automation/) |
 | Analyse sessions in MATLAB? | [session_analysis](projects/matlab/session_analysis/) |
 
 ### All C# projects
