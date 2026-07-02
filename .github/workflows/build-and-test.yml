@@ -1,0 +1,41 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore projects
+        run: dotnet restore projects/csharp/SqlRace.Examples.sln
+        env:
+          NUGET_AUTH_USERNAME: ${{ secrets.PACKAGES_USERNAME }}
+          NUGET_AUTH_TOKEN: ${{ secrets.PACKAGES_PATTOKEN }}
+
+      - name: Build projects
+        run: dotnet build projects/csharp/SqlRace.Examples.sln --no-restore --configuration Release
+
+      - name: Restore tests
+        run: dotnet restore tests/SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj
+        env:
+          NUGET_AUTH_USERNAME: ${{ secrets.PACKAGES_USERNAME }}
+          NUGET_AUTH_TOKEN: ${{ secrets.PACKAGES_PATTOKEN }}
+
+      - name: Build tests
+        run: dotnet build tests/SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj --no-restore --configuration Release
+
+      # NOTE: Tests are NOT executed in CI. Several tests initialise the SQL Race
+      # runtime via SqlRaceBootstrapper, which requires a SQL Race licence that the
+      # CI runner does not have (LicenceException). CI verifies compilation only;
+      # run `dotnet test` locally on a licenced machine to execute the test suite.

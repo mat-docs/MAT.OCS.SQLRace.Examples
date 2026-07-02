@@ -1,0 +1,25 @@
+#!/bin/bash
+# ─────────────────────────────────────────────────────────────
+# Pre-commit hook: run tests before allowing a commit
+# ─────────────────────────────────────────────────────────────
+# Install: ./scripts/install-hooks.sh
+# Bypass:  git commit --no-verify
+# ─────────────────────────────────────────────────────────────
+
+set -e
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+TEST_PROJECT="$REPO_ROOT/tests/SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj"
+
+echo "🔨 Building..."
+dotnet build "$TEST_PROJECT" --configuration Release --verbosity quiet 2>&1
+
+echo "🧪 Running tests..."
+if dotnet test "$TEST_PROJECT" --no-build --configuration Release --verbosity quiet 2>&1; then
+    echo "✅ All tests passed."
+else
+    echo ""
+    echo "❌ Tests failed. Commit blocked."
+    echo "   Fix the failing tests, or use 'git commit --no-verify' to skip."
+    exit 1
+fi

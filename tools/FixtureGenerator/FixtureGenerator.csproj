@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>FixtureGenerator</AssemblyName>
+    <RootNamespace>SqlRace.Examples.Fixtures</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\projects\csharp\SqlRace.Examples.Core\SqlRace.Examples.Core.csproj" />
+  </ItemGroup>
+</Project>
