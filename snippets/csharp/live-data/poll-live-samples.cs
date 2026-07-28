@@ -50,15 +50,33 @@ Console.WriteLine($"Polling {paramId} every 2s (30s timeout)...\n");
     }
 }
 
+var sessionSummary = sessionManager.FindSummaryBy(sessionKey, connectionString);
+
 var pollCount = 0;
+
+// --- Load the session with server listener so we can pick up live data ---
+using var clientSession = sessionManager.Load(sessionSummary.Key, sessionSummary.GetConnectionString());
+var session = clientSession.Session;
+
+using var pda = session.CreateParameterDataAccess(paramId);
+var lastEndTime = long.MinValue;
 while (!cts.Token.IsCancellationRequested)
 {
-    // --- Reload session each cycle to pick up newly flushed data ---
-    using var clientSession = sessionManager.Load(sessionKey, connectionString);
-    var session = clientSession.Session;
+    try { await Task.Delay(2000, cts.Token); }
+    catch (OperationCanceledException) { break; }
+    
+    // --- Check if the end time is updated. ---
+    var endTime = session.EndTime;
+    if (lastEndTime >= endTime)
+    {
+        // --- End time has not been changed. No new data. ---
+        Console.WriteLine($"  Poll {++pollCount}: no data yet");
+        continue;
+    }
 
-    using var pda = session.CreateParameterDataAccess(paramId);
-    pda.GoTo(long.MaxValue);
+    // --- End time has changed. Update lastEndTime and fetch the latest samples. ---
+    lastEndTime = endTime;
+    pda.GoTo(lastEndTime);
     var samples = pda.GetNextSamples(5, StepDirection.Reverse);
 
     if (samples.SampleCount > 0)
@@ -71,9 +89,6 @@ while (!cts.Token.IsCancellationRequested)
     {
         Console.WriteLine($"  Poll {++pollCount}: no data yet");
     }
-
-    try { await Task.Delay(2000, cts.Token); }
-    catch (OperationCanceledException) { break; }
 }
 
 Console.WriteLine($"\nPolling complete — {pollCount} polls.");
