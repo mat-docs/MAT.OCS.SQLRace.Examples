@@ -1,9 +1,12 @@
-using MESL.SqlRace.Domain;
-using MESL.SqlRace.Domain.Infrastructure.Enumerators;
-using MESL.SqlRace.Domain.Query;
-using Microsoft.Extensions.Configuration;
-using SqlRace.Examples.Core;
 using LiveDashboard;
+
+using MESL.SqlRace.Domain;
+using MESL.SqlRace.Domain.Infrastructure.DataPipeline;
+using MESL.SqlRace.Domain.Query;
+
+using Microsoft.Extensions.Configuration;
+
+using SqlRace.Examples.Core;
 
 // ─── Configuration ───────────────────────────────────────────
 var configuration = new ConfigurationBuilder()
@@ -48,7 +51,6 @@ if (sessions.Count == 0)
 var sessionManager = SessionManager.CreateSessionManager();
 IClientSession? clientSession = null;
 Session? session = null;
-dynamic? loadKey = null; // Store the key for reloading
 
 if (!string.IsNullOrEmpty(configuredSessionId))
 {
@@ -57,13 +59,16 @@ if (!string.IsNullOrEmpty(configuredSessionId))
     {
         Console.WriteLine($"Session '{configuredSessionId}' not found. Available:");
         foreach (var s in sessions.OrderByDescending(s => s.TimeOfRecording).Take(5))
+        {
             Console.WriteLine($"  {s.Identifier} ({s.Key})");
+        }
+
         return;
     }
 
-    clientSession = sessionManager.Load(match.Key, connectionString);
+    var sessionConnectionString = match.GetConnectionString();
+    clientSession = sessionManager.Load(match.Key, sessionConnectionString);
     session = clientSession.Session;
-    loadKey = match.Key;
     Console.WriteLine($"Loading configured session: {match.Identifier} ({match.Key})");
 }
 else
@@ -71,38 +76,43 @@ else
     // Try sessions newest-first, skip any with no sample data
     foreach (var candidate in sessions.OrderByDescending(s => s.TimeOfRecording))
     {
-        var tempClient = sessionManager.Load(candidate.Key, connectionString);
+        var sessionConnectionString = candidate.GetConnectionString();
+        var tempClient = sessionManager.Load(candidate.Key, sessionConnectionString);
         var tempSession = tempClient.Session;
 
         // Check if the first configured parameter has any data
         var testParam = paramIds.FirstOrDefault(id =>
             tempSession.Parameters.Any(p => p.Identifier == id));
 
-        if (testParam != null)
+        if (testParam == null)
         {
-            using var testPda = tempSession.CreateParameterDataAccess(testParam);
-            testPda.GoTo(long.MaxValue);
-            var testSamples = testPda.GetNextSamples(1, StepDirection.Reverse);
-
-            if (testSamples.SampleCount > 0)
-            {
-                clientSession = tempClient;
-                session = tempSession;
-                loadKey = candidate.Key;
-                Console.WriteLine($"Loading session: {candidate.Identifier} ({candidate.Key})");
-                break;
-            }
+            tempClient.Close();
+            Console.WriteLine($"Skipping session {candidate.Identifier} (test parameter not found)");
+            continue;
         }
 
-        tempClient.Dispose();
-        Console.WriteLine($"Skipping session {candidate.Identifier} (no sample data)");
-    }
+        using var testPda = tempSession.CreateParameterDataAccess(testParam);
+        var sampleCount = testPda.GetSamplesCount(tempSession.StartTime, tempSession.EndTime);
 
-    if (session == null)
-    {
-        Console.WriteLine("No sessions with sample data found.");
-        return;
+        if (sampleCount == 0)
+        {
+            Console.WriteLine($"Skipping session {candidate.Identifier} (no sample data)");
+            tempClient.Close();
+            continue;
+        }
+
+        clientSession = tempClient;
+        session = tempSession;
+        Console.WriteLine($"Loading session: {candidate.Identifier} ({candidate.Key})");
+        break;
     }
+}
+
+if (clientSession == null ||
+    session == null)
+{
+    Console.WriteLine("No sessions with sample data found.");
+    return;
 }
 
 // ─── Resolve available parameters ────────────────────────────
@@ -121,51 +131,17 @@ if (availableParams.Count == 0)
 var renderer = new DashboardRenderer(pollingMs);
 var sessionId = session.Identifier;
 
+var lastEndTime = long.MinValue;
+// Create a list of PDAs for the available parameters.
+var parameterPdas = new List<ParameterDataAccessBase>(availableParams.Count);
+foreach (var param in availableParams)
+{
+    var pda = session.CreateParameterDataAccess(param);
+    parameterPdas.Add(pda);
+}
+
 while (!cts.Token.IsCancellationRequested)
 {
-    // Reload session each cycle to pick up newly flushed data
-    clientSession?.Dispose();
-    clientSession = sessionManager.Load(loadKey!, connectionString);
-    session = clientSession.Session;
-
-    var stats = new List<DashboardRenderer.ParameterStats>();
-
-    foreach (var paramId in availableParams)
-    {
-        // Create a fresh PDA each cycle so we always see the latest live data
-        using var pda = session.CreateParameterDataAccess(paramId);
-        pda.GoTo(long.MaxValue);
-        var samples = pda.GetNextSamples(windowSize, StepDirection.Reverse);
-
-        if (samples.SampleCount == 0)
-        {
-            stats.Add(new DashboardRenderer.ParameterStats(
-                paramId, double.NaN, double.NaN, double.NaN, double.NaN, 0));
-            continue;
-        }
-
-        var latest = samples.Data[0];
-        var min = double.MaxValue;
-        var max = double.MinValue;
-        var sum = 0.0;
-
-        for (var j = 0; j < samples.SampleCount; j++)
-        {
-            var v = samples.Data[j];
-            if (v < min) min = v;
-            if (v > max) max = v;
-            sum += v;
-        }
-
-        stats.Add(new DashboardRenderer.ParameterStats(
-            paramId, latest, min, max, sum / samples.SampleCount, samples.SampleCount));
-    }
-
-    renderer.Render(
-        sessionId,
-        session.EndTime > session.StartTime ? "Data" : "Empty",
-        stats);
-
     try
     {
         await Task.Delay(pollingMs, cts.Token);
@@ -174,8 +150,79 @@ while (!cts.Token.IsCancellationRequested)
     {
         break;
     }
+
+    var stats = new List<DashboardRenderer.ParameterStats>();
+    if (lastEndTime >= session.EndTime)
+    {
+        // -- No updates to the session, skip this polling cycle --
+        continue;
+    }
+
+    lastEndTime = session.EndTime;
+
+    foreach (var pda in parameterPdas)
+    {
+        // Query the PDA for new samples
+        var pdaEndTime = pda.GetEndTime();
+        if (pdaEndTime == null)
+        {
+            // No samples are available for the PDA.
+            stats.Add(
+                new DashboardRenderer.ParameterStats(
+                    pda.ParameterIdentifier,
+                    double.NaN,
+                    double.NaN,
+                    double.NaN,
+                    double.NaN,
+                    0));
+            continue;
+        }
+
+        var maxSampleIntervalNs = (long)(1_000_000_000 / pda.GetMaximumFrequency());
+        var duration = maxSampleIntervalNs * windowSize;
+        var startTime = pdaEndTime.Value - duration;
+        // Grab specifically the end, Max, Min, and Average values for the parameter over the window.
+        var dataStatistics = pda.GetDataStatistics(
+            startTime,
+            duration,
+            statisticOption: StatisticOption.End | StatisticOption.Max | StatisticOption.Min | StatisticOption.Mean);
+
+        if (dataStatistics.NumberOfSamples == 0)
+        {
+            // No samples are available for the PDA in the specified window.
+            stats.Add(
+                new DashboardRenderer.ParameterStats(
+                    pda.ParameterIdentifier,
+                    double.NaN,
+                    double.NaN,
+                    double.NaN,
+                    double.NaN,
+                    0));
+            continue;
+        }
+
+        var latest = dataStatistics.EndValue;
+        var min = dataStatistics.MinimumValue;
+        var max = dataStatistics.MaximumValue;
+
+        stats.Add(
+            new DashboardRenderer.ParameterStats(
+                pda.ParameterIdentifier,
+                latest,
+                min,
+                max,
+                dataStatistics.MeanValue,
+                dataStatistics.NumberOfSamples));
+    }
+
+    renderer.Render(
+        sessionId,
+        session.EndTime > session.StartTime ? "Data" : "Empty",
+        stats);
 }
 
 Console.SetCursorPosition(0, Console.CursorTop + 1);
 Console.WriteLine("Dashboard stopped.");
-clientSession?.Dispose();
+// Dispose all PDAs once we are done.
+parameterPdas.ForEach(x => x.Dispose());
+clientSession.Close();
