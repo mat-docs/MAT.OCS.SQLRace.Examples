@@ -111,7 +111,8 @@ def load_session(session_manager, session_guid, connection_string=None):
 
     key = SessionKey.Parse(session_guid)
     cs = connection_string or get_connection_string()
-    client_session = session_manager.Load(key, cs)
+    session_summary = session_manager.FindSummaryBy(key, cs)
+    client_session = session_manager.Load(session_summary.key, session_summary.GetConnectionString())
     return client_session, client_session.Session
 
 
