@@ -360,6 +360,44 @@ try {
         return $true
     }
 
+# Preflight for the Python leg. Without it, a machine with no Python produces
+    # one identical "The system cannot find the file specified" per snippet and
+    # nothing that says Python is simply not installed - which is exactly how it
+    # first showed up on a build agent.
+    #
+    # Returns $null when Python is usable, otherwise the reason it is not.
+    function Test-PythonAvailable {
+        $python = Get-Command python -ErrorAction SilentlyContinue
+        if (-not $python) {
+            Write-Host 'Python not found on PATH - skipping the Python leg.' -ForegroundColor Yellow
+            Write-Host '  Install Python 3, then: pip install pythonnet cffi pandas' -ForegroundColor Yellow
+            return 'Python is not installed on this machine'
+        }
+
+        # pythonnet needs clr_loader, which needs cffi. A missing cffi fails
+        # inside pythonnet.load() with a runtime error that reads like a SQL Race
+        # fault rather than a missing dependency.
+        $previousPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        try {
+            $probe = & python -c "import clr_loader, cffi" 2>&1 | ForEach-Object { $_.ToString() }
+            $exitCode = $LASTEXITCODE
+        }
+        finally {
+            $ErrorActionPreference = $previousPreference
+        }
+
+        if ($exitCode -ne 0) {
+            Write-Host "Python is installed ($($python.Source)) but pythonnet is not usable - skipping the Python leg." -ForegroundColor Yellow
+            $probe | Select-Object -First 3 | ForEach-Object { Write-Host "  $_" -ForegroundColor Yellow }
+            Write-Host '  Fix with: pip install pythonnet cffi pandas' -ForegroundColor Yellow
+            return 'pythonnet or its dependencies are missing'
+        }
+
+        Write-Host "Python ready ($($python.Source))" -ForegroundColor DarkGray
+        return $null
+    }
+
     function Invoke-MatlabSnippet {
         param ([hashtable] $Snippet, [string[]] $Arguments)
 
@@ -404,6 +442,18 @@ try {
                 }
             }
             continue
+        }
+
+        if ($lang -eq 'Python') {
+            $reason = Test-PythonAvailable
+            if ($reason) {
+                foreach ($snippet in $snippets) {
+                    $results += [pscustomobject]@{
+                        Language = 'Python'; Snippet = $snippet.Name; Status = 'SKIP'; Detail = $reason
+                    }
+                }
+                continue
+            }
         }
 
         Write-Host ""
