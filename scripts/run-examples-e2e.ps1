@@ -211,6 +211,49 @@ try {
         }
     }
 
+# Preflight before the MATLAB leg. A MATLAB startup costs the better part of a
+    # minute, so without this a missing install or an unavailable licence seat
+    # produces twenty-odd identical failures over quarter of an hour instead of
+    # one clear message in forty seconds.
+    #
+    # Licensing is a network checkout: <matlabroot>/licenses/network.lic points at
+    # the FlexLM server, or MLM_LICENSE_FILE overrides it as port@host. Note that
+    # FlexLM needs two ports open - lmgrd (27000 by default) and the MLM vendor
+    # daemon, which is randomly assigned unless the server pins it with
+    # "port=" on its DAEMON line.
+    function Test-MatlabAvailable {
+        $matlab = Get-Command matlab -ErrorAction SilentlyContinue
+        if (-not $matlab) {
+            Write-Host 'MATLAB not found on PATH - skipping the MATLAB leg.' -ForegroundColor Yellow
+            Write-Host '  Install MATLAB, or run with -Language CSharp or -Language Python.' -ForegroundColor Yellow
+            return $false
+        }
+
+        Write-Host "Checking out a MATLAB licence ($($matlab.Source))..." -ForegroundColor Cyan
+        $previousPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        try {
+            $probe = & matlab -batch "fprintf('MATLAB %s licensed\n', version)" 2>&1 |
+                ForEach-Object { $_.ToString() }
+            $exitCode = $LASTEXITCODE
+        }
+        finally {
+            $ErrorActionPreference = $previousPreference
+        }
+
+        if ($exitCode -ne 0) {
+            Write-Host 'MATLAB is installed but would not start - skipping the MATLAB leg.' -ForegroundColor Yellow
+            $probe | Select-Object -First 6 | ForEach-Object { Write-Host "  $_" -ForegroundColor Yellow }
+            Write-Host "  MLM_LICENSE_FILE = $($env:MLM_LICENSE_FILE)" -ForegroundColor Yellow
+            Write-Host '  A licence manager error here usually means the agent cannot reach' -ForegroundColor Yellow
+            Write-Host '  the FlexLM server, or no concurrent seat is free.' -ForegroundColor Yellow
+            return $false
+        }
+
+        Write-Host "  $($probe | Where-Object { $_ -match 'licensed' } | Select-Object -First 1)" -ForegroundColor DarkGray
+        return $true
+    }
+
     function Invoke-MatlabSnippet {
         param ([hashtable] $Snippet, [string[]] $Arguments)
 
@@ -247,6 +290,16 @@ try {
     foreach ($lang in $languages) {
         $snippets = @($manifest[$lang] | Where-Object { $_.Name -like $Filter })
         if ($snippets.Count -eq 0) { continue }
+
+        if ($lang -eq 'Matlab' -and -not (Test-MatlabAvailable)) {
+            foreach ($snippet in $snippets) {
+                $results += [pscustomobject]@{
+                    Language = 'Matlab'; Snippet = $snippet.Name; Status = 'SKIP'
+                    Detail   = 'MATLAB unavailable or unlicensed on this machine'
+                }
+            }
+            continue
+        }
 
         Write-Host ""
         Write-Host "########## $lang ##########" -ForegroundColor Yellow
