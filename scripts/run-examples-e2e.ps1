@@ -41,6 +41,18 @@ param (
     # ships. Empty means whatever the projects resolve normally.
     [string] $SqlRaceApiVersion,
 
+    # Extra NuGet source, normally a folder holding a .nupkg that has not been
+    # published anywhere - the package a CI build just produced, for instance.
+    # Passed as RestoreAdditionalProjectSources rather than added with
+    # "dotnet nuget add source", because the repo nuget.config starts with
+    # <clear /> and would discard a source added at user level.
+    [string] $AdditionalPackageSource,
+
+    # Hard limit per snippet. Nothing here is supposed to wait on anything, so
+    # a snippet still running after this has hung and is killed. Generous
+    # because a cold MATLAB start alone is most of a minute.
+    [int] $SnippetTimeoutSeconds = 180,
+
     [switch] $SkipBuild
 )
 
@@ -56,6 +68,9 @@ try {
 
     $buildArgs = @('-c', 'Release', '-v', 'quiet')
     if ($SqlRaceApiVersion) { $buildArgs += "-p:SqlRaceApiVersion=$SqlRaceApiVersion" }
+    if ($AdditionalPackageSource) {
+        $buildArgs += "-p:RestoreAdditionalProjectSources=$AdditionalPackageSource"
+    }
 
     # ── Normalisation ────────────────────────────────────────
     #
@@ -106,13 +121,104 @@ try {
     # order snippets execute in, and of whether a previous run left anything
     # behind.
     function Reset-Fixture {
-        if (Test-Path $fixturePath) { Remove-Item $fixturePath -Force }
-        & 'tools/FixtureGenerator/bin/Release/net8.0/FixtureGenerator.exe' $fixturePath | Out-Null
-        if ($LASTEXITCODE -ne 0) { throw 'Fixture generation failed' }
+        # SQLite handles are not always released the instant a snippet process
+        # exits, so deleting and regenerating can lose a race with the previous
+        # snippet. Retry rather than failing the whole run on a transient lock.
+        for ($attempt = 1; $attempt -le 5; $attempt++) {
+            try {
+                if (Test-Path $fixturePath) { Remove-Item $fixturePath -Force -ErrorAction Stop }
+                & 'tools/FixtureGenerator/bin/Release/net8.0/FixtureGenerator.exe' $fixturePath | Out-Null
+                if ($LASTEXITCODE -eq 0) { return }
+            }
+            catch {
+                if ($attempt -eq 5) { throw "Could not reset the fixture: $($_.Exception.Message)" }
+            }
+            Start-Sleep -Milliseconds (200 * $attempt)
+        }
+        throw "Fixture generation failed after 5 attempts (file locked by a previous snippet?)"
     }
 
     Write-Host "Verified fixture at $fixturePath" -ForegroundColor Cyan
     Reset-Fixture
+
+    # Runs an external command with a hard timeout, capturing both streams.
+    #
+    # Needed because a snippet can hang rather than fail - one waiting on live
+    # data that never arrives, or a MATLAB session that stops for input. Without
+    # a timeout that wedges the entire run, and because the hung process keeps a
+    # handle on the fixture, every subsequent snippet fails too. Nothing is
+    # supposed to sit and wait here, so a snippet still running after the
+    # timeout is a failure by definition.
+    function Invoke-WithTimeout {
+        param (
+            [Parameter(Mandatory)][string] $FilePath,
+            [string[]] $ArgumentList = @(),
+            [string] $WorkingDirectory = $repo,
+            [int] $TimeoutSeconds = $SnippetTimeoutSeconds
+        )
+
+        $stdout = [System.IO.Path]::GetTempFileName()
+        $stderr = [System.IO.Path]::GetTempFileName()
+
+        try {
+            $startArgs = @{
+                FilePath               = $FilePath
+                WorkingDirectory       = $WorkingDirectory
+                RedirectStandardOutput = $stdout
+                RedirectStandardError  = $stderr
+                NoNewWindow            = $true
+                PassThru               = $true
+            }
+            if ($ArgumentList.Count -gt 0) { $startArgs.ArgumentList = $ArgumentList }
+
+            $process = Start-Process @startArgs
+
+            # Touching Handle caches it. Without this, Start-Process -PassThru
+            # hands back an object that releases the native handle on exit and
+            # ExitCode reads back empty - every snippet then looks like a
+            # failure with no exit code to explain it.
+            $null = $process.Handle
+
+            if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
+                # Kill the tree: dotnet run spawns the snippet as a child, and
+                # killing only the parent would leave the child holding the
+                # fixture open.
+                try { $process.Kill($true) } catch { }
+                $process.WaitForExit(5000) | Out-Null
+                return [pscustomobject]@{
+                    ExitCode = -1
+                    TimedOut = $true
+                    Lines    = @("Timed out after $TimeoutSeconds seconds.")
+                }
+            }
+
+            # The timed WaitForExit overload can return before the exit code is
+            # cached on the object, leaving ExitCode empty. The parameterless
+            # overload also waits for the redirected streams to be flushed, so
+            # this both populates ExitCode and guarantees the files are complete.
+            $process.WaitForExit()
+
+            $lines = @()
+            foreach ($file in $stdout, $stderr) {
+                if ((Get-Item $file).Length -gt 0) {
+                    # The snippets write UTF-8 (box-drawing characters in table
+                    # rules, en dashes in ranges). Get-Content defaults to the
+                    # ANSI codepage on Windows PowerShell, which would mangle
+                    # them into mojibake and fail every golden comparison.
+                    $lines += (Get-Content $file -Encoding UTF8 -ErrorAction SilentlyContinue)
+                }
+            }
+
+            return [pscustomobject]@{
+                ExitCode = $process.ExitCode
+                TimedOut = $false
+                Lines    = $lines
+            }
+        }
+        finally {
+            Remove-Item $stdout, $stderr -Force -ErrorAction SilentlyContinue
+        }
+    }
 
     # ── C# runner project ────────────────────────────────────
     #
@@ -149,10 +255,10 @@ try {
         # against the project directory, not the working directory.
         $snippetFile = (Resolve-Path $Snippet.Path).Path
 
-        $output = & dotnet run --project $runnerProject @buildArgs `
-            "-p:SnippetFile=$snippetFile" -- @Arguments 2>&1 |
-            ForEach-Object { $_.ToString() }
-        return [pscustomobject]@{ ExitCode = $LASTEXITCODE; Lines = $output }
+        $dotnetArgs = @('run', '--project', $runnerProject) + $buildArgs +
+                      @("-p:SnippetFile=$snippetFile", '--') + $Arguments
+
+        return Invoke-WithTimeout -FilePath 'dotnet' -ArgumentList $dotnetArgs
     }
 
     # A NuGet-restored build keeps platform-specific assets under runtimes/<rid>/
@@ -203,8 +309,8 @@ try {
         $previousEncoding = $env:PYTHONIOENCODING
         $env:PYTHONIOENCODING = 'utf-8'
         try {
-            $output = & python $Snippet.Path @Arguments 2>&1 | ForEach-Object { $_.ToString() }
-            return [pscustomobject]@{ ExitCode = $LASTEXITCODE; Lines = $output }
+            return Invoke-WithTimeout -FilePath 'python' `
+                -ArgumentList (@((Resolve-Path $Snippet.Path).Path) + $Arguments)
         }
         finally {
             $env:PYTHONIOENCODING = $previousEncoding
@@ -261,8 +367,7 @@ try {
         # error, and needs an absolute path since it does not inherit our cwd
         # semantics for run().
         $full = (Resolve-Path $Snippet.Path).Path
-        $output = & matlab -batch "run('$full')" 2>&1 | ForEach-Object { $_.ToString() }
-        return [pscustomobject]@{ ExitCode = $LASTEXITCODE; Lines = $output }
+        return Invoke-WithTimeout -FilePath 'matlab' -ArgumentList @('-batch', "run('$full')")
     }
 
     $runners = @{
@@ -356,7 +461,13 @@ try {
             $status = 'PASS'
             $detail = ''
 
-            if ($run.ExitCode -ne 0) {
+            if ($run.TimedOut) {
+                # Distinct from a plain failure: the snippet is hung, not wrong.
+                # Named separately so nobody goes looking for a data mismatch.
+                $status = 'TIMEOUT'
+                $detail = "hung and was killed after $SnippetTimeoutSeconds seconds"
+            }
+            elseif ($run.ExitCode -ne 0) {
                 $status = 'FAIL'
                 $detail = "exit code $($run.ExitCode)"
             }
@@ -418,7 +529,7 @@ try {
         ForEach-Object { "{0,-22} {1}" -f $_.Name, $_.Count } |
         Write-Host
 
-    $bad = @($results | Where-Object { $_.Status -in @('FAIL', 'DIFF') })
+    $bad = @($results | Where-Object { $_.Status -in @('FAIL', 'DIFF', 'TIMEOUT') })
     $ungolden = @($results | Where-Object { $_.Status -eq 'NOGOLD' })
     $skipped = @($results | Where-Object { $_.Status -eq 'SKIP' })
 

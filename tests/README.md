@@ -36,6 +36,21 @@ dotnet test SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj -p:SqlRaceApiVe
 ../scripts/run-examples-e2e.ps1 -SqlRaceApiVersion 2.1.26212.6-ci
 ```
 
+If the candidate has not been published anywhere — a package a PR build just
+produced, for instance — point at the folder holding the `.nupkg` instead. Nothing
+needs publishing for this to work:
+
+```powershell
+../scripts/run-examples-e2e.ps1 `
+    -SqlRaceApiVersion 2.1.26212.6-ci `
+    -AdditionalPackageSource C:\path\to\packages
+```
+
+`SqlRaceApiVersion` is defined once in `Directory.Build.props` at the repo root, so
+it applies to every project at once. Overriding it on the test project alone would
+leave `SqlRace.Examples.Core` and `FunctionLibrary` resolving whatever is published,
+and the run would silently mix two different SQL Race builds.
+
 The SQL Race pipeline runs both against every nightly build — see
 `Build/generic-steps/run-consumer-compat-tests.yml` in `MAT.OCS.SQLRace.API`. That is the
 counterpart to its `check-api-compatibility.yml`, which diffs the public API surface against

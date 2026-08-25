@@ -7,6 +7,6 @@
     <NoWarn>$(NoWarn);CA1416</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MESL.SQLRace.API" Version="*" />
+    <PackageReference Include="MESL.SQLRace.API" Version="$(SqlRaceApiVersion)" />
   </ItemGroup>
 </Project>
