@@ -1,0 +1,17 @@
+﻿Parameter: Speed:Shaft
+Total samples: 6250
+Status breakdown:
+  Sample            6250 (100.0%)
+Valid samples (Sample status):
+  t+   <measure>  192.0000
+  t+  <measure>  192.0000
+  t+  <measure>  194.0000
+  t+  <measure>  197.0000
+  t+  <measure>  194.0000
+  t+ <measure>  195.0000
+  t+ <measure>  199.0000
+  t+ <measure>  198.0000
+  t+ <measure>  196.0000
+  t+ <measure>  199.0000
+Total valid: 6250 / 6250
+Done.

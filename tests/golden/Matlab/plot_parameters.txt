@@ -1,0 +1,5 @@
+﻿Pressure:Inlet            6000 samples
+Temperature:Sensors       6000 samples
+RPM:Turbine               6000 samples
+Displayed 3 parameter(s).
+Done.

@@ -1,0 +1,16 @@
+﻿Timetable: 2400 rows
+    timeVector    Temperature:Sensors
+    __________    ___________________
+    0 sec                 -4
+    0.05 sec              -4
+    0.1 sec               -5
+    0.15 sec              -4
+    0.2 sec               -5
+    0.25 sec              -5
+    0.3 sec               -5
+    0.35 sec              -5
+    0.4 sec               -4
+    0.45 sec              -4
+Min:  -7.0000
+Max:  -1.0000
+Mean: -4.1037

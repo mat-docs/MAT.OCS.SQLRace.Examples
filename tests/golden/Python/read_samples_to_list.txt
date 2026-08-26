@@ -1,0 +1,7 @@
+﻿Extracted 1000 samples into Python lists
+  Type: timestamps=list, values=list
+  First: t=36000000000000 ns, v=20.0000
+  Last:  t=36009990000000 ns, v=119.9000
+  Min:   20.0000
+  Max:   119.9000
+  Mean:  69.9500

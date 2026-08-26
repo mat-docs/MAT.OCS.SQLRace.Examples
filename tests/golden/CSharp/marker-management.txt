@@ -1,0 +1,10 @@
+﻿Session <guid>: 3 markers added
+  [Anomaly] 36000000000000–36002000000000 ns (<measure>)
+    Type: Anomaly
+    Description: Unexpected temperature spike detected
+  [RegionOfInterest] 36005000000000–36008000000000 ns (<measure>)
+    Type: RegionOfInterest
+    Description: Steady-state operating window
+  [Transient] 36010000000000–36012000000000 ns (<measure>)
+    Type: Transient
+    Description: Load step response period

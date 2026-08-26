@@ -1,0 +1,13 @@
+﻿File: <path>
+Sessions found: 1
+Loaded session: <guid>
+  Identifier:     Verified Test Session
+  Start time:     36000000000000 ns
+  End time:       36009990000000 ns
+  Duration:       <measure>
+  Parameters:     3
+  Laps:           0
+  Parameters:
+    - Pressure:Inlet
+    - Temperature:Sensors
+    - Speed:Shaft

@@ -1,0 +1,14 @@
+﻿Session: Verified Test Session (<guid>)
+=== Parameters (3) ===
+Identifier                     Conversion                AppGroup
+────────────────────────────────────────────────────────────────────────
+Pressure:Inlet                 Pressure:Inlet_conversion Sensors
+Temperature:Sensors            Temperature:Sensors_conversion Sensors
+Speed:Shaft                    Speed:Shaft_conversion    Driveline
+=== Application Groups ===
+  Sensors
+  Driveline
+=== Parameter Groups ===
+  Hydraulic
+  Thermal
+  Rotation

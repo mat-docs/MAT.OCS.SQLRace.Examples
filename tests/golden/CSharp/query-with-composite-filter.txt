@@ -1,0 +1,4 @@
+﻿Filter: Identifier contains 'Example' AND recorded in last 30 days
+Session Key                              Identifier                                   Recorded
+──────────────────────────────────────────────────────────────────────────────────────────────
+No sessions matched. Create some sessions first with 04-create-session-write-data.cs.

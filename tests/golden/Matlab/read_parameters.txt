@@ -1,0 +1,5 @@
+﻿Parameter: Temperature:Sensors
+Samples:   2400
+Min:       -7.0000
+Max:       -1.0000
+Mean:      -4.1037

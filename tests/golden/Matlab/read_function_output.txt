@@ -1,0 +1,7 @@
+﻿Session: Track Test Session 1
+Function parameters found: 0
+No function parameters in this session.
+Author a function in ATLAS (or via the .NET FunctionManager API),
+then re-run: its output appears as a "<name>:Functions" parameter
+and is read exactly like the example below.
+Done.

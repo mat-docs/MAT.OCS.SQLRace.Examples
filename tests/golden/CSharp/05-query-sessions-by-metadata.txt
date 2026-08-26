@@ -1,0 +1,6 @@
+﻿=== All sessions ===
+  <guid>  Verified Test Session           <datetime>Z
+Total: 1 session(s)
+=== Sessions matching 'Example' ===
+  No sessions found matching 'Example'.
+  Tip: Run 04-create-session-write-data.cs to create some sessions.

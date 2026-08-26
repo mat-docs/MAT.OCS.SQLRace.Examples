@@ -1,0 +1,4 @@
+﻿Searching for sessions matching 'Example'...
+Session Key                              Identifier                                   Recorded
+──────────────────────────────────────────────────────────────────────────────────────────────
+No sessions found. Run 04-create-session-write-data.cs to create some.

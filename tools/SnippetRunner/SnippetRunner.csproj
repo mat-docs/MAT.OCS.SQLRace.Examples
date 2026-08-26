@@ -5,8 +5,36 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <NoWarn>$(NoWarn);CA1416</NoWarn>
+
+    <!--
+      Which SQL Race build to run the snippets against. "*" floats to the newest
+      release on the feed. A compatibility run overrides it to point at a
+      candidate before that candidate ships:
+
+        dotnet run -p:SqlRaceApiVersion=2.1.26212.6-ci
+    -->
+    <SqlRaceApiVersion Condition="'$(SqlRaceApiVersion)' == ''">*</SqlRaceApiVersion>
   </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="MESL.SQLRace.API" Version="*" />
+    <PackageReference Include="MESL.SQLRace.API" Version="$(SqlRaceApiVersion)" />
+  </ItemGroup>
+
+  <!--
+    Setting SnippetFile to the absolute path of a snippet compiles that snippet
+    as the program instead of Program.cs, so an arbitrary snippet can be run
+    without modifying anything in the working tree.
+
+    scripts/run-examples-e2e.ps1 drives this. It used to copy each snippet over
+    Program.cs and restore it in a finally block, which left the repo dirty for
+    the duration and lost the original if the run was interrupted. Swapping the
+    compile item instead keeps the working tree clean.
+
+    (XML comments cannot contain a double hyphen, so the exact command line is
+    documented in run-examples-e2e.ps1 rather than here.)
+  -->
+  <ItemGroup Condition="'$(SnippetFile)' != ''">
+    <Compile Remove="Program.cs" />
+    <Compile Include="$(SnippetFile)" />
   </ItemGroup>
 </Project>

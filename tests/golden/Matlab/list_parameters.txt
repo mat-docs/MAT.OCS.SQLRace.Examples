@@ -1,0 +1,9 @@
+﻿Session: Turbine Inspection Week 1
+Parameters: 3
+         Identifier              Name         AppGroup              Groups                     Conversion            MinValue    MaxValue    Samples
+    _____________________    _____________    _________    ________________________    __________________________    ________    ________    _______
+    "Pressure:Inlet"         "Pressure"       "Inlet"      "PG_Pressure_Inlet"         "CONV_Pressure:Inlet"           3000        7000       6000
+    "Temperature:Sensors"    "Temperature"    "Sensors"    "PG_Temperature_Sensors"    "CONV_Temperature:Sensors"       300         700       6000
+    "RPM:Turbine"            "RPM"            "Turbine"    "PG_RPM_Turbine"            "CONV_RPM:Turbine"              2000        5000       6000
+Catalogue written to: <path>
+Done.

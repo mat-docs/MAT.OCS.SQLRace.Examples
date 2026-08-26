@@ -1,0 +1,6 @@
+﻿Session: Verified Test Session (3 parameters)
+Identifier                     Conversion                Unit       Format     Range
+───────────────────────────────────────────────────────────────────────────────────────────────
+Pressure:Inlet                 Pressure:Inlet_conversion bar        %5.3f      [0.0, 10.0]
+Temperature:Sensors            Temperature:Sensors_conversion degC       %5.2f      [0.0, 500.0]
+Speed:Shaft                    Speed:Shaft_conversion    rad/s      %6.2f      [0.0, 200.0]

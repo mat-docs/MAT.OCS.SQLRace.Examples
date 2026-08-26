@@ -1,0 +1,6 @@
+﻿1. Conversion: degC_conversion (1:1 rational)
+2. Channel: id=100, 100 Hz, Double64Bit, interval=10000000 ns
+3. Groups: Thermal (parameter), Sensors (application)
+4. Parameter: Temperature:Sensors → channelId=100, conversion=degC_conversion
+5. Configuration committed.
+Wrote 10 samples, read back 10: [20.0 ... 0.0] degC
