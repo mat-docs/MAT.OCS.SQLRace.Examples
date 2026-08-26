@@ -22,7 +22,7 @@
 #   ./scripts/run-examples-e2e.ps1
 #   ./scripts/run-examples-e2e.ps1 -Language CSharp
 #   ./scripts/run-examples-e2e.ps1 -Filter '*read*'
-#   ./scripts/run-examples-e2e.ps1 -SqlRaceApiVersion 2.1.26212.6-ci
+#   ./scripts/run-examples-e2e.ps1 -SqlRaceApiVersion <candidate-version>
 #   ./scripts/run-examples-e2e.ps1 -UpdateGolden        # after an intended change
 # ─────────────────────────────────────────────────────────────
 [CmdletBinding()]

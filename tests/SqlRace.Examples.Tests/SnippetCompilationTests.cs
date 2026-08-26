@@ -6,11 +6,10 @@
 // compiles each one against the real SQL Race assemblies using
 // Roslyn.
 //
-// This is the early-warning system for API breaks. Snippets are
-// the code we hand customers, so a snippet that stops compiling
-// against a new MESL.SQLRace.API release is a customer whose
-// script stops compiling too - and we want to know before the
-// release ships, not after.
+// This is the early-warning system for API breaks. A snippet
+// that stops compiling against a new MESL.SQLRace.API release is
+// a script written against the old one that stops compiling too,
+// so the break is worth catching before the release, not after.
 //
 // Compilation is metadata-only: nothing here initialises the SQL
 // Race runtime, so no licence is needed and this suite runs on a
@@ -18,7 +17,7 @@
 // covered by scripts/run-examples-e2e.ps1, which does need one.
 //
 // To test a specific API build:
-//   dotnet test -p:SqlRaceApiVersion=2.1.26212.6-ci
+//   dotnet test -p:SqlRaceApiVersion=<candidate-version>
 //
 // Run: dotnet test --filter "FullyQualifiedName~SnippetCompilation"
 // ─────────────────────────────────────────────────────────────
@@ -147,7 +146,7 @@ public class SnippetCompilationTests
 
         Assert.True(errors.Count == 0,
             $"{relativePath} no longer compiles against {DescribeSqlRaceVersion()}. " +
-            "A customer copying this snippet would hit the same errors:\n" +
+            "Code copied from this snippet would hit the same errors:\n" +
             string.Join("\n", errors.Select(d =>
                 $"  Line {d.Location.GetLineSpan().StartLinePosition.Line + 1}: {d.Id}: {d.GetMessage()}")));
     }

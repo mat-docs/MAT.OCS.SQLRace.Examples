@@ -19,21 +19,21 @@ correct outputs are known — so the examples are checked for *correctness*, not
 
 ## Breaking-change early warning
 
-These pieces exist to answer one question before a release ships: *will the new
-`MESL.SQLRace.API` break code customers already have?* Three layers, each catching something
+These pieces exist to answer one question: *will a new `MESL.SQLRace.API` release
+break code written against the previous one?* Three layers, each catching something
 the previous one cannot.
 
 | Layer | Catches | Licence? |
 |-------|---------|----------|
-| `SnippetCompilationTests` | A snippet that no longer compiles — the same errors a customer would hit | No |
+| `SnippetCompilationTests` | A snippet that no longer compiles — the same errors you would hit copying it | No |
 | `run-examples-e2e.ps1` golden comparison | A snippet that still compiles and runs but now returns different data | Yes |
 | Its Python and MATLAB legs | Renames and signature changes a C# compile would catch but which fail silently for `pythonnet` and `NET.addAssembly` callers | Yes |
 
 To validate a candidate build before it is published, pin the version:
 
 ```powershell
-dotnet test SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj -p:SqlRaceApiVersion=2.1.26212.6-ci
-../scripts/run-examples-e2e.ps1 -SqlRaceApiVersion 2.1.26212.6-ci
+dotnet test SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj -p:SqlRaceApiVersion=<candidate-version>
+../scripts/run-examples-e2e.ps1 -SqlRaceApiVersion <candidate-version>
 ```
 
 If the candidate has not been published anywhere — a package a PR build just
@@ -42,7 +42,7 @@ needs publishing for this to work:
 
 ```powershell
 ../scripts/run-examples-e2e.ps1 `
-    -SqlRaceApiVersion 2.1.26212.6-ci `
+    -SqlRaceApiVersion <candidate-version> `
     -AdditionalPackageSource C:\path\to\packages
 ```
 
@@ -51,10 +51,8 @@ it applies to every project at once. Overriding it on the test project alone wou
 leave `SqlRace.Examples.Core` and `FunctionLibrary` resolving whatever is published,
 and the run would silently mix two different SQL Race builds.
 
-The SQL Race pipeline runs both against every nightly build — see
-`Build/generic-steps/run-consumer-compat-tests.yml` in `MAT.OCS.SQLRace.API`. That is the
-counterpart to its `check-api-compatibility.yml`, which diffs the public API surface against
-the last published package.
+Both layers are also run automatically against SQL Race builds before they are
+published, so a break in the examples is caught alongside a break in the API itself.
 
 ### Golden output
 

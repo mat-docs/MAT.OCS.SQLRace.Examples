@@ -45,7 +45,7 @@ jobs:
       # The snippet compilation tests are the exception: they compile every snippet
       # against the real SQL Race assemblies using Roslyn, which is a metadata-only
       # operation needing no licence. They are the early warning that a new
-      # MESL.SQLRace.API release has broken the code we hand customers.
+      # MESL.SQLRace.API release has broken the examples.
       - name: Verify snippets compile against SQL Race
         run: >
           dotnet test tests/SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj

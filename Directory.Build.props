@@ -8,8 +8,8 @@
       development wants. A compatibility run overrides it to point at a
       candidate before that candidate ships:
 
-        dotnet test  -p:SqlRaceApiVersion=2.1.26212.6-ci
-        ./scripts/run-examples-e2e.ps1 -SqlRaceApiVersion 2.1.26212.6-ci
+        dotnet test  -p:SqlRaceApiVersion=<candidate-version>
+        ./scripts/run-examples-e2e.ps1 -SqlRaceApiVersion <candidate-version>
 
       It is defined here rather than per-project because it has to apply to
       every project at once. Overriding it on the test project alone leaves
