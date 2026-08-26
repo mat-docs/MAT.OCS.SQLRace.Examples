@@ -6,14 +6,28 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+
+    <!--
+      Which SQL Race build the snippets are compiled against. "*" floats to the
+      newest release on the feed, which is what everyday development wants.
+      A compatibility run overrides it to point at a specific candidate before
+      that candidate ships:
+
+        dotnet test -p:SqlRaceApiVersion=2.1.26212.6-ci
+
+      Note that "*" only floats as far as the configured feed can see; an
+      offline restore will happily settle on whatever is already in the local
+      NuGet cache, so pin explicitly when the answer matters.
+    -->
+    <SqlRaceApiVersion Condition="'$(SqlRaceApiVersion)' == ''">*</SqlRaceApiVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="xunit" Version="2.6.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.4" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" />
-    <PackageReference Include="MESL.SQLRace.API" Version="*" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+    <PackageReference Include="MESL.SQLRace.API" Version="$(SqlRaceApiVersion)" />
   </ItemGroup>
 
   <ItemGroup>

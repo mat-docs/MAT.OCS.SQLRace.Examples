@@ -3,11 +3,22 @@
 // ─────────────────────────────────────────────────────────────
 //
 // Dynamically discovers all .cs files under snippets/csharp/ and
-// verifies they parse as valid C# syntax using Roslyn.
+// compiles each one against the real SQL Race assemblies using
+// Roslyn.
 //
-// This catches syntax errors and missing brackets but does NOT
-// verify against the real SQL Race assemblies (that requires the
-// NuGet package to be resolvable at test time).
+// This is the early-warning system for API breaks. Snippets are
+// the code we hand customers, so a snippet that stops compiling
+// against a new MESL.SQLRace.API release is a customer whose
+// script stops compiling too - and we want to know before the
+// release ships, not after.
+//
+// Compilation is metadata-only: nothing here initialises the SQL
+// Race runtime, so no licence is needed and this suite runs on a
+// plain GitHub runner. Runtime behaviour of the same snippets is
+// covered by scripts/run-examples-e2e.ps1, which does need one.
+//
+// To test a specific API build:
+//   dotnet test -p:SqlRaceApiVersion=2.1.26212.6-ci
 //
 // Run: dotnet test --filter "FullyQualifiedName~SnippetCompilation"
 // ─────────────────────────────────────────────────────────────
@@ -40,19 +51,131 @@ public class SnippetCompilationTests
         }
     }
 
+    // ── Reference set ─────────────────────────────────────────
+    //
+    // Two sources, both derived from this test assembly rather
+    // than from a hard-coded SDK path, so the same code works on
+    // a developer machine and on a CI runner:
+    //
+    //   1. TRUSTED_PLATFORM_ASSEMBLIES - every framework assembly
+    //      the host runtime can load.
+    //   2. This assembly's own output directory - the SQL Race
+    //      assemblies and their transitive dependencies, put
+    //      there by the MESL.SQLRace.API PackageReference.
+    //
+    // Built once: resolving ~200 assemblies per snippet would
+    // dominate the runtime of the suite.
+    private static readonly Lazy<IReadOnlyList<MetadataReference>> References =
+        new(BuildReferences);
+
+    private static IReadOnlyList<MetadataReference> BuildReferences()
+    {
+        // Keyed by simple name so a framework assembly and a copy
+        // of the same assembly in the output folder do not both
+        // get referenced - Roslyn reports that as an ambiguous
+        // type reference rather than resolving it.
+        var byName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        var platformAssemblies = (string?)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES");
+        if (platformAssemblies is not null)
+        {
+            foreach (var path in platformAssemblies.Split(Path.PathSeparator))
+            {
+                if (path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) && File.Exists(path))
+                    byName[Path.GetFileNameWithoutExtension(path)] = path;
+            }
+        }
+
+        // The output folder wins on conflict: it holds the SQL
+        // Race build under test, which is the point of all this.
+        foreach (var path in Directory.EnumerateFiles(AppContext.BaseDirectory, "*.dll"))
+            byName[Path.GetFileNameWithoutExtension(path)] = path;
+
+        var references = new List<MetadataReference>();
+        foreach (var path in byName.Values)
+        {
+            // Native and resource-only DLLs sit alongside managed
+            // ones in the output folder and throw when read as
+            // metadata.
+            try { references.Add(MetadataReference.CreateFromFile(path)); }
+            catch (BadImageFormatException) { }
+            catch (IOException) { }
+        }
+
+        return references;
+    }
+
+    // Snippets are top-level-statement programs built with
+    // ImplicitUsings enabled, so the usings the SDK would inject
+    // have to be supplied here - otherwise every snippet fails on
+    // Console, Path and the LINQ extension methods.
+    private const string ImplicitUsings =
+        "global using global::System;\n" +
+        "global using global::System.Collections.Generic;\n" +
+        "global using global::System.IO;\n" +
+        "global using global::System.Linq;\n" +
+        "global using global::System.Net.Http;\n" +
+        "global using global::System.Threading;\n" +
+        "global using global::System.Threading.Tasks;\n";
+
     [Theory]
     [MemberData(nameof(SnippetFiles))]
-    public void Snippet_ParsesWithoutSyntaxErrors(string relativePath, string fullPath)
+    public void Snippet_CompilesAgainstSqlRaceAssemblies(string relativePath, string fullPath)
     {
-        var source = File.ReadAllText(fullPath);
-        var syntaxTree = CSharpSyntaxTree.ParseText(source, new CSharpParseOptions(LanguageVersion.CSharp12));
-        var diagnostics = syntaxTree.GetDiagnostics()
+        var parseOptions = new CSharpParseOptions(LanguageVersion.CSharp12);
+
+        var trees = new[]
+        {
+            CSharpSyntaxTree.ParseText(File.ReadAllText(fullPath), parseOptions, path: fullPath),
+            CSharpSyntaxTree.ParseText(ImplicitUsings, parseOptions, path: "ImplicitUsings.g.cs"),
+        };
+
+        // ConsoleApplication because top-level statements need an
+        // entry point. Each snippet compiles alone - only one file
+        // in a compilation may carry top-level statements.
+        var compilation = CSharpCompilation.Create(
+            assemblyName: "SnippetCompilation_" + Guid.NewGuid().ToString("N"),
+            syntaxTrees: trees,
+            references: References.Value,
+            options: new CSharpCompilationOptions(
+                OutputKind.ConsoleApplication,
+                nullableContextOptions: NullableContextOptions.Enable));
+
+        var errors = compilation.GetDiagnostics()
             .Where(d => d.Severity == DiagnosticSeverity.Error)
             .ToList();
 
-        Assert.True(diagnostics.Count == 0,
-            $"Syntax errors in {relativePath}:\n" +
-            string.Join("\n", diagnostics.Select(d => $"  Line {d.Location.GetLineSpan().StartLinePosition.Line + 1}: {d.GetMessage()}")));
+        Assert.True(errors.Count == 0,
+            $"{relativePath} no longer compiles against {DescribeSqlRaceVersion()}. " +
+            "A customer copying this snippet would hit the same errors:\n" +
+            string.Join("\n", errors.Select(d =>
+                $"  Line {d.Location.GetLineSpan().StartLinePosition.Line + 1}: {d.Id}: {d.GetMessage()}")));
+    }
+
+    // Named in failure messages so a red build says which API
+    // build broke the snippet, not just that something broke.
+    private static string DescribeSqlRaceVersion()
+    {
+        var domain = Path.Combine(AppContext.BaseDirectory, "MESL.SqlRace.Domain.dll");
+        if (!File.Exists(domain))
+            return "MESL.SQLRace.API (version unknown - assembly not resolved)";
+
+        var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(domain);
+        return $"MESL.SQLRace.API {info.FileVersion}";
+    }
+
+    [Fact]
+    public void SqlRaceAssemblies_AreResolvable()
+    {
+        // Guards against the compilation tests passing vacuously.
+        // If the package failed to restore there would be nothing
+        // to compile against, and a weaker suite could report that
+        // as success.
+        var domain = Path.Combine(AppContext.BaseDirectory, "MESL.SqlRace.Domain.dll");
+        Assert.True(File.Exists(domain),
+            $"MESL.SqlRace.Domain.dll was not found in {AppContext.BaseDirectory}. " +
+            "The MESL.SQLRace.API package did not restore, so snippet compilation " +
+            "would not be testing anything.");
     }
 
     [Fact]
