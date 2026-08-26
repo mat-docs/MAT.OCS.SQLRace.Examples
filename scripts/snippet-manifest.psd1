@@ -35,9 +35,9 @@
         @{ Name = 'read-subsampled-data'; Path = 'snippets\csharp\data-access\read-subsampled-data.cs'; Args = @('{fixtureKey}') }
         @{ Name = 'reverse-iteration'; Path = 'snippets\csharp\data-access\reverse-iteration.cs'; Args = @('{fixtureKey}') }
         @{ Name = 'timestamp-array-construction'; Path = 'snippets\csharp\data-access\timestamp-array-construction.cs' }
-        @{ Name = 'dotnet-function-basic'; Path = 'snippets\csharp\functions\dotnet-function-basic.cs'; Skip = 'does not compile against any shipped release - see SnippetCompilationTests' }
-        @{ Name = 'dotnet-function-with-pda'; Path = 'snippets\csharp\functions\dotnet-function-with-pda.cs'; Skip = 'does not compile against any shipped release - see SnippetCompilationTests' }
-        @{ Name = 'fdl-function-basic'; Path = 'snippets\csharp\functions\fdl-function-basic.cs'; Skip = 'does not compile against any shipped release - see SnippetCompilationTests' }
+        @{ Name = 'dotnet-function-basic'; Path = 'snippets\csharp\functions\dotnet-function-basic.cs'; Skip = 'declares a function class rather than running one - needs a MEF host and the .NET Functions licence option' }
+        @{ Name = 'dotnet-function-with-pda'; Path = 'snippets\csharp\functions\dotnet-function-with-pda.cs'; Skip = 'declares a function class rather than running one - needs a MEF host and the .NET Functions licence option' }
+        @{ Name = 'fdl-function-basic'; Path = 'snippets\csharp\functions\fdl-function-basic.cs'; Skip = 'needs the ATLAS Functions licence option, which the fixture runner does not have' }
         @{ Name = '01-load-session-from-file'; Path = 'snippets\csharp\getting-started\01-load-session-from-file.cs'; Args = @('{fixturePath}') }
         @{ Name = '02-load-session-from-database'; Path = 'snippets\csharp\getting-started\02-load-session-from-database.cs'; Skip = 'needs a SQL Server instance, not the SQLite fixture' }
         @{ Name = '03-read-parameter-samples'; Path = 'snippets\csharp\getting-started\03-read-parameter-samples.cs'; Args = @('{fixtureKey}') }

@@ -2,11 +2,12 @@
 // SQL Race Example: FDL Function (Basic)
 // ─────────────────────────────────────────────────────────────
 //
-// Demonstrates: Creating an FDL function (Celsius to Fahrenheit), building it,
-//               and consuming the output via a PDA
-// Prerequisites: MESL.SQLRace.API NuGet package, .NET 8, a session with data
-// Input: A session with a Temperature:Sensors parameter
-// Output: Converted values read from the FDL function output
+// Demonstrates: Building an FDL function (Celsius to Fahrenheit) and reading
+//               its output parameter back through a PDA
+// Prerequisites: MESL.SQLRace.API NuGet package, .NET 8, the "ATLAS Functions"
+//                licence option, a session with a Temperature:Sensors parameter
+// Input: A session GUID
+// Output: Converted values read from the FDL function's output parameter
 //
 // Related: snippets/csharp/functions/dotnet-function-basic.cs
 // Docs: https://mat-docs.github.io/Atlas.SQLRaceAPI.Documentation/api/index.html
@@ -15,6 +16,8 @@
 using MAT.OCS.Core;
 using MESL.SqlRace.Domain;
 using MESL.SqlRace.Domain.Functions;
+using MESL.SqlRace.Domain.Functions.Fdl;
+using MESL.SqlRace.Functions.Interfaces.Enums;
 
 Core.LicenceProgramName = "SQLRace";
 Core.Initialize();
@@ -29,40 +32,57 @@ if (args.Length == 0)
 }
 
 var sessionKey = SessionKey.Parse(args[0]);
+
+// --- Define the FDL function: Celsius → Fahrenheit ---
+// An output parameter's identifier is "<Name>:<ApplicationName>", so this
+// function publishes "TemperatureFahrenheit:Functions".
+const string FunctionName = "TemperatureFahrenheit";
+const string OutputGroup = "Functions";
+const string OutputIdentifier = $"{FunctionName}:{OutputGroup}";
+const string FdlCode = "return ($Temperature:Sensors * 1.8 + 32);";
+
+var functionManager = FunctionManagerFactory.Create();
+
+var definition = functionManager.CreateFunctionDefinition(FdlFunctionConstants.UniqueId);
+definition.Name = FunctionName;
+definition.FunctionMode = FunctionMode.Instantaneous;
+
+// The FDL source lives on the implementation definition, which the function
+// manager creates alongside the definition itself.
+var implementation = (IFdlFunctionImplementationDefinition)definition.ImplementationDefinition;
+implementation.FunctionCode = FdlCode;
+
+// FDL functions require exactly one output parameter - the value they return.
+definition.OutputParameterDefinitions.Add(
+    FunctionOutputParameterDefinition.Create(FunctionName, OutputGroup, "Temperature in Fahrenheit")
+        .Units("degF")
+        .FormatOverride("%5.1f")
+        .MinimumValue("-40.0")
+        .MaximumValue("1000.0"));
+
+var buildResults = functionManager.Build(definition);
+
+if (buildResults.Errors.Count > 0)
+{
+    Console.WriteLine("FDL build errors:");
+    foreach (var error in buildResults.Errors)
+        Console.WriteLine($"  {error.ErrorText}");
+    return;
+}
+
+Console.WriteLine($"FDL function built: {FdlCode}");
+
+// --- Read the function output ---
+// Load the session *after* the build: SQL Race adds a built function's output
+// parameters to sessions as they load.
 var sessionManager = SessionManager.CreateSessionManager();
 using var clientSession = sessionManager.Load(sessionKey, connectionString);
 var session = clientSession.Session;
 
-// --- Create the FDL function: Celsius → Fahrenheit ---
-var functionManager = FunctionManagerFactory.Create();
-var fdlCode = "return ($Temperature:Sensors * 1.8 + 32)";
-var outputIdentifier = "TemperatureFahrenheit:Calculated";
-
-var funcDef = functionManager.CreateFunctionDefinition(
-    FdlFunctionConstants.FdlFunctionTypeId,
-    outputIdentifier,
-    "Temperature in Fahrenheit");
-
-funcDef.SetFdlCode(fdlCode);
-funcDef.SetOutputParameter(outputIdentifier, "degF", "%5.1f", -40, 1000);
-
-var errors = functionManager.Build(funcDef, session);
-
-if (errors is not null && errors.Any())
-{
-    Console.WriteLine("FDL build errors:");
-    foreach (var error in errors)
-        Console.WriteLine($"  {error}");
-    return;
-}
-
-Console.WriteLine($"FDL function built: {fdlCode}");
-
-// --- Read the function output ---
-using var pda = session.CreateParameterDataAccess(outputIdentifier);
+using var pda = session.CreateParameterDataAccess(OutputIdentifier);
 var samples = pda.GetSamplesBetween(session.StartTime, session.EndTime);
 
-Console.WriteLine($"Output: {samples.SampleCount} samples of {outputIdentifier}\n");
+Console.WriteLine($"Output: {samples.SampleCount} samples of {OutputIdentifier}\n");
 
 for (var i = 0; i < Math.Min(samples.SampleCount, 10); i++)
 {

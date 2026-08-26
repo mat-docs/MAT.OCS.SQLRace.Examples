@@ -47,10 +47,6 @@ jobs:
       # operation needing no licence. They are the early warning that a new
       # MESL.SQLRace.API release has broken the code we hand customers.
       - name: Verify snippets compile against SQL Race
-        # Advisory for now - three function snippets have a known pre-existing
-        # failure. Remove continue-on-error once those are fixed so that a genuine
-        # API break fails the build.
-        continue-on-error: true
         run: >
           dotnet test tests/SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj
           --no-build --configuration Release
