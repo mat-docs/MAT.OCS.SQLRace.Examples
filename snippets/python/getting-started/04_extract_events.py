@@ -66,19 +66,19 @@ try:
 
     # --- Event definitions → Python dict ---
     definitions = {}
-    for evt_def in session.Events.EventDefinitions:
-        definitions[evt_def.Name] = evt_def.Priority
-        print(f"Definition: {evt_def.Name} (priority: {evt_def.Priority})")
+    for evt_def in session.EventDefinitions:
+        definitions[evt_def.Description] = evt_def.Priority
+        print(f"Definition: {evt_def.Description} (priority: {evt_def.Priority})")
 
     # --- Event data ---
     events = session.Events.GetEventData(session.StartTime, session.EndTime)
 
-    print(f"\n{'Timestamp (ns)':>20}  {'Event':<22}  {'Data'}")
+    print(f"\n{'Timestamp (ns)':>20}  {'Key':<5}  {'Group':<16}  {'Data'}")
     print("─" * 70)
 
     for evt in events:
-        values = [str(evt.Values[i]) for i in range(evt.Values.Count)] if evt.Values else []
+        values = [str(evt.RawData[i]) for i in range(evt.RawData.Count)] if evt.RawData else []
         data_str = ", ".join(values)
-        print(f"{evt.Timestamp:>20}  {evt.EventDefinitionName:<22}  [{data_str}]")
+        print(f"{evt.TimeStamp:>20}  {evt.EventDefinitionKey:<5}  {evt.GroupName:<16}  [{data_str}]")
 finally:
     client_session.Dispose()
