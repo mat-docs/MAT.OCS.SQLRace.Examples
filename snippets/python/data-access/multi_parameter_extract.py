@@ -90,10 +90,19 @@ try:
     if all_data:
         first_key = identifiers[0]
         df = pd.DataFrame({"timestamp_ns": all_data[first_key]["timestamps"]})
+        # Columns are matched by position, not by timestamp. Parameters at
+        # different rates have different sample counts, so a shorter one is
+        # padded with NaN rather than forced into the first parameter's row
+        # count - and its values do NOT line up with timestamp_ns. To compare
+        # across rates, sample onto a common timestamp array as
+        # snippets/csharp/data-access/multi-rate-alignment.cs does.
         for param_id in identifiers:
-            df[param_id] = all_data[param_id]["values"][:len(df)]
+            df[param_id] = pd.Series(all_data[param_id]["values"][:len(df)])
 
         print(f"\nDataFrame: {df.shape[0]} rows x {df.shape[1]} columns")
+        counts = {p: len(all_data[p]["values"]) for p in identifiers}
+        if len(set(counts.values())) > 1:
+            print(f"Note: sample counts differ {counts} - columns are positional, not time-aligned.")
         print(df.head(10).to_string(index=False))
 finally:
     client_session.Dispose()

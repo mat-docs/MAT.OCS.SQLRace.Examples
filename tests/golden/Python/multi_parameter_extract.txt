@@ -1,0 +1,17 @@
+﻿Session has 3 parameter(s): ['Pressure:Inlet', 'Temperature:Sensors', 'Speed:Shaft']
+  Pressure:Inlet: 1000 samples
+  Temperature:Sensors: 1000 samples
+  Speed:Shaft: 500 samples
+DataFrame: 1000 rows x 4 columns
+Note: sample counts differ {'Pressure:Inlet': 1000, 'Temperature:Sensors': 1000, 'Speed:Shaft': 500} - columns are positional, not time-aligned.
+  timestamp_ns  Pressure:Inlet  Temperature:Sensors  Speed:Shaft
+36000000000000             2.0                 20.0          0.0
+36000010000000             2.0                 20.1          0.2
+36000020000000             2.0                 20.2          0.4
+36000030000000             2.0                 20.3          0.6
+36000040000000             2.0                 20.4          0.8
+36000050000000             2.0                 20.5          1.0
+36000060000000             2.0                 20.6          1.2
+36000070000000             2.0                 20.7          1.4
+36000080000000             2.0                 20.8          1.6
+36000090000000             2.0                 20.9          1.8
