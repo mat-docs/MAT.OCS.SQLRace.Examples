@@ -194,7 +194,15 @@ public class ParameterBuilder
     /// <param name="session">The session to add parameters to.</param>
     /// <param name="builders">The configured builders to build.</param>
     /// <returns>A list of created parameters.</returns>
-    public static IReadOnlyList<BuiltParameter> BuildBatch(Session session, IEnumerable<ParameterBuilder> builders)
+    /// <param name="configure">
+    /// Optional hook to add anything else - conversions, event definitions - to the same
+    /// configuration before it is committed. Only the first configuration set committed to a
+    /// session survives a reload, so anything that must persist has to go in this one.
+    /// </param>
+    public static IReadOnlyList<BuiltParameter> BuildBatch(
+        Session session,
+        IEnumerable<ParameterBuilder> builders,
+        Action<ConfigurationSet>? configure = null)
     {
         var config = session.CreateConfiguration();
         var parameters = new List<BuiltParameter>();
@@ -263,6 +271,8 @@ public class ParameterBuilder
             config.AddParameter(parameter);
             parameters.Add(new BuiltParameter(parameter, (uint)channelId));
         }
+
+        configure?.Invoke(config);
 
         config.Commit();
         return parameters;

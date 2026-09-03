@@ -63,7 +63,7 @@
         @{ Name = '01_load_session'; Path = 'snippets\python\getting-started\01_load_session.py'; Args = @('{fixtureKey}') }
         @{ Name = '02_read_parameters'; Path = 'snippets\python\getting-started\02_read_parameters.py'; Args = @('{fixtureKey}') }
         @{ Name = '03_query_sessions'; Path = 'snippets\python\getting-started\03_query_sessions.py' }
-        @{ Name = '04_extract_events'; Path = 'snippets\python\getting-started\04_extract_events.py'; Args = @('{fixtureKey}'); Skip = 'event data does not survive a session reload, so a loaded fixture session never has any - the snippet runs but verifies nothing' }
+        @{ Name = '04_extract_events'; Path = 'snippets\python\getting-started\04_extract_events.py'; Args = @('{fixtureKey}') }
     )
 
     Matlab = @(

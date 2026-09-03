@@ -50,6 +50,19 @@ public static class VerifiedFixture
 
     public const int ParameterCount = 3;
 
+    // ── Events ─────────────────────────────────────────────────
+    // One definition, three instances, each raising the temperature ramp's value
+    // at that moment against a fixed threshold - so the expected output is still
+    // derivable by hand.
+    public const int EventDefinitionId = 1;
+    public const string EventDescription = "LimitExceedance";
+    public const string EventGroupName = "Sensors";
+    public const double EventThreshold = 50.0;
+
+    /// <summary>Seconds after the session start at which an event is raised.</summary>
+    public static readonly int[] EventOffsetsSeconds = { 2, 5, 8 };
+    public const int EventCount = 3;
+
     // NOTE: a freshly-created SQLite session always reloads with exactly one (default) lap.
     // Laps added via LapCollection.Add do not survive a reload in this API path, so the
     // verified fixture does not rely on laps. (Pre-existing .ssn2 files may contain laps
@@ -117,11 +130,36 @@ public static class VerifiedFixture
                 .WithDataType(DataType.Double64Bit)
                 .WithConversion("rad/s", "%6.2f")
                 .WithRange(min: 0, max: 200),
+        },
+        config =>
+        {
+            // An EventDefinition's conversion function names must already be registered
+            // or Commit() drops the definition, logging rather than throwing.
+            config.AddConversion(RationalConversion.CreateSimple1To1Conversion("Value", "degC", "%5.2f"));
+            config.AddConversion(RationalConversion.CreateSimple1To1Conversion("Threshold", "degC", "%5.2f"));
+            config.AddEventDefinition(new EventDefinition(
+                EventDefinitionId,
+                EventDescription,
+                EventPriorityType.High,
+                new List<string> { "Value", "Threshold" },
+                EventGroupName));
         });
 
         WriteRamp(session, built[0].ChannelId, TemperatureHz, TemperatureSampleCount, Temperature);
         WriteRamp(session, built[1].ChannelId, PressureHz, PressureSampleCount, _ => PressureConstant);
         WriteRamp(session, built[2].ChannelId, SpeedHz, SpeedSampleCount, Speed);
+
+        // Events need a session that already has channel data: they are stored in
+        // time segments, and a session with no time base discards them silently.
+        foreach (var offset in EventOffsetsSeconds)
+        {
+            var timestamp = StartTimeNs + (long)offset * 1_000_000_000L;
+            session.Events.AddEventData(
+                EventDefinitionId,
+                EventGroupName,
+                timestamp,
+                new List<double> { Temperature(offset * TemperatureHz), EventThreshold });
+        }
 
         // Finalise the recording so all data and metadata are persisted to disk.
         session.Flush();

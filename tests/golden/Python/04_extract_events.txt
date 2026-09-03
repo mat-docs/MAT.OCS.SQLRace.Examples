@@ -1,0 +1,6 @@
+﻿Definition: LimitExceedance (priority: High)
+      Timestamp (ns)  Key    Group             Data
+──────────────────────────────────────────────────────────────────────
+      36002000000000  1      Sensors           [40.0, 50.0]
+      36005000000000  1      Sensors           [70.0, 50.0]
+      36008000000000  1      Sensors           [100.0, 50.0]
