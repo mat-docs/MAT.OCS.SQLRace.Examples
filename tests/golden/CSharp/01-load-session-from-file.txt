@@ -1,7 +1,7 @@
 ﻿File: <path>
 Sessions found: 1
 Loaded session: <guid>
-  Identifier:     Verified Test Session
+  Identifier:     Verified Example Session
   Start time:     36000000000000 ns
   End time:       36009990000000 ns
   Duration:       <measure>

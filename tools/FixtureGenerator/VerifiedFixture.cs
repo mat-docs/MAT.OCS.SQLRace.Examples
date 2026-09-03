@@ -19,7 +19,9 @@ public static class VerifiedFixture
     // ── Session identity ───────────────────────────────────────
     /// <summary>Fixed session key so examples that take a GUID can be pointed at the fixture.</summary>
     public const string SessionKeyString = "f1c0ffee-0000-4000-8000-000000000001";
-    public const string SessionName = "Verified Test Session";
+    // Contains "Example" so the query snippets, which filter on
+    // Identifier contains "Example", have something to match.
+    public const string SessionName = "Verified Example Session";
 
     /// <summary>Session start in nanoseconds-of-day (10:00:00.000 → 36,000 s).</summary>
     public const long StartTimeNs = 36_000_000_000_000L;
@@ -73,8 +75,11 @@ public static class VerifiedFixture
 
         var sessionManager = SessionManager.CreateSessionManager();
 
-        // Date with a 10:00:00 time-of-day so Session.StartTime == StartTimeNs.
-        var sessionDate = new DateTime(2025, 6, 15, 10, 0, 0, DateTimeKind.Utc);
+        // Only the 10:00:00 time-of-day matters - it is what makes
+        // Session.StartTime equal StartTimeNs. The date is today so that
+        // TimeOfRecording falls inside the "last 30 days" window the query
+        // snippets filter on; a fixed date made them match nothing.
+        var sessionDate = DateTime.UtcNow.Date.AddHours(10);
 
         using var clientSession = sessionManager.CreateSession(
             connectionString, Key, SessionName, sessionDate, "Example");

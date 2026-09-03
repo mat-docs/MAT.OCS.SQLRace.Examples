@@ -1,4 +1,4 @@
-﻿Session: Verified Test Session (3 parameters)
+﻿Session: Verified Example Session (3 parameters)
 Identifier                     Conversion                Unit       Format     Range
 ───────────────────────────────────────────────────────────────────────────────────────────────
 Pressure:Inlet                 Pressure:Inlet_conversion bar        %5.3f      [0.0, 10.0]

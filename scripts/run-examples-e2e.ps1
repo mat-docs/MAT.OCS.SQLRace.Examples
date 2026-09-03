@@ -86,7 +86,10 @@ try {
         # Volatile values, most specific pattern first.
         $normalised = $normalised -replace '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}', '<guid>'
         $normalised = $normalised -replace '\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(\.\d+)?', '<datetime>'
-        $normalised = $normalised -replace '\d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2}', '<datetime>'
+        # Single-digit month and day, and an AM/PM suffix: pythonnet renders
+        # DateTime with the current culture, so 9/3/2026 10:00:00 AM has to
+        # normalise too or the golden only holds for the day it was written.
+        $normalised = $normalised -replace '\d{1,2}/\d{1,2}/\d{4} \d{1,2}:\d{2}:\d{2}( [AP]M)?', '<datetime>'
         # Windows paths, including the per-user temp directory the fixture lives in.
         $normalised = $normalised -replace '[A-Za-z]:\\[^\s"'']*', '<path>'
         # Elapsed times and sizes: "12.345 s", "1234 ms", "4.2 MB".

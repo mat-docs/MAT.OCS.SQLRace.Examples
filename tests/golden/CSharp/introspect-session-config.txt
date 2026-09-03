@@ -1,4 +1,4 @@
-﻿Session: Verified Test Session (<guid>)
+﻿Session: Verified Example Session (<guid>)
 === Parameters (3) ===
 Identifier                     Conversion                AppGroup
 ────────────────────────────────────────────────────────────────────────

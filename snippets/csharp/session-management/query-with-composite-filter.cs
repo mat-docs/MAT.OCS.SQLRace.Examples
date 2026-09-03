@@ -13,6 +13,7 @@
 
 using MESL.SqlRace.Domain;
 using MESL.SqlRace.Domain.Query;
+using MESL.SqlRace.Domain.Sort;
 
 Core.LicenceProgramName = "SQLRace";
 Core.Initialize();
@@ -21,10 +22,18 @@ var connectionString = $"DbEngine=SQLite;Data Source={Path.Combine(Path.GetTempP
 
 var queryManager = QueryManager.CreateQueryManager(connectionString);
 
-// --- Build a composite filter: session type contains "Example" AND recorded after a date ---
+// --- Build a composite filter: identifier contains "Example" AND recorded after a date ---
+// Field names come from SessionFieldIdentifiers, not from the property names on
+// the result. "TimeOfRecording" is the property; the filter field is
+// SessionStartDateTime. An unrecognised name is treated as a session metadata
+// item and quietly matches nothing rather than raising.
+//
+// Pass the date as a DateTime: the string overload has to be in
+// ScalarFilter.DateFormat exactly, and anything else - ISO 8601 "O" included -
+// fails to parse and silently matches nothing.
 var composite = new CompositeFilter(CombineType.AND);
-composite.Add(new ScalarFilter("Identifier", MatchingRule.Contains, "Example", ignoreCase: true));
-composite.Add(new ScalarFilter("TimeOfRecording", MatchingRule.GreaterThan, DateTime.UtcNow.AddDays(-30).ToString("O"), ignoreCase: true));
+composite.Add(new ScalarFilter(SessionFieldIdentifiers.SessionIdentifier, MatchingRule.Contains, "Example", ignoreCase: true));
+composite.Add(new ScalarFilter(SessionFieldIdentifiers.SessionStartDateTime, MatchingRule.GreaterThan, DateTime.UtcNow.AddDays(-30)));
 
 queryManager.Filter = composite;
 
