@@ -1,0 +1,9 @@
+﻿SQL Race initialised
+Session loaded: <guid>
+  Identifier: Flight Test FT-042
+  Start time: 32400000000000 ns
+  End time:   32519950000000 ns
+  Duration:   <measure>
+  Parameters: 3
+  Laps:       1
+Session closed.

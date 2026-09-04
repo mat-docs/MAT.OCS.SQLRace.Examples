@@ -1,0 +1,7 @@
+﻿Session created: <guid>
+Connection:      DbEngine=SQLite;Data Source=<path>
+Temperature:Sensors (100 Hz): 100 samples
+  First: 20.00 degC  Last: 17.71 degC
+Pressure:Inlet (50 Hz): 50 samples
+  First: 1.013 bar  Last: 1.141 bar
+Done.

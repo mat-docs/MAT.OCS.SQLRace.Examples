@@ -6,6 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MESL.SQLRace.API" Version="*" />
+    <PackageReference Include="MESL.SQLRace.API" Version="$(SqlRaceApiVersion)" />
   </ItemGroup>
 </Project>

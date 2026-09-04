@@ -1,0 +1,9 @@
+﻿Session <guid>: 5 segments
+  # Name                           Start (ns)   Offset (s)
+----------------------------------------------------------
+  1 Warmup                     36000000000000            0
+  2 Steady State 1             36060000000000           60
+  3 Ramp Up                    36180000000000          180
+  4 Steady State 2             36240000000000          240
+  5 Cooldown                   36360000000000          360
+Done.

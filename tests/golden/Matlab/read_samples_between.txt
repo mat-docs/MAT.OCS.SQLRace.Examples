@@ -1,0 +1,15 @@
+﻿Parameter: Temperature:Sensors
+Range:     36000000000000 - 36000500000000 ns (<measure>)
+Samples:   11
+  t+   <measure>  572.0000
+  t+  <measure>  571.0000
+  t+ <measure>  585.0000
+  t+ <measure>  572.0000
+  t+ <measure>  567.0000
+  t+ <measure>  557.0000
+  t+ <measure>  574.0000
+  t+ <measure>  559.0000
+  t+ <measure>  559.0000
+  t+ <measure>  561.0000
+  ... and 1 more
+Done.

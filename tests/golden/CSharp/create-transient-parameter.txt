@@ -1,0 +1,4 @@
+﻿Transient parameter 'CalculatedTemp:Derived' created (in-memory only)
+Read 10 transient samples: [100.0 ... 0.0]
+After reload: parameter exists = False
+Transient parameters are not persisted — they exist only in-memory.

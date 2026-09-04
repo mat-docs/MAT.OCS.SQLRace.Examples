@@ -1,0 +1,5 @@
+﻿Filter: Identifier contains 'Example' AND recorded in last 30 days
+Session Key                              Identifier                                   Recorded
+──────────────────────────────────────────────────────────────────────────────────────────────
+<guid>     Verified Example Session       <datetime>Z
+1 session(s) matched.

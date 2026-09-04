@@ -1,0 +1,16 @@
+﻿Creating sessions:
+  Run Part 1: 50 samples from 36000000000000 ns
+  Run Part 2: 50 samples from 36005000000000 ns
+Composite: 36000000000000 – 36009900000000 ns
+Read 100 samples across both sessions
+  t+     <measure>  20.0 degC
+  t+   <measure>  20.5 degC
+  t+   <measure>  21.0 degC
+  t+   <measure>  21.5 degC
+  t+   <measure>  22.0 degC
+  t+   <measure>  22.5 degC
+  t+   <measure>  23.0 degC
+  t+   <measure>  23.5 degC
+  t+   <measure>  24.0 degC
+  t+   <measure>  24.5 degC
+  ... and 90 more

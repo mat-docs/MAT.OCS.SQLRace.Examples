@@ -1,0 +1,7 @@
+﻿Session: <guid>
+Reading 3 parameter(s)...
+Parameter                            Samples          Min          Max
+----------------------------------------------------------------------
+Pressure:Inlet                          1000       2.0000       2.0000
+Temperature:Sensors                     1000      20.0000     119.9000
+Speed:Shaft                              500       0.0000      99.8000

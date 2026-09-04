@@ -1,0 +1,6 @@
+﻿=== All sessions ===
+  <guid>  Verified Example Session        <datetime>Z
+Total: 1 session(s)
+=== Sessions matching 'Example' ===
+  <guid>  Verified Example Session        <datetime>Z
+Found: 1 session(s)

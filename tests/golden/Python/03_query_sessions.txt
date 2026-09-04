@@ -1,0 +1,5 @@
+﻿Searching for sessions matching 'Example'...
+Session Key                              Identifier                                   Recorded
+──────────────────────────────────────────────────────────────────────────────────────────────
+<guid>     Verified Example Session       <datetime>
+1 session(s) found.

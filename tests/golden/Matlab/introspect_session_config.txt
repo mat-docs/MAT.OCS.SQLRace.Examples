@@ -1,0 +1,16 @@
+﻿Session: Turbine Inspection Week 1 (<guid>)
+=== Parameters (3) ===
+Identifier                     Conversion                AppGroup
+------------------------------------------------------------------------
+Pressure:Inlet                 CONV_Pressure:Inlet       Inlet
+Temperature:Sensors            CONV_Temperature:Sensors  Sensors
+RPM:Turbine                    CONV_RPM:Turbine          Turbine
+=== Application Groups ===
+  Inlet
+  Sensors
+  Turbine
+=== Parameter Groups ===
+  PG_Pressure_Inlet
+  PG_RPM_Turbine
+  PG_Temperature_Sensors
+Done.

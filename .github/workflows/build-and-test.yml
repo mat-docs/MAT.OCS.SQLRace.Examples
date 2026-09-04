@@ -18,16 +18,36 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Restore solution
+      - name: Restore projects
         run: dotnet restore projects/csharp/SqlRace.Examples.sln
         env:
           NUGET_AUTH_USERNAME: ${{ secrets.PACKAGES_USERNAME }}
           NUGET_AUTH_TOKEN: ${{ secrets.PACKAGES_PATTOKEN }}
 
-      - name: Build solution
+      - name: Build projects
         run: dotnet build projects/csharp/SqlRace.Examples.sln --no-restore --configuration Release
 
-      # NOTE: Tests are NOT executed in CI. Several tests initialise the SQL Race
-      # runtime via SqlRaceBootstrapper, which requires a SQL Race licence that the
-      # CI runner does not have (LicenceException). CI verifies compilation only;
-      # run `dotnet test` locally on a licenced machine to execute the test suite.
+      - name: Restore tests
+        run: dotnet restore tests/SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj
+        env:
+          NUGET_AUTH_USERNAME: ${{ secrets.PACKAGES_USERNAME }}
+          NUGET_AUTH_TOKEN: ${{ secrets.PACKAGES_PATTOKEN }}
+
+      - name: Build tests
+        run: dotnet build tests/SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj --no-restore --configuration Release
+
+      # NOTE: MOST tests are not executed in CI. Several of them initialise the SQL
+      # Race runtime via SqlRaceBootstrapper, which requires a SQL Race licence that
+      # the CI runner does not have (LicenceException). Run `dotnet test` locally on
+      # a licenced machine to execute the full suite, or scripts/run-examples-e2e.ps1
+      # for the runtime checks across C#, Python and MATLAB.
+      #
+      # The snippet compilation tests are the exception: they compile every snippet
+      # against the real SQL Race assemblies using Roslyn, which is a metadata-only
+      # operation needing no licence. They are the early warning that a new
+      # MESL.SQLRace.API release has broken the examples.
+      - name: Verify snippets compile against SQL Race
+        run: >
+          dotnet test tests/SqlRace.Examples.Tests/SqlRace.Examples.Tests.csproj
+          --no-build --configuration Release
+          --filter "FullyQualifiedName~SnippetCompilation"

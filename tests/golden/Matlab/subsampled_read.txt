@@ -1,0 +1,20 @@
+﻿Parameter:       Temperature:Sensors
+Original range:  28800000000000 - 28919980000000 ns
+Subsampled to:   1199 points at 10 Hz
+  t+     <measure>  300.0000
+  t+   <measure>  300.0000
+  t+   <measure>  300.0000
+  t+   <measure>  304.6000
+  t+   <measure>  310.2000
+  t+   <measure>  307.6000
+  t+   <measure>  306.6000
+  t+   <measure>  310.2000
+  t+   <measure>  313.8000
+  t+   <measure>  322.2000
+  t+  <measure>  320.6000
+  t+  <measure>  326.4000
+  t+  <measure>  328.8000
+  t+  <measure>  328.6000
+  t+  <measure>  335.0000
+  ... and 1184 more
+Done.

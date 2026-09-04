@@ -1,0 +1,12 @@
+﻿Session has 3 parameter(s)
+  Pressure:Inlet: 2400 samples
+  Temperature:Sensors: 2400 samples
+  Acceleration:Platform: 2400 samples
+Timetable: 2400 rows x 3 variables
+    timeVec     Pressure_Inlet    Temperature_Sensors    Acceleration_Platform
+    ________    ______________    ___________________    _____________________
+    0 sec            100                  -4                       0
+    0.05 sec         100                  -4                       0
+    0.1 sec          100                  -5                       0
+    0.15 sec         100                  -4                       0
+    0.2 sec          100                  -5                       0

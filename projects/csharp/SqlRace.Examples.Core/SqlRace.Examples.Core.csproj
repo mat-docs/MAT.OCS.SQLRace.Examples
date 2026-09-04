@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MESL.SQLRace.API" Version="*" />
+    <PackageReference Include="MESL.SQLRace.API" Version="$(SqlRaceApiVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.*" />

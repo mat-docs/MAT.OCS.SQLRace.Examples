@@ -1,0 +1,6 @@
+﻿Created primary:   <guid>
+Created associate:  <guid>
+Associated <guid> with primary <guid>
+Loaded primary session: Primary Test Run
+  Items: 1
+  Associated sessions loaded: 0

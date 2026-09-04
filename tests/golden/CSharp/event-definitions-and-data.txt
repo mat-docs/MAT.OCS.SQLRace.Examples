@@ -1,0 +1,7 @@
+﻿Session <guid>: event definitions and data
+      Timestamp (ns) DefKey     Group           Data
+────────────────────────────────────────────────────────────────────────────────
+      36005000000000 1          Diagnostics     [127.3, 120]
+      36010000000000 2          Diagnostics     [3, 1]
+      36015000000000 3          Diagnostics     [0, 1]
+      36020000000000 1          Diagnostics     [135.1, 120]

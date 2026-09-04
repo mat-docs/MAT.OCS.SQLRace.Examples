@@ -1,0 +1,24 @@
+﻿=== Pattern 1: Uniform at 10 Hz ===
+Count: 10
+  36000000000000 ns  (t+<measure>)
+  36000100000000 ns  (t+<measure>)
+  36000200000000 ns  (t+<measure>)
+  36000300000000 ns  (t+<measure>)
+  36000400000000 ns  (t+<measure>)
+  ...
+=== Pattern 2: Specific offsets (<measure>, <measure>, <measure>, <measure>, <measure>) ===
+Count: 5
+  36000000000000 ns  (t+<measure>)
+  36000250000000 ns  (t+<measure>)
+  36000500000000 ns  (t+<measure>)
+  36000750000000 ns  (t+<measure>)
+  36001000000000 ns  (t+<measure>)
+=== Pattern 3: Log-spaced (20 points) ===
+Count: 20
+  36000000000001 ns  (t+<measure>)
+  36000000000002 ns  (t+<measure>)
+  36000000000008 ns  (t+<measure>)
+  36000000000026 ns  (t+<measure>)
+  36000000000078 ns  (t+<measure>)
+  ...
+  36001000000000 ns  (t+<measure>)

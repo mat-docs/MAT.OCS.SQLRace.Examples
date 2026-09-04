@@ -1,0 +1,26 @@
+<Project>
+
+  <PropertyGroup>
+    <!--
+      Which SQL Race build everything in this repo compiles and runs against.
+
+      "*" floats to the newest release on the feed, which is what everyday
+      development wants. A compatibility run overrides it to point at a
+      candidate before that candidate ships:
+
+        dotnet test  -p:SqlRaceApiVersion=<candidate-version>
+        ./scripts/run-examples-e2e.ps1 -SqlRaceApiVersion <candidate-version>
+
+      It is defined here rather than per-project because it has to apply to
+      every project at once. Overriding it on the test project alone leaves
+      SqlRace.Examples.Core and FunctionLibrary resolving whatever is published,
+      so the run would mix two different SQL Race builds and prove nothing.
+
+      Note that "*" only floats as far as the configured feed can see. An
+      offline restore settles on whatever is already in the local NuGet cache,
+      so pin explicitly when the answer matters.
+    -->
+    <SqlRaceApiVersion Condition="'$(SqlRaceApiVersion)' == ''">*</SqlRaceApiVersion>
+  </PropertyGroup>
+
+</Project>

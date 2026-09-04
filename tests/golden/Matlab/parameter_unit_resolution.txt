@@ -1,0 +1,7 @@
+﻿Session: Turbine Inspection Week 1 (3 parameters)
+Identifier                     Conversion                Unit       Format     Range
+-----------------------------------------------------------------------------------------------
+Pressure:Inlet                 CONV_Pressure:Inlet       kPa        %5.0f      [3000.0, 7000.0]
+Temperature:Sensors            CONV_Temperature:Sensors  °C         %5.0f      [300.0, 700.0]
+RPM:Turbine                    CONV_RPM:Turbine          RPM        %5.0f      [2000.0, 5000.0]
+Done.

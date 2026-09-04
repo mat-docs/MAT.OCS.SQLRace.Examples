@@ -1,0 +1,7 @@
+﻿=== SQL Race MATLAB Setup Diagnostics ===
+[1/5] Checking .NET runtime... OK (Runtime: core, Status: notloaded)
+[2/5] Loading SQL Race assembly... OK (<path>
+[3/5] Initialising Core... OK
+[4/5] Loading test session... OK (Parameters: 3, Segments: 1)
+[5/5] Reading parameter data... OK (2400 samples)
+=== Diagnostics complete ===

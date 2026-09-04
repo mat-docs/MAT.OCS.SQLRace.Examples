@@ -1,0 +1,9 @@
+﻿SQL Race initialised
+Session loaded: <guid>
+  Name:       Verified Example Session
+  Start time: 36000000000000 ns
+  End time:   36009990000000 ns
+  Duration:   <measure>
+  Parameters: 3
+  Laps:       0
+Session closed.

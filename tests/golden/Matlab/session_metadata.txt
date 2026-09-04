@@ -1,0 +1,10 @@
+﻿Created session <guid> with 5 metadata items
+Reloaded session: 5 metadata items
+Key                  Value
+------------------------------------------------------------
+Facility             Wind Tunnel A
+Operator             Test Engineer 1
+TestObjective        Thermal characterisation at 80% load
+AmbientTemp          22.5
+RunNumber            42
+Done.

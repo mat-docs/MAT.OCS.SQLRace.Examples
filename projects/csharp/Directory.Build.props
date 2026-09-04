@@ -1,5 +1,18 @@
 <Project>
 
+  <!--
+    MSBuild stops at the first Directory.Build.props it finds walking up from a
+    project, so without this import the repo-root one never reaches anything
+    under projects/csharp - and SqlRaceApiVersion is defined there.
+
+    Unimported, "$(SqlRaceApiVersion)" expands to nothing, and an empty version
+    range does not fail loudly: NuGet resolves the *oldest* MESL.SQLRace.API on
+    the feed. Every project here would then compile against a 2019 package while
+    the test project floats to the newest, which is precisely the mixed-build
+    situation SqlRaceApiVersion exists to prevent.
+  -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
