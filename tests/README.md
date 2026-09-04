@@ -73,6 +73,11 @@ golden means nothing was verified. Skipped snippets are listed in the summary fo
 reason — a snippet silently missing from the run would otherwise be indistinguishable from
 one that passed.
 
+`Matlab/event_extraction` has no golden on purpose. None of the scenario files under
+`../notebooks/scenarios/data/` contain event definitions, so it reports zero events and a
+golden would record that as a pass over nothing. It needs event data adding to
+`motorsport-lap-analysis.ssn2` before it is worth capturing.
+
 ## The verified fixture
 
 `VerifiedFixture.Generate(connectionString)` writes one session (`Verified Test Session`,
