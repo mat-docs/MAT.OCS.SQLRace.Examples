@@ -3,8 +3,10 @@
 // ─────────────────────────────────────────────────────────────
 //
 // Demonstrates: Polling a live session's latest samples with async delay and cancellation
-// Prerequisites: MESL.SQLRace.API NuGet package, .NET 8, a live session
-// Input: A live session key and parameter identifier
+// Prerequisites: MESL.SQLRace.API NuGet package, .NET 8, a live session recorded with the
+//                Server Listener enabled (see docs/server-listener.md)
+// Input: A live session key, the connection string of the database it is recording to,
+//        and a parameter identifier
 // Output: Latest sample values printed at each poll interval
 //
 // Related: snippets/csharp/live-data/subscribe-to-lap-events.cs
@@ -32,58 +34,62 @@ var sessionKey = SessionKey.Parse(args[0]);
 var paramId = args.Length > 2 ? args[2] : "Temperature:Sensors";
 
 var sessionManager = SessionManager.CreateSessionManager();
-
-using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-
-Console.WriteLine($"Polling {paramId} every 2s (30s timeout)...\n");
-
-// --- Verify the parameter exists before polling ---
-{
-    using var initClient = sessionManager.Load(sessionKey, connectionString);
-    if (!initClient.Session.Parameters.Any(p => p.Identifier == paramId))
-    {
-        Console.WriteLine($"ERROR: Parameter '{paramId}' not found in session.");
-        Console.WriteLine("Available (first 20):");
-        foreach (var p in initClient.Session.Parameters.Take(20))
-            Console.WriteLine($"  {p.Identifier}");
-        return;
-    }
-}
-
 var sessionSummary = sessionManager.FindSummaryBy(sessionKey, connectionString);
 
-var pollCount = 0;
+// --- Live data only comes from the recorder's Server Listener ---
+// For a Live session GetConnectionString() returns the listener's "SqlRaceServer:..." string.
+// A LiveNotInServer session has no listener: its database copy trails the leading edge by
+// the recorder's flush delay (5 minutes by default), so it never gives live data.
+var liveConnectionString = sessionSummary?.State == SessionState.Live ? sessionSummary.GetConnectionString() : null;
+if (liveConnectionString is null || !liveConnectionString.StartsWith("SqlRaceServer", StringComparison.OrdinalIgnoreCase))
+{
+    Console.WriteLine($"ERROR: Session is {sessionSummary?.State.ToString() ?? "not found"}, not Live with a Server Listener.");
+    Console.WriteLine("Enable the Server Listener on the recorder (docs/server-listener.md) and record a new session.");
+    return;
+}
 
-// --- Load the session with server listener so we can pick up live data ---
-using var clientSession = sessionManager.Load(sessionSummary.Key, sessionSummary.GetConnectionString());
+using var clientSession = sessionManager.Load(sessionSummary.Key, liveConnectionString);
 var session = clientSession.Session;
 
+if (!session.Parameters.Any(p => p.Identifier == paramId))
+{
+    Console.WriteLine($"ERROR: Parameter '{paramId}' not found in session.");
+    Console.WriteLine("Available (first 20):");
+    foreach (var p in session.Parameters.Take(20))
+        Console.WriteLine($"  {p.Identifier}");
+    return;
+}
+
+using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+Console.WriteLine($"Polling {paramId} every 2s (30s timeout)...\n");
+
 using var pda = session.CreateParameterDataAccess(paramId);
+var pollCount = 0;
 var lastEndTime = long.MinValue;
-while (!cts.Token.IsCancellationRequested)
+while (!cts.Token.IsCancellationRequested && session.State == SessionState.Live)
 {
     try { await Task.Delay(2000, cts.Token); }
     catch (OperationCanceledException) { break; }
-    
-    // --- Check if the end time is updated. ---
+
+    // --- EndTime is kept up to date by the Server Listener while the session is live ---
     var endTime = session.EndTime;
     if (lastEndTime >= endTime)
     {
-        // --- End time has not been changed. No new data. ---
-        Console.WriteLine($"  Poll {++pollCount}: no data yet");
+        Console.WriteLine($"  Poll {++pollCount}: no new data");
         continue;
     }
 
-    // --- End time has changed. Update lastEndTime and fetch the latest samples. ---
     lastEndTime = endTime;
-    pda.GoTo(lastEndTime);
+    pda.GoTo(endTime);
     var samples = pda.GetNextSamples(5, StepDirection.Reverse);
 
     if (samples.SampleCount > 0)
     {
+        // Reverse reads return newest first.
         var latest = samples.Data[0];
         var latestTime = samples.Timestamp[0];
-        Console.WriteLine($"  Poll {++pollCount}: latest={latest:F2} at {latestTime} ns ({samples.SampleCount} recent)");
+        var behindMs = (endTime - latestTime) / 1_000_000.0;
+        Console.WriteLine($"  Poll {++pollCount}: latest={latest:F2} at {latestTime} ns, {behindMs:F0} ms behind session end");
     }
     else
     {
