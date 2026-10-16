@@ -52,6 +52,12 @@ var sessionManager = SessionManager.CreateSessionManager();
 IClientSession? clientSession = null;
 Session? session = null;
 
+// A LiveNotInServer session is still recording but has no Server Listener, so the only
+// copy is the database's, which trails the leading edge by the recorder's flush delay
+// (5 minutes by default). Its EndTime is also fixed at load, so the dashboard would freeze.
+const string NoListenerHelp =
+    "Enable the Server Listener on the recorder for live data - see docs/server-listener.md.";
+
 if (!string.IsNullOrEmpty(configuredSessionId))
 {
     var match = sessions.FirstOrDefault(s => s.Identifier == configuredSessionId);
@@ -66,6 +72,12 @@ if (!string.IsNullOrEmpty(configuredSessionId))
         return;
     }
 
+    if (match.State == SessionState.LiveNotInServer)
+    {
+        Console.WriteLine($"Session '{configuredSessionId}' is LiveNotInServer. {NoListenerHelp}");
+        return;
+    }
+
     var sessionConnectionString = match.GetConnectionString();
     clientSession = sessionManager.Load(match.Key, sessionConnectionString);
     session = clientSession.Session;
@@ -76,6 +88,12 @@ else
     // Try sessions newest-first, skip any with no sample data
     foreach (var candidate in sessions.OrderByDescending(s => s.TimeOfRecording))
     {
+        if (candidate.State == SessionState.LiveNotInServer)
+        {
+            Console.WriteLine($"Skipping session {candidate.Identifier} (LiveNotInServer). {NoListenerHelp}");
+            continue;
+        }
+
         var sessionConnectionString = candidate.GetConnectionString();
         var tempClient = sessionManager.Load(candidate.Key, sessionConnectionString);
         var tempSession = tempClient.Session;
