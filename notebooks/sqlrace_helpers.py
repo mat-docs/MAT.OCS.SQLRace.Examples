@@ -111,7 +111,18 @@ def load_session(session_manager, session_guid, connection_string=None):
 
     key = SessionKey.Parse(session_guid)
     cs = connection_string or get_connection_string()
-    client_session = session_manager.Load(key, cs)
+    summary = session_manager.FindSummaryBy(key, cs)
+    if summary is None:
+        raise LookupError(f"Session {session_guid} not found in {cs}")
+
+    # For a Live session this is the recorder's Server Listener connection string.
+    # A LiveNotInServer session has no listener, so its database copy trails the
+    # leading edge by the recorder's flush delay (5 minutes by default).
+    if str(summary.State) == "LiveNotInServer":
+        print("WARNING: Session is LiveNotInServer - enable the recorder's Server Listener "
+              "for live data (docs/server-listener.md).")
+
+    client_session = session_manager.Load(summary.Key, summary.GetConnectionString())
     return client_session, client_session.Session
 
 

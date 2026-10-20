@@ -120,7 +120,7 @@ This queries the database, loads recent sessions, and monitors for EndTime growt
 | Client can't connect | Firewall blocking the port | Open the Server Listener port (TCP+UDP) on both machines |
 | `FindLiveSession` says "no live sessions" | No active recording, or data hasn't flushed yet | Start a recorder on the ADS; use `--wait 90` for slow flush intervals |
 | `CreateParameterDataAccess` throws | Session loaded before parameters were flushed | Wait for the first data flush (~60–70s), then reload the session |
-| Data values don't change between polls | Cached session data from initial load | Reload the session (`SessionManager.Load()`) each poll cycle — see `poll-live-samples.cs` |
+| Data values don't change between polls, or arrive ~5 minutes behind the session end | Session loaded from the database instead of the Server Listener (state **LiveNotInServer**) | Enable the Server Listener on the recorder and load the session with the connection string from `SessionSummary.GetConnectionString()`; check `State == Live` first. See `poll-live-samples.cs` |
 
 ## Related
 
