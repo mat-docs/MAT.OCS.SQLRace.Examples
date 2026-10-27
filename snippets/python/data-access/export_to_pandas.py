@@ -89,7 +89,8 @@ try:
     df["time"] = pd.to_timedelta(df["timestamp_ns"], unit="ns")
 
     print(f"DataFrame: {len(df)} rows")
-    print(df.head(10).to_string(index=False))
+    # Format each Timedelta on its own: pandas 3.1 pads a whole column to microseconds.
+    print(df.head(10).to_string(index=False, formatters={"time": str}))
     print(f"\nDescribe:\n{df[param_id].describe()}")
 finally:
     if pda is not None:
