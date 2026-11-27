@@ -84,6 +84,7 @@ Each snippet:
 |------|-------------|
 | [`create-parameter-config.cs`](csharp/configuration/create-parameter-config.cs) | Full manual step-by-step parameter setup |
 | [`create-transient-parameter.cs`](csharp/configuration/create-transient-parameter.cs) | In-memory-only parameters with CreateTransientConfiguration |
+| [`create-transient-events.cs`](csharp/configuration/create-transient-events.cs) | Add and verify an in-memory Transient Event |
 | [`introspect-session-config.cs`](csharp/configuration/introspect-session-config.cs) | Enumerate parameters, channels, groups, conversions |
 | [`conversion-types.cs`](csharp/configuration/conversion-types.cs) | RationalConversion vs TableConversion |
 
